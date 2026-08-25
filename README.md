@@ -25,6 +25,12 @@ No installation, no server-side processing for validation or repair, and no acco
 
 ---
 
+## AI Disclosure
+
+**Parts of MBSM (code, refactors, and/or documentation) were created or modified with the help of AI tools.** Everything is still reviewed before being merged, but if you spot something that looks off, please open an issue or a pull request.
+
+---
+
 ## Features
 
 ### 4D / 5D Skin Validator
@@ -38,6 +44,10 @@ No installation, no server-side processing for validation or repair, and no acco
 ### Classic Skins
 
 <table><tr><th width='35%'>Feature</th><th>Description</th></tr><tr><td><strong>3D skin preview</strong></td><td>View regular Minecraft Bedrock skins directly in the browser.</td></tr><tr><td><strong>Model detection</strong></td><td>Automatically detects <strong>Steve (wide)</strong> and <strong>Alex (slim)</strong> models.</td></tr><tr><td><strong>Skin browser</strong></td><td>Browse skins contained inside a skin pack archive.</td></tr><tr><td><strong>Texture preview</strong></td><td>Inspect PNG textures used by the skin pack.</td></tr></table>
+
+### OBJ → Skin 1.8
+
+<table><tr><th width='35%'>Feature</th><th>Description</th></tr><tr><td><strong>.obj import</strong></td><td>Loads a 3D model (with its texture) exported from Blender or any other tool that writes named objects/groups.</td></tr><tr><td><strong>Bone assignment</strong></td><td>Assigns each part of the model to a bone of the standard Bedrock humanoid skeleton, with automatic suggestions based on part names.</td></tr><tr><td><strong>Visual pivot editing</strong></td><td>Lets you add bones and position pivots directly in the live 3D view instead of hand-editing JSON.</td></tr><tr><td><strong>Real Bedrock 1.8.0 export</strong></td><td>Outputs an actual <code>poly_mesh</code> geometry, packaged as a complete skin pack (<code>manifest.json</code>, <code>geometry.json</code>, <code>skins.json</code>, language file and textures).</td></tr><tr><td><strong>Fully local</strong></td><td>Runs entirely in the browser, like the rest of MBSM — nothing is uploaded anywhere.</td></tr></table>
 
 ---
 
@@ -68,6 +78,7 @@ MBSM aims to provide a **single toolkit** that helps creators quickly identify p
 * Automatic Skin Pack Repair
 * 4D/5D Viewer — live 3D preview (5D) + embedded Blockbench Web editor (4D)
 * Classic Skins — 3D skin viewer + Skinpack Maker
+* OBJ → Skin 1.8 — converts a 3D model (.obj) into a real Bedrock 1.8.0 poly_mesh skin pack
 
 ---
 
@@ -105,7 +116,7 @@ Clone the repository:
 git clone https://github.com/Darktubbie/MBSM.git
 ```
 
-Then open **index.html** in a modern browser.
+Then open **index.html** in a modern browser — it's the single HTML entry point for the whole toolkit (every tool, including OBJ → Skin 1.8, lives inside this one page now).
 
 No build process or local server is currently required.
 
