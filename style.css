@@ -1221,6 +1221,10 @@ a{
 .fc-maker:hover{ border-color:var(--yellow); }
 .fc-maker::after{ background:var(--yellow); }
 
+.fc-objskin .tag{ background:rgba(124,155,255,.15); color:var(--info); }
+.fc-objskin:hover{ border-color:var(--info); }
+.fc-objskin::after{ background:var(--info); }
+
 .perks{
   display:grid;
   grid-template-columns:repeat(3,1fr);

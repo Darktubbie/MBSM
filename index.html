@@ -7,9 +7,12 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css?v=7">
+
+  <!-- Estilos propios (escopados bajo #objSkinStudio) del módulo OBJ -> Skin 1.8 -->
+  <link rel="stylesheet" href="obj-skin-studio.css?v=1">
 
   <!-- Librería para leer/crear archivos ZIP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -17,6 +20,16 @@
   <!-- Librería para el visualizador 3D de skins -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <!-- Módulos adicionales de three.js que usa el conversor OBJ -> Skin 1.8
+       (edición visual de huesos/pivotes y contorno de selección) -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/OutlinePass.js"></script>
 </head>
 <body>
 
@@ -129,6 +142,11 @@
         <h3 data-i18n="home.fcMakerTitle">Build a pack from scratch</h3>
         <p data-i18n="home.fcMakerText">Generates the full skin pack structure — manifest, geometry and textures — without touching a console.</p>
       </a>
+      <a href="#validator" class="card feature-card fc-objskin tab-link" data-tab="validator" data-subtab="sgTabObjSkin">
+        <span class="tag" data-i18n="home.fcObjSkinTag">OBJ → SKIN 1.8</span>
+        <h3 data-i18n="home.fcObjSkinTitle">Turn a 3D model into a working 5D skin</h3>
+        <p data-i18n="home.fcObjSkinText">Import an .obj + texture, assign parts to bones, adjust pivots visually, and export a real Bedrock 1.8.0 poly_mesh — ready as a full skin pack.</p>
+      </a>
     </div>
 
   </div>
@@ -192,6 +210,7 @@
     <div class="sub-tabs">
       <button type="button" class="sub-tab-btn active" data-subtab="sgTabValidator" data-i18n="validator.subValidator">Validator</button>
       <button type="button" class="sub-tab-btn" data-subtab="sgTabViewer" data-i18n="sg.subViewer">4D/5D Viewer</button>
+      <button type="button" class="sub-tab-btn" data-subtab="sgTabObjSkin" data-i18n="sg.subObjSkin">OBJ → Skin 1.8</button>
     </div>
 
     <!-- ---- Sub-pestaña: Validator (contenido original, sin cambios) ---- -->
@@ -545,6 +564,211 @@
     </div>
     <!-- ---- /Sub-pestaña: 4D/5D Viewer ---- -->
 
+    <!-- ---- Sub-pestaña: OBJ → Skin 1.8 ---- -->
+    <div id="sgTabObjSkin" class="sub-tab-panel">
+
+      <div class="module-window">
+        <div class="module-window-bar">
+          <span class="module-window-dot"></span>
+          <span class="module-window-dot"></span>
+          <span class="module-window-dot"></span>
+          <span class="module-window-title" data-i18n="objskin.windowTitle">OBJ → Skin Studio</span>
+        </div>
+        <div class="module-window-body" style="padding:0;">
+          <p style="padding:16px 20px 0;" data-i18n="objskin.intro">Import a 3D model (.obj) exported from Blender or another program, assign its parts to a skeleton's bones, position pivots visually, and export a real Bedrock 1.8.0 geometry (poly_mesh) — ready as a full skin pack (manifest.json, skins.json, lang and textures included).</p>
+          <div style="margin:16px 20px 20px;">
+<div id="objSkinStudio">
+  <div id="dropOverlay">
+    <div id="dropOverlayInner">
+      <svg class="dropIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>
+      <p data-oss-i18n="drop.text">Suelta tu .obj y tu textura aquí</p>
+    </div>
+  </div>
+
+  <div id="app">
+
+    <div id="mobileBackdrop"></div>
+    <button class="mobileToggle" id="btnMobileSidebar" title="Modelos" data-oss-i18n-title="mobile.models">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+    </button>
+    <button class="mobileToggle" id="btnMobileInspector" title="Huesos / Exportar" data-oss-i18n-title="mobile.bonesExport">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.6"/><circle cx="18" cy="18" r="2.6"/><line x1="8" y1="8" x2="16" y2="16"/></svg>
+    </button>
+
+    <!-- ============ Columna izquierda: proyectos + partes ============ -->
+    <aside id="sidebar">
+      <button class="mobileClose" id="btnCloseSidebar" title="Cerrar" data-oss-i18n-title="common.close">×</button>
+      <div id="sidebarHeader">
+        <div class="sidebarHeaderTop">
+          <h1>OBJ → Skin <span class="badgeVer">1.8</span></h1>
+          <div class="lang-switch" id="objSkinLangSwitch">
+            <button type="button" class="lang-btn" data-lang="es">ES</button>
+            <button type="button" class="lang-btn" data-lang="en">EN</button>
+          </div>
+        </div>
+        <button class="btn btnPrimary wide" id="btnNewProject" data-oss-i18n="sidebar.newModel">+ Nuevo modelo</button>
+      </div>
+
+      <ul id="projectList"></ul>
+
+      <div id="projectFiles" hidden>
+        <div class="fileRow" id="fileRowObj" title="Cambiar modelo .obj" data-oss-i18n-title="sidebar.changeObjTitle">
+          <span class="fileRowIcon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>
+          </span>
+          <div class="fileRowInfo">
+            <div class="fileRowLabel" data-oss-i18n="sidebar.objLabel">Modelo .obj</div>
+            <div class="fileRowValue" id="objFileName" data-oss-i18n="sidebar.noFile">Sin archivo — haz clic para subir</div>
+          </div>
+          <input type="file" id="objInput" accept=".obj" hidden>
+        </div>
+        <div class="fileRow" id="fileRowTex" title="Cambiar textura" data-oss-i18n-title="sidebar.changeTexTitle">
+          <span class="fileRowIcon fileRowThumb" id="texThumb">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          </span>
+          <div class="fileRowInfo">
+            <div class="fileRowLabel" data-oss-i18n="sidebar.texLabel">Textura</div>
+            <div class="fileRowValue" id="texFileName" data-oss-i18n="sidebar.noFile">Sin archivo — haz clic para subir</div>
+          </div>
+          <input type="file" id="texInput" accept=".png,.jpg,.jpeg" hidden>
+        </div>
+      </div>
+
+      <div id="partsSection" hidden>
+        <div class="sectionHeader">
+          <h3 data-oss-i18n="sidebar.partsTitle">Partes del modelo</h3>
+          <button class="btn btnGhost small" id="btnAutoAssign" title="Reasignar huesos según el nombre de cada parte" data-oss-i18n-title="sidebar.autoAssignTitle" data-oss-i18n="sidebar.autoAssign">Autoasignar</button>
+        </div>
+        <input type="text" id="partsSearch" placeholder="Buscar parte..." data-oss-i18n-placeholder="sidebar.searchPart">
+        <ul id="partsList"></ul>
+      </div>
+    </aside>
+
+    <!-- ============ Centro: viewport 3D ============ -->
+    <main id="viewport">
+      <canvas id="canvas"></canvas>
+
+      <div id="emptyState">
+        <svg class="emptyIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>
+        <h2 data-oss-i18n="empty.title">Crea un modelo para empezar</h2>
+        <p data-oss-i18n-html="empty.text1">Sube un archivo <code>.obj</code> exportado desde Blender/otro programa, con sus objetos o grupos nombrados (cabeza, brazo, torso, etc.) y una textura.</p>
+        <p class="emptyHint" data-oss-i18n="empty.text2">Cuanto mejor nombrados estén los grupos del .obj, mejor podrá autoasignarlos esta herramienta a los huesos del esqueleto.</p>
+        <button class="btn btnPrimary" id="btnEmptyNewProject" data-oss-i18n="sidebar.newModel">+ Nuevo modelo</button>
+      </div>
+
+      <div id="toolbar" hidden>
+        <button class="toolBtn" id="btnZoomIn" title="Acercar" data-oss-i18n-title="tb.zoomIn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+        </button>
+        <button class="toolBtn" id="btnZoomOut" title="Alejar" data-oss-i18n-title="tb.zoomOut">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+        </button>
+        <button class="toolBtn" id="btnFit" title="Encuadrar modelo" data-oss-i18n-title="tb.fit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+        </button>
+        <span class="toolSep"></span>
+        <button class="toolBtn toggle" id="btnWireframe" title="Alambre / wireframe" data-oss-i18n-title="tb.wireframe">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>
+        </button>
+        <button class="toolBtn toggle" id="btnGrid" title="Mostrar/ocultar grilla" data-oss-i18n-title="tb.grid">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </button>
+        <button class="toolBtn toggle" id="btnSkeleton" title="Mostrar/ocultar esqueleto" data-oss-i18n-title="tb.skeleton">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="6" r="2.6"/><circle cx="18" cy="18" r="2.6"/><line x1="8" y1="8" x2="16" y2="16"/></svg>
+        </button>
+        <button class="toolBtn toggle" id="btnUnassignedOnly" title="Resaltar partes sin asignar" data-oss-i18n-title="tb.unassigned">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><line x1="12" y1="9" x2="12" y2="13.5"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></svg>
+        </button>
+        <span class="toolSep"></span>
+        <button class="toolBtn" id="btnFullscreen" title="Pantalla completa" data-oss-i18n-title="tb.fullscreen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+        </button>
+      </div>
+
+      <div id="viewportStatus"></div>
+      <a id="creditLink" href="https://github.com/MCMrARM/obj-skin-studio" target="_blank" rel="noopener noreferrer" data-oss-i18n="credit.text">Inspirado en OBJ Skin Studio de MCMrARM</a>
+    </main>
+
+    <!-- ============ Derecha: huesos + exportar ============ -->
+    <aside id="inspector">
+      <button class="mobileClose" id="btnCloseInspector" title="Cerrar" data-oss-i18n-title="common.close">×</button>
+      <div id="inspectorTabs">
+        <button class="tabBtn active" data-tab="bones" data-oss-i18n="tabs.bones">Huesos</button>
+        <button class="tabBtn" data-tab="export" data-oss-i18n="tabs.export">Exportar</button>
+      </div>
+
+      <div class="tabPanel active" id="tab-bones">
+        <div id="bonesEmpty" data-oss-i18n="common.selectModelFirst">Crea o selecciona un modelo primero.</div>
+        <div id="bonesContent" hidden>
+          <ul id="boneTree"></ul>
+          <button class="btn btnGhost wide" id="btnAddBone" data-oss-i18n="bones.addHere">+ Agregar hueso aquí</button>
+          <p class="hint" id="addBoneHint" data-oss-i18n-html="bones.addHereHint">Se crea dentro del hueso que tengas seleccionado en el árbol (como una subcarpeta). Si te equivocas de lugar, cámbialo luego con "Hueso padre".</p>
+
+          <div id="boneDetail" hidden>
+            <h3 class="panelTitle" id="boneDetailTitle" data-oss-i18n="bones.boneWord">Hueso</h3>
+            <div id="boneBreadcrumb"></div>
+            <label class="infoLabel" data-oss-i18n="bones.name">Nombre</label>
+            <input type="text" id="boneNameInput">
+            <label class="infoLabel" data-oss-i18n="bones.parent">Hueso padre</label>
+            <select id="boneParentSelect"></select>
+            <label class="infoLabel" data-oss-i18n="bones.pivot">Pivote (X, Y, Z)</label>
+            <div class="vec3Row">
+              <input type="number" step="0.1" id="pivotX">
+              <input type="number" step="0.1" id="pivotY">
+              <input type="number" step="0.1" id="pivotZ">
+            </div>
+            <button class="btn btnDanger" id="btnDeleteBone" data-oss-i18n="bones.deleteBone">Eliminar hueso</button>
+
+            <h4 class="panelTitle small" data-oss-i18n="bones.assignedParts">Partes asignadas a este hueso</h4>
+            <ul id="boneAssignedParts"></ul>
+            <p class="hint" data-oss-i18n="bones.assignedPartsHint">Marca o desmarca partes en la lista de la izquierda para asignarlas a este hueso.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabPanel" id="tab-export">
+        <div id="exportEmpty" data-oss-i18n="common.selectModelFirst">Crea o selecciona un modelo primero.</div>
+        <div id="exportContent" hidden>
+          <label class="infoLabel" data-oss-i18n="export.modelName">Nombre del modelo</label>
+          <input type="text" id="exportNameInput">
+          <label class="infoLabel" data-oss-i18n="export.identifier">Identifier de geometría</label>
+          <input type="text" id="exportIdentifierInput" readonly>
+
+          <div class="infoGrid">
+            <div><span class="infoKey" data-oss-i18n="export.bonesWithGeo">Huesos con geometría</span><span class="infoVal" id="expBoneCount">—</span></div>
+            <div><span class="infoKey" data-oss-i18n="export.totalTris">Triángulos totales</span><span class="infoVal" id="expTriCount">—</span></div>
+            <div><span class="infoKey" data-oss-i18n="export.unassignedParts">Partes sin asignar</span><span class="infoVal" id="expUnassignedCount">—</span></div>
+            <div><span class="infoKey" data-oss-i18n="export.texture">Textura</span><span class="infoVal" id="expTexSize">—</span></div>
+          </div>
+
+          <div id="exportWarnings"></div>
+
+          <div class="hintDivider"></div>
+          <label class="infoLabel" data-oss-i18n="export.packName">Nombre del paquete de skins</label>
+          <input type="text" id="packNameInput" placeholder="Mi Skin Pack" data-oss-i18n-placeholder="export.packNamePlaceholder">
+          <p class="hint" data-oss-i18n-html="export.packNameHint">Aplica a TODO el paquete (no solo a este modelo): se usa en <code>manifest.json</code> y como nombre visible del paquete dentro de Minecraft.</p>
+
+          <label class="infoLabel" data-oss-i18n="export.styleLabel">Estilo del geometry.json</label>
+          <div class="segmentToggle" id="exportStyleToggle">
+            <button type="button" class="segmentBtn active" id="btnStyleFancy" data-style="fancy" data-oss-i18n="export.fancy">Fancy</button>
+            <button type="button" class="segmentBtn" id="btnStyleCompact" data-style="compact" data-oss-i18n="export.compact">Compacto</button>
+          </div>
+
+          <button class="btn btnPrimary wide" id="btnDownloadPackage">Descargar paquete de skin</button>
+          <p class="hint" data-oss-i18n-html="export.downloadHint">Genera <code>manifest.json</code>, <code>geometry.json</code>, <code>skins.json</code>, <code>texts/en_US.lang</code> y las texturas — listo para copiar tal cual a <code>games/com.mojang/skin_packs/</code>.</p>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- ---- /Sub-pestaña: OBJ → Skin 1.8 ---- -->
+
   </div>
 
 </section>
@@ -747,9 +971,10 @@
         <strong>Minecraft Bedrock</strong>
         skin packs that runs almost entirely in your browser: a validator
         for 4D/5D packs with custom geometries, a 3D skin viewer, a 4D/5D
-        viewer with an embedded Blockbench Web editor, and a skin pack
-        builder. The only thing that ever leaves your browser is a 4D
-        model's data when you send it to that embedded Blockbench editor —
+        viewer with an embedded Blockbench Web editor, an OBJ → Skin 1.8
+        converter that turns a 3D model into a working 5D skin pack, and a
+        skin pack builder. The only thing that ever leaves your browser is a
+        4D model's data when you send it to that embedded Blockbench editor —
         everything else stays local.
       </p>
 
@@ -758,6 +983,46 @@
         not show up in-game, a model fail to load, or textures break — and
         to make building a pack from scratch simple.
       </p>
+
+    </div>
+
+  </div>
+
+  <div class="container checks-section">
+
+    <h2 class="section-title" data-i18n="about.toolsTitle">WHAT'S INSIDE MBSM</h2>
+
+    <div class="checks-grid tools-grid">
+
+      <article class="card check-card">
+        <h3 data-i18n="home.fcValidatorTag">VALIDATOR</h3>
+        <p data-i18n="home.fcValidatorText">Checks geometry.json, render controllers and ambiguous or duplicate model names, and tells you exactly which file to fix.</p>
+      </article>
+
+      <article class="card check-card">
+        <h3 data-i18n="home.fcFixerTag">AUTO-FIX</h3>
+        <p data-i18n="home.fcFixerText">Ambiguities, broken references and small details get solved on their own; the rest gets flagged for you.</p>
+      </article>
+
+      <article class="card check-card">
+        <h3 data-i18n="home.fcViewerTag">4D/5D VIEWER</h3>
+        <p data-i18n="home.fcViewerText">Preview bones, cubes and pivots of custom geometries with the skin applied, rotating live — or send 4D models straight to an embedded Blockbench editor.</p>
+      </article>
+
+      <article class="card check-card">
+        <h3 data-i18n="home.fcClassicViewerTag">3D VIEWER</h3>
+        <p data-i18n="home.fcClassicViewerText">See a regular Minecraft Bedrock skin applied to the Steve/Alex model, rotating live, before using it in-game.</p>
+      </article>
+
+      <article class="card check-card">
+        <h3 data-i18n="home.fcMakerTag">MAKER</h3>
+        <p data-i18n="home.fcMakerText">Generates the full skin pack structure — manifest, geometry and textures — without touching a console.</p>
+      </article>
+
+      <article class="card check-card">
+        <h3 data-i18n="home.fcObjSkinTag">OBJ → SKIN 1.8</h3>
+        <p data-i18n="home.fcObjSkinText">Import an .obj + texture, assign parts to bones, adjust pivots visually, and export a real Bedrock 1.8.0 poly_mesh — ready as a full skin pack.</p>
+      </article>
 
     </div>
 
@@ -872,6 +1137,13 @@
 <script src="renderer5d.js?v=1"></script>
 <script src="blockbench.js?v=1"></script>
 <script src="skinGeoViewer.js?v=1"></script>
+
+<!-- Módulo del conversor OBJ -> Skin 1.8 (poly_mesh), antes una página
+     aparte (obj-skin-studio.html) embebida por iframe; ahora vive
+     integrado en esta misma página, igual que los demás módulos de
+     arriba. Se expone como window.ObjSkinStudio (init perezoso +
+     refreshLanguage) y no declara nada más en el ámbito global. -->
+<script src="obj-a-skin-bedrock.js?v=1"></script>
 
 <script src="app.js?v=7"></script>
 

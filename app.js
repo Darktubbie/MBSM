@@ -43,7 +43,10 @@ const I18N = {
       fcClassicViewerText: "See a regular Minecraft Bedrock skin applied to the Steve/Alex model, rotating live, before using it in-game.",
       fcMakerTag: "MAKER",
       fcMakerTitle: "Build a pack from scratch",
-      fcMakerText: "Generates the full skin pack structure — manifest, geometry and textures — without touching a console."
+      fcMakerText: "Generates the full skin pack structure — manifest, geometry and textures — without touching a console.",
+      fcObjSkinTag: "OBJ → SKIN 1.8",
+      fcObjSkinTitle: "Turn a 3D model into a working 5D skin",
+      fcObjSkinText: "Import an .obj + texture, assign parts to bones, adjust pivots visually, and export a real Bedrock 1.8.0 poly_mesh — ready as a full skin pack."
     },
     perks: {
       eyebrow: "DETAILS THAT MATTER",
@@ -119,6 +122,7 @@ const I18N = {
     },
     sg: {
       subViewer: "4D/5D Viewer",
+      subObjSkin: "OBJ → Skin 1.8",
       tabIntro: "Live 3D preview for 4D/5D geometries: 5D models (poly_mesh) render directly here, 4D models (cubes) open in an embedded Blockbench Web editor, all without leaving MBSM.",
       windowTitle: "4D/5D VIEWER",
       fieldPack: "Full pack (optional)",
@@ -169,6 +173,10 @@ const I18N = {
       bbSafetyNetTextureNote: "Blockbench Web doesn't support receiving geometry and texture at the same time by URL, so the texture needs to be added inside the panel.",
       bbSafetyNetWarningHtml: `⚠ If the Blockbench panel stays black, blank, or shows an error like <code>"Error: URI Too Long"</code>, this model was actually too large for Blockbench's server to accept by URL — that limit is set by their server and this page can't verify it from here. Use the buttons below to download it yourself and open it inside the panel with <code>Ctrl+O</code> (then drag in the texture afterwards).`
     },
+    objskin: {
+      windowTitle: "OBJ → SKIN STUDIO",
+      intro: "Import a 3D model (.obj) exported from Blender or another program, assign its parts to a skeleton's bones, position pivots visually, and export a real Bedrock 1.8.0 geometry (poly_mesh) — ready as a full skin pack (manifest.json, skins.json, lang and textures included)."
+    },
     fix: {
       title: "Available fixes",
       subtitle: "Select the repairs you want to apply.",
@@ -190,13 +198,15 @@ const I18N = {
     },
     about: {
       title: "ABOUT MBSM",
+      toolsTitle: "WHAT'S INSIDE MBSM",
       p1: `MBSM is a free toolbox for
         <strong>Minecraft Bedrock</strong>
         skin packs that runs almost entirely in your browser: a validator
         for 4D/5D packs with custom geometries, a 3D skin viewer, a 4D/5D
-        viewer with an embedded Blockbench Web editor, and a skin pack
-        builder. The only thing that ever leaves your browser is a 4D
-        model's data when you send it to that embedded Blockbench editor —
+        viewer with an embedded Blockbench Web editor, an OBJ → Skin 1.8
+        converter that turns a 3D model into a working 5D skin pack, and a
+        skin pack builder. The only thing that ever leaves your browser is a
+        4D model's data when you send it to that embedded Blockbench editor —
         everything else stays local.`,
       p2: "The goal is to catch exactly the mistakes that usually make a skin not show up in-game, a model fail to load, or textures break — and to make building a pack from scratch simple."
     },
@@ -348,7 +358,10 @@ const I18N = {
       fcClassicViewerText: "Mira una skin normal de Minecraft Bedrock aplicada al modelo Steve/Alex, girando en vivo, antes de usarla en el juego.",
       fcMakerTag: "CONSTRUCTOR",
       fcMakerTitle: "Arma un pack desde cero",
-      fcMakerText: "Genera la estructura completa de un skin pack — manifest, geometría y texturas — sin tocar una consola."
+      fcMakerText: "Genera la estructura completa de un skin pack — manifest, geometría y texturas — sin tocar una consola.",
+      fcObjSkinTag: "OBJ → SKIN 1.8",
+      fcObjSkinTitle: "Convierte un modelo 3D en una skin 5D funcional",
+      fcObjSkinText: "Importa un .obj + textura, asigna las partes a los huesos, ajusta los pivotes visualmente, y exporta una geometría real Bedrock 1.8.0 (poly_mesh) — lista como paquete de skin completo."
     },
     perks: {
       eyebrow: "DETALLES QUE IMPORTAN",
@@ -424,6 +437,7 @@ const I18N = {
     },
     sg: {
       subViewer: "Visor 4D/5D",
+      subObjSkin: "OBJ → Skin 1.8",
       tabIntro: "Vista previa 3D en vivo para geometrías 4D/5D: los modelos 5D (poly_mesh) se renderizan aquí mismo, los modelos 4D (cubes) se abren en un editor Blockbench Web integrado, todo sin salir de MBSM.",
       windowTitle: "VISOR 4D/5D",
       fieldPack: "Pack completo (opcional)",
@@ -474,6 +488,10 @@ const I18N = {
       bbSafetyNetTextureNote: "Blockbench Web no admite recibir geometría y textura a la vez por URL, así que la textura hay que añadirla dentro del panel.",
       bbSafetyNetWarningHtml: `⚠ Si el panel de Blockbench se queda en negro, en blanco, o muestra un texto de error como <code>"Error: URI Too Long"</code>, es que este modelo era, en realidad, demasiado grande para que el servidor de Blockbench lo aceptara por URL — ese límite lo impone su servidor y esta página no puede comprobarlo desde aquí. Usa los botones de abajo para descargarlo tú mismo y ábrelo dentro del panel con <code>Ctrl+O</code> (y arrastra la textura después).`
     },
+    objskin: {
+      windowTitle: "OBJ → SKIN STUDIO",
+      intro: "Importa un modelo 3D (.obj) exportado desde Blender u otro programa, asigna sus partes a los huesos de un esqueleto, posiciona los pivotes visualmente, y exporta una geometría real Bedrock 1.8.0 (poly_mesh) — lista como paquete de skin completo (manifest.json, skins.json, lang y texturas incluidos)."
+    },
     fix: {
       title: "Correcciones disponibles",
       subtitle: "Selecciona las reparaciones que quieres aplicar.",
@@ -495,14 +513,16 @@ const I18N = {
     },
     about: {
       title: "ACERCA DE MBSM",
+      toolsTitle: "QUÉ INCLUYE MBSM",
       p1: `MBSM es una caja de herramientas gratuita para paquetes de
         <strong>Minecraft Bedrock</strong> que funciona casi por completo en
         tu navegador: un validador para packs 4D/5D con geometrías
         personalizadas, un visor de skins en 3D, un visor 4D/5D con un
-        editor Blockbench Web integrado, y un creador de skinpacks. Lo único
-        que sale de tu navegador son los datos de un modelo 4D cuando lo
-        envías a ese editor Blockbench integrado — todo lo demás se queda
-        local.`,
+        editor Blockbench Web integrado, un conversor OBJ → Skin 1.8 que
+        convierte un modelo 3D en un paquete de skin 5D funcional, y un
+        creador de skinpacks. Lo único que sale de tu navegador son los
+        datos de un modelo 4D cuando lo envías a ese editor Blockbench
+        integrado — todo lo demás se queda local.`,
       p2: "El objetivo es detectar exactamente los errores que suelen provocar que una skin no aparezca en el juego, que el modelo no cargue o que las texturas se rompan — y hacer sencillo crear un pack desde cero."
     },
     checks: {
@@ -699,6 +719,10 @@ async function applyLanguage(lang) {
   // efectos secundarios -- solo cambia el idioma del texto ya calculado.
   if (typeof BlockbenchPanel !== "undefined") BlockbenchPanel.refreshLanguage();
   if (typeof SkinGeoViewer !== "undefined") SkinGeoViewer.refreshLanguage();
+
+  // Igual que arriba, pero para el conversor OBJ -> Skin 1.8 (antes una
+  // página aparte, ahora un módulo más de la SPA).
+  if (typeof ObjSkinStudio !== "undefined") ObjSkinStudio.refreshLanguage();
 
   // El Skinpack Maker genera su lista de skins y su vista previa de forma
   // dinámica (no vía data-i18n), así que hay que volver a pintarlas cada
@@ -1572,5 +1596,18 @@ applyLanguage(savedLang);
   if (!sgTabBtn) return;
   sgTabBtn.addEventListener("click", function () {
     if (typeof SkinGeoViewer !== "undefined") SkinGeoViewer.init();
+  });
+})();
+
+// ==========================================================
+// OBJ -> Skin 1.8 (antes obj-skin-studio.html, cargado por iframe) --
+// misma inicialización perezosa: arranca Three.js/su UI solo la primera
+// vez que el usuario entra a esa sub-pestaña.
+// ==========================================================
+(function () {
+  var objSkinTabBtn = document.querySelector('.sub-tab-btn[data-subtab="sgTabObjSkin"]');
+  if (!objSkinTabBtn) return;
+  objSkinTabBtn.addEventListener("click", function () {
+    if (typeof ObjSkinStudio !== "undefined") ObjSkinStudio.init();
   });
 })();
