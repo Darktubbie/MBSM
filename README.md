@@ -25,6 +25,25 @@ No installation, no server-side processing for validation or repair, and no acco
 
 ---
 
+
+## Interface
+
+<div align="center">
+
+![Home dashboard](assets/screenshot-home.png)
+
+</div>
+
+**v0.7.0 beta** brought a complete visual redesign:
+
+* **Sidebar navigation** — grouped by Workspace / Viewers / Tools, collapsible, with a command palette (`⌘K` / `Ctrl+K`) to jump to any tool instantly.
+* **Home dashboard** — quick-access cards for every tool plus an in-app changelog.
+* **Inspector panel** — a dedicated side panel in the 4D/5D viewer for model info, display options and appearance settings.
+* **Dark / Light / System themes**, switchable from the sidebar.
+* **Full Spanish and English interface**, with automatic browser-language detection.
+
+---
+
 ## AI Disclosure
 
 **Parts of MBSM (code, refactors, and/or documentation) were created or modified with the help of AI tools.** Everything is still reviewed before being merged, but if you spot something that looks off, please open an issue or a pull request.
