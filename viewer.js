@@ -1,18 +1,18 @@
 // viewer.js
-// Visualizador de skin packs "normales" (no 4D) de Minecraft Bedrock:
-// detecta modelo Steve/Alex (wide/slim) por skin y permite ver la textura
-// o una previsualización 3D del modelo con la skin aplicada.
+// Viewer for "regular" (non-4D) Minecraft Bedrock skin packs: detects
+// each skin's Steve/Alex model (wide/slim) and lets you look at the
+// texture or a 3D preview of the model with the skin applied.
 
 // ----------------------------
-// Geometría OFICIAL de Minecraft Bedrock para el modelo humanoide
-// estándar (Steve = wide, Alex = slim), tomada directamente del
-// player_geometry.json real del juego (solo Steve y Alex; la capa
-// -"geometry.cape"- no se incluye aquí, se maneja aparte con
-// addCapeMesh). Reemplaza al layout UV armado a mano que se usaba
-// antes: se renderiza con el mismo pipeline genérico que ya usan los
-// modelos personalizados de packs 4D/5D (buildCustomGeometryModel),
-// así que el resultado es consistente y confiable en vez de depender
-// de coordenadas de píxeles transcritas manualmente.
+// Minecraft Bedrock's OFFICIAL geometry for the standard humanoid model
+// (Steve = wide, Alex = slim), taken directly from the game's real
+// player_geometry.json (Steve and Alex only; the cape layer
+// -"geometry.cape"- isn't included here, it's handled separately by
+// addCapeMesh). This replaces the hand-built UV layout used before:
+// it's rendered through the same generic pipeline already used for
+// 4D/5D packs' custom models (buildCustomGeometryModel), so the result
+// is consistent and reliable instead of depending on manually
+// transcribed pixel coordinates.
 // ----------------------------
 const OFFICIAL_PLAYER_GEOMETRY = {
   "geometry.npc.steve": {
@@ -386,10 +386,10 @@ const OFFICIAL_PLAYER_GEOMETRY = {
 ;
 
 // ----------------------------
-// Layout UV del formato de skin 64x64 (capa base). Cada cara es
-// [x, y, w, h] en píxeles dentro de la textura, origen arriba-izquierda.
-// Orden de caras: right, left, top, bottom, front, back
-// (coincide con el orden de caras que usa THREE.BoxGeometry).
+// UV layout for the 64x64 skin format (base layer). Each face is
+// [x, y, w, h] in pixels within the texture, origin top-left.
+// Face order: right, left, top, bottom, front, back
+// (matches the face order THREE.BoxGeometry uses).
 // ----------------------------
 function mcLayoutWide() {
   return {
@@ -402,8 +402,8 @@ function mcLayoutWide() {
   };
 }
 
-// Formato antiguo 64x32: no hay región independiente para brazo/pierna
-// izquierdos, se reflejan desde los del lado derecho.
+// Legacy 64x32 format: there's no separate region for the left
+// arm/leg, they're mirrored from the right side's.
 function mcLayoutLegacyWide() {
   const w = mcLayoutWide();
   return {
@@ -417,18 +417,17 @@ function mcLayoutLegacyWide() {
 }
 
 // ----------------------------
-// Aplica un layout de caras [x,y,w,h] (en píxeles) a un BoxGeometry,
-// usando el orden de caras estándar de THREE.BoxGeometry:
+// Applies a [x,y,w,h] (in pixels) face layout to a BoxGeometry, using
+// THREE.BoxGeometry's standard face order:
 // [+x right, -x left, +y top, -y bottom, +z front, -z back]
 // ----------------------------
 function setBoxUV(geometry, layout, texW, texH) {
-  // NOTA: "right"/"left" en el layout se refieren a las regiones de
-  // píxeles de la textura tal como las nombra el formato de Minecraft,
-  // no directamente al eje +X/-X de three.js. Confirmado con un skin
-  // real que esas dos regiones aparecían intercambiadas en el modelo
-  // (la cara -X del box recibía los píxeles de "right" y viceversa),
-  // así que aquí se emparejan al revés a propósito para que el
-  // resultado se vea correcto.
+  // NOTE: "right"/"left" in the layout refer to the texture's pixel
+  // regions as Minecraft's format names them, not directly to three.js's
+  // +X/-X axis. Confirmed with a real skin that those two regions showed
+  // up swapped on the model (the box's -X face was getting "right"'s
+  // pixels and vice versa), so they're deliberately paired backwards
+  // here so the result looks correct.
   const order = ["left", "right", "top", "bottom", "front", "back"];
   const uvAttr = geometry.attributes.uv;
 
@@ -458,37 +457,36 @@ function makePart(w, h, d, layout, texW, texH, material) {
 }
 
 // ----------------------------
-// Construye el modelo del jugador (Steve/Alex) con la textura aplicada.
-// Devuelve un THREE.Group listo para agregar a la escena.
+// Builds the player model (Steve/Alex) with the texture applied.
+// Returns a THREE.Group ready to add to the scene.
 //
-// Formato moderno (64x64): se renderiza con la geometría OFICIAL de
-// Minecraft (OFFICIAL_PLAYER_GEOMETRY) usando el mismo pipeline genérico
-// que ya usan los modelos personalizados de packs 4D/5D
-// (buildCustomGeometryModel). Esto reemplaza el layout UV armado a mano
-// que se usaba antes, y de paso corrige una inconsistencia real: la
-// segunda capa (overlay) usaba un "inflate" fijo de 0.5 para TODAS las
-// piezas, cuando en el modelo oficial solo el gorro usa 0.5 -la
-// chaqueta, las mangas y los pantalones usan 0.25-, lo que hacía que esa
-// capa se viera más separada/inflada de lo que debería.
+// Modern format (64x64): rendered with Minecraft's OFFICIAL geometry
+// (OFFICIAL_PLAYER_GEOMETRY) through the same generic pipeline already
+// used for 4D/5D packs' custom models (buildCustomGeometryModel). This
+// replaces the hand-built UV layout used before, and along the way fixes
+// a real inconsistency: the second layer (overlay) used a fixed
+// "inflate" of 0.5 for EVERY piece, when in the official model only the
+// hat uses 0.5 -the jacket, sleeves and pants use 0.25-, which made that
+// layer look more puffed-out/separated than it should.
 //
-// Formato antiguo (64x32): no tiene segunda capa ni distinción
-// wide/slim, así que se sigue armando a mano con el layout clásico
-// (no hay geometría oficial moderna para este formato).
+// Legacy format (64x32): has no second layer or wide/slim distinction,
+// so it's still built by hand with the classic layout (there's no
+// modern official geometry for this format).
 // ----------------------------
 function buildPlayerModel(texture, isSlim, texW, texH) {
 
-  const legacy = texH < texW; // 64x32 = formato antiguo
+  const legacy = texH < texW; // 64x32 = legacy format
 
   if (!legacy) {
     const identifier = isSlim ? "geometry.npc.alex" : "geometry.npc.steve";
     const model = buildCustomGeometryModel(OFFICIAL_PLAYER_GEOMETRY, identifier, texture, texW, texH);
 
     if (model) {
-      model.position.y = -12; // centra el modelo verticalmente
+      model.position.y = -12; // center the model vertically
       return model;
     }
-    // Si por algún motivo no se pudo construir, se sigue de largo y se
-    // usa el layout clásico como respaldo (no debería pasar nunca).
+    // If for some reason it couldn't be built, fall through and use the
+    // classic layout as a fallback (should never actually happen).
   }
 
   const material = new THREE.MeshLambertMaterial({
@@ -527,15 +525,15 @@ function buildPlayerModel(texture, isSlim, texW, texH) {
   leftLeg.position.set(2, 6, 0);
   group.add(leftLeg);
 
-  group.position.y = -12; // centra el modelo verticalmente
+  group.position.y = -12; // center the model vertically
 
   return group;
 }
 
 // ----------------------------
-// Ajusta la cámara y los límites de OrbitControls para que el modelo
-// completo (sin importar su tamaño real) quede visible dentro del
-// encuadre, en vez de usar una distancia fija que puede recortarlo.
+// Adjusts the camera and OrbitControls' limits so the whole model (no
+// matter its actual size) stays visible within frame, instead of using
+// a fixed distance that could crop it.
 // ----------------------------
 function fitCameraToObject(camera, controls, object, paddingFactor = 1.6) {
   const box = new THREE.Box3().setFromObject(object);
@@ -559,14 +557,14 @@ function fitCameraToObject(camera, controls, object, paddingFactor = 1.6) {
 }
 
 // ==========================================================
-// Renderizador GENÉRICO de geometry.json (modelos 4D/5D con huesos y
-// cubos personalizados, no solo el modelo estándar Steve/Alex).
+// GENERIC geometry.json renderer (4D/5D models with custom bones and
+// cubes, not just the standard Steve/Alex model).
 // ==========================================================
 
-// Calcula el layout UV estándar de "box UV" de Minecraft a partir de un
-// origen [u,v] y el tamaño del cubo [sx,sy,sz]. Esta es la misma fórmula
-// que usa el propio formato de skin del jugador (ya verificada contra
-// las regiones conocidas del modelo humanoid).
+// Computes Minecraft's standard "box UV" layout from an origin [u,v]
+// and the cube's size [sx,sy,sz]. This is the same formula the player
+// skin format itself uses (already verified against the humanoid
+// model's known regions).
 function boxUVFromOrigin(u, v, sx, sy, sz, mirror) {
   const layout = {
     right:  [u,               v + sz, sz, sy],
@@ -577,9 +575,9 @@ function boxUVFromOrigin(u, v, sx, sy, sz, mirror) {
     bottom: [u + sz + sx,     v,      sx, sz]
   };
 
-  // "mirror" (muy común en modelos hechos con Blockbench, sobre todo en
-  // piezas simétricas como brazos/alas): intercambia las regiones UV de
-  // las caras izquierda/derecha, igual que hace Minecraft/Blockbench.
+  // "mirror" (very common in Blockbench-made models, especially for
+  // symmetric pieces like arms/wings): swaps the left/right faces' UV
+  // regions, same as Minecraft/Blockbench does.
   if (mirror) {
     const tmp = layout.right;
     layout.right = layout.left;
@@ -589,8 +587,8 @@ function boxUVFromOrigin(u, v, sx, sy, sz, mirror) {
   return layout;
 }
 
-// Layout UV cuando el cubo define coordenadas por cara explícitamente
-// (formato "per-face uv" de Bedrock: north/south/east/west/up/down).
+// UV layout for when a cube defines coordinates per face explicitly
+// (Bedrock's "per-face uv" format: north/south/east/west/up/down).
 function perFaceUV(uvObj) {
   const map = { east: "right", west: "left", south: "front", north: "back", up: "top", down: "bottom" };
   const layout = {};
@@ -607,48 +605,48 @@ function perFaceUV(uvObj) {
   return layout;
 }
 
-// Busca la geometría de "identifier" dentro de geometry.json. Los packs
-// 4D/5D usan siempre el formato de ENTIDAD LEGACY (format_version
-// "1.8.0" o "1.10.0"): la geometría es una clave de nivel superior cuyo
-// valor tiene un array "bones", por ejemplo:
+// Looks up "identifier"'s geometry inside geometry.json. 4D/5D packs
+// always use the LEGACY ENTITY format (format_version "1.8.0" or
+// "1.10.0"): the geometry is a top-level key whose value has a "bones"
+// array, e.g.:
 //   { "geometry.egg": { "bones": [...] } }
-// No se exige que la clave empiece con "geometry." porque algunos
-// archivos 1.8.0 no siguen esa convención de forma estricta; en su
-// lugar se detecta cualquier clave de nivel superior cuyo valor sea un
-// objeto con un array "bones" (la señal real de que es una geometría).
+// The key isn't required to start with "geometry." because some 1.8.0
+// files don't follow that convention strictly; instead, any top-level
+// key whose value is an object with a "bones" array is detected (that's
+// the real signal that it's a geometry).
 //
-// El formato nuevo ("minecraft:geometry", 1.12.0+) NO se soporta a
-// propósito: los skinpacks 4D/5D no lo usan.
+// The new format ("minecraft:geometry", 1.12.0+) is deliberately NOT
+// supported: 4D/5D skinpacks don't use it.
 //
-// IMPORTANTE sobre coordenadas: en TODAS las versiones del formato
-// legacy (1.8.0 y 1.10.0 por igual), el "origin" de cada cubo está
-// definido en espacio ABSOLUTO del modelo (el mismo espacio que el
-// "pivot" del hueso), nunca relativo al pivote. Tratarlo como relativo
-// (como se hacía antes) descolocaba las piezas del modelo.
+// IMPORTANT about coordinates: in EVERY version of the legacy format
+// (1.8.0 and 1.10.0 alike), each cube's "origin" is defined in the
+// model's ABSOLUTE space (the same space as the bone's "pivot"), never
+// relative to the pivot. Treating it as relative (like this used to do)
+// threw the model's pieces out of place.
 //
-// Devuelve { bones, texW, texH } o null si no se encontró nada.
+// Returns { bones, texW, texH }, or null if nothing was found.
 function resolveCustomGeometry(geometryJson, identifier) {
   if (!geometryJson || !identifier) return null;
 
   const baseNameOf = (id) =>
     String(id).replace(/^geometry\./i, "").split(".").pop().toLowerCase();
 
-  // Normaliza agresivamente: sin "geometry.", sin mayúsculas, y sin
-  // separadores (puntos/guiones/guiones bajos/espacios). Esto hace que
-  // "geometry.Angel_Geo", "geometry.angelgeo" y "geometry.angel-geo"
-  // se reconozcan como el mismo nombre, algo común entre packs 4D/5D
-  // hechos a mano donde el identificador de skins.json no coincide letra
-  // por letra con la clave real de geometry.json.
+  // Aggressively normalized: no "geometry.", no uppercase, and no
+  // separators (dots/dashes/underscores/spaces). This makes
+  // "geometry.Angel_Geo", "geometry.angelgeo" and "geometry.angel-geo"
+  // all get recognized as the same name, which is common in hand-made
+  // 4D/5D packs where skins.json's identifier doesn't match
+  // geometry.json's actual key letter-for-letter.
   const normalize = (id) =>
     String(id)
       .replace(/^geometry\./i, "")
       .toLowerCase()
       .replace(/[^a-z0-9]/g, "");
 
-  // Recolecta TODAS las geometrías disponibles, sin importar si están
-  // como claves de nivel superior o dentro de un array en la raíz
-  // (algunos exportadores 1.8.0 atípicos guardan un array de geometrías
-  // sueltas en vez de un objeto con claves "geometry.X").
+  // Collects EVERY available geometry, whether they're top-level keys
+  // or sit inside an array at the root (a few unusual 1.8.0 exporters
+  // store a loose array of geometries instead of an object with
+  // "geometry.X" keys).
   const candidates = [];
 
   Object.keys(geometryJson).forEach(k => {
@@ -673,9 +671,9 @@ function resolveCustomGeometry(geometryJson, identifier) {
     candidates.find(c => baseNameOf(c.key) === baseNameOf(identifier)) ||
     candidates.find(c => normalize(c.key) === normalize(identifier));
 
-  // Último recurso: coincidencia parcial (una cadena contiene a la
-  // otra), para nombres con sufijos/prefijos extra (p. ej. "AngelGeo"
-  // dentro de "geometry.angel_geo_v2").
+  // Last resort: a partial match (one string contains the other), for
+  // names with extra suffixes/prefixes (e.g. "AngelGeo" inside
+  // "geometry.angel_geo_v2").
   if (!match) {
     const normId = normalize(identifier);
     if (normId) {
@@ -686,9 +684,9 @@ function resolveCustomGeometry(geometryJson, identifier) {
     }
   }
 
-  // Si solo hay una geometría en todo el archivo, se usa esa como
-  // último recurso aunque el identificador no calce en absoluto
-  // (evita un falso "no encontrado" cuando es evidente cuál es).
+  // If there's only one geometry in the whole file, use it as a last
+  // resort even if the identifier doesn't match at all (avoids a false
+  // "not found" when it's obvious which one it is).
   if (!match && candidates.length === 1) match = candidates[0];
 
   if (match) {
@@ -700,9 +698,8 @@ function resolveCustomGeometry(geometryJson, identifier) {
     };
   }
 
-  // El archivo entero ES una única geometría sin clave contenedora
-  // (algunos exportadores antiguos guardan {"bones":[...]} directo en
-  // la raíz).
+  // The whole file IS a single geometry with no containing key (some
+  // older exporters store {"bones":[...]} directly at the root).
   if (Array.isArray(geometryJson.bones) && geometryJson.bones.length) {
     return {
       bones: geometryJson.bones,
@@ -740,11 +737,11 @@ function buildCubeMesh(cube, texW, texH, material, inflate, mirror) {
   return new THREE.Mesh(geo, material);
 }
 
-// Construye el modelo 3D completo a partir de un identificador de
-// geometría (p. ej. "geometry.egg") buscándolo dentro de geometry.json
-// (formato nuevo o antiguo), respetando la jerarquía de huesos
-// (parent/pivot/rotation) y aplicando la textura de la skin. Devuelve
-// null si no se encuentra la geometría o si queda completamente vacía.
+// Builds the complete 3D model from a geometry identifier (e.g.
+// "geometry.egg") by looking it up inside geometry.json (new or legacy
+// format), respecting the bone hierarchy (parent/pivot/rotation) and
+// applying the skin texture. Returns null if the geometry isn't found or
+// ends up completely empty.
 function buildCustomGeometryModel(geometryJson, identifier, texture, texW, texH) {
 
   const resolved = resolveCustomGeometry(geometryJson, identifier);
@@ -786,9 +783,9 @@ function buildCustomGeometryModel(geometryJson, identifier, texture, texW, texH)
       const origin = cube.origin || [0, 0, 0];
       const size = cube.size || [0, 0, 0];
 
-      // El "origin" del cubo siempre está en espacio ABSOLUTO del
-      // modelo (igual que el "pivot" del hueso), en todas las
-      // versiones del formato legacy (1.8.0 y 1.10.0 por igual).
+      // A cube's "origin" is always in the model's ABSOLUTE space
+      // (same as the bone's "pivot"), across every version of the
+      // legacy format (1.8.0 and 1.10.0 alike).
       const center = [
         origin[0] + size[0] / 2,
         origin[1] + size[1] / 2,
@@ -797,10 +794,10 @@ function buildCustomGeometryModel(geometryJson, identifier, texture, texW, texH)
 
       if (cube.rotation) {
 
-        // El cubo tiene su propio pivote/rotación, independiente del
-        // hueso (una pieza dentro del hueso rotada por separado). Se
-        // envuelve en un grupo intermedio para rotarlo alrededor de
-        // SU PROPIO pivote, no del pivote del hueso.
+        // The cube has its own pivot/rotation, independent of the bone
+        // (a piece inside the bone that's rotated separately). It's
+        // wrapped in an intermediate group so it rotates around ITS OWN
+        // pivot, not the bone's.
         const cubePivot = cube.pivot || center;
 
         const wrapper = new THREE.Group();
@@ -866,9 +863,9 @@ function buildCustomGeometryModel(geometryJson, identifier, texture, texW, texH)
 
   });
 
-  // Si la geometría se encontró pero no contiene huesos/cubos visibles
-  // (archivo malformado o vacío), tratamos esto igual que "no encontrada"
-  // para poder mostrar un mensaje claro en vez de un canvas en blanco.
+  // If the geometry was found but has no visible bones/cubes
+  // (malformed or empty file), we treat this the same as "not found" so
+  // a clear message can be shown instead of a blank canvas.
   let cubeCount = 0;
   root.traverse((obj) => { if (obj.isMesh) cubeCount++; });
 
@@ -877,15 +874,15 @@ function buildCustomGeometryModel(geometryJson, identifier, texture, texW, texH)
   return root;
 }
 
-// Agrega la capa (cape.png) como una caja delgada con el mismo mapeo de
-// "caja UV" que el resto del modelo (formato estándar de Minecraft:
-// región 10x16 en el origen [0,0] de la textura, profundidad 1), en vez
-// de estirar toda la textura sobre un único plano.
+// Adds the cape (cape.png) as a thin box with the same "box UV" mapping
+// the rest of the model uses (Minecraft's standard format: a 10x16
+// region at the texture's [0,0] origin, depth 1), instead of stretching
+// the whole texture over a single plane.
 //
-// El tamaño/posición se adapta al bounding box REAL del modelo en vez de
-// usar medidas fijas pensadas para el humanoide estándar: así se ve
-// razonablemente bien tanto en el modelo Steve/Alex como en un modelo
-// 4D/5D personalizado de cualquier tamaño.
+// Size/position adapt to the model's ACTUAL bounding box instead of
+// using fixed measurements meant for the standard humanoid: this way it
+// looks reasonably good both on the Steve/Alex model and on a custom
+// 4D/5D model of any size.
 function addCapeMesh(group, capeTexture, texW, texH) {
   const capeMat = new THREE.MeshLambertMaterial({
     map: capeTexture,
@@ -898,9 +895,9 @@ function addCapeMesh(group, capeTexture, texW, texH) {
   const size = box.getSize(new THREE.Vector3());
   const center = box.getCenter(new THREE.Vector3());
 
-  // Proporción estándar de la capa (10 de ancho x 16 de alto x 1 de
-  // profundidad) escalada según el alto real del modelo, tomando el
-  // humanoide estándar (32 de alto total) como referencia.
+  // Cape's standard proportions (10 wide x 16 tall x 1 deep) scaled to
+  // the model's actual height, using the standard humanoid's total
+  // height of 32 as the reference.
   const scale = Math.max(size.y / 32, 0.1);
   const capeW = 10 * scale;
   const capeH = 16 * scale;
@@ -912,9 +909,9 @@ function addCapeMesh(group, capeTexture, texW, texH) {
 
   const cape = new THREE.Mesh(capeGeo, capeMat);
 
-  // Cuelga desde cerca de la parte superior del modelo, pegada a la
-  // cara trasera real (el punto más "atrás" del bounding box), en vez
-  // de una posición fija asumiendo las proporciones del humanoide.
+  // Hangs from near the top of the model, flush against its actual
+  // back face (the "rearmost" point of the bounding box), instead of a
+  // fixed position that assumes the humanoid's proportions.
   cape.position.set(
     center.x,
     box.max.y - capeH * 0.55,
@@ -926,8 +923,8 @@ function addCapeMesh(group, capeTexture, texW, texH) {
 }
 
 // ----------------------------
-// Maneja una única instancia activa de escena 3D a la vez, para no
-// acumular renderers/animation loops si el usuario expande varias skins.
+// Keeps a single active 3D scene instance at a time, so renderers/
+// animation loops don't pile up if the user expands several skins.
 // ----------------------------
 let active3DViewer = null;
 
@@ -939,8 +936,8 @@ function dispose3DViewer() {
   active3DViewer = null;
 }
 
-// Abre el visor 3D en un <canvas> dado, con la textura (data URL) y si el
-// modelo es slim (Alex) o wide (Steve).
+// Opens the 3D viewer on a given <canvas>, with the texture (data URL)
+// and whether the model is slim (Alex) or wide (Steve).
 function open3DViewer(canvas, textureDataUrl, isSlim) {
   dispose3DViewer();
 
@@ -1010,9 +1007,9 @@ async function parseNormalSkinPack(zip) {
   const pngFiles = fileList.filter(f => /\.png$/i.test(f));
   const skins = skinsJson.skins || [];
 
-  // Resolver el nombre visible desde en_US.lang. Sin esto, el visor
-  // siempre mostraba "(no name in lang)" aunque el paquete sí tuviera
-  // el nombre traducido correctamente.
+  // Resolve the display name from en_US.lang. Without this, the viewer
+  // always showed "(no name in lang)" even when the pack actually had a
+  // properly translated name.
   const langPaths = fileList.filter(f => /texts\/.*\.lang$/i.test(f));
   const enUsPath = langPaths.find(f => /(^|\/)en_US\.lang$/i.test(f));
 

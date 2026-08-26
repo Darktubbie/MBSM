@@ -1,21 +1,45 @@
 :root{
-  --bg:#0f1011;
-  --bg2:#151618;
-  --panel:#1b1d20;
-  --panel2:#24272b;
-  --border:#343840;
+  color-scheme:dark;
+  /* ---- MBSM design system (2026 redesign) ---- */
+  --bg:#0b0b0f;
+  --bg2:#0b0b0f;
+  --panel:#121217;
+  --panel2:#18181f;
+  --elevated:#18181f;
+  --border:#27272f;
+  --border-soft:#1e1e26;
 
+  --primary:#7c3aed;
+  --primary-hover:#8b5cf6;
+  --accent:#a855f7;
+
+  /* Alias de compatibilidad con el resto de style.css / módulos */
   --purple:#a855f7;
   --purple-dark:#7c3aed;
 
-  --red:#ff5a5a;
-  --yellow:#ffd85a;
-  --info:#7c9bff;
+  --success:#22c55e;
+  --warning:#f59e0b;
+  --red:#ef4444;
+  --yellow:#f59e0b;
+  --info:#3b82f6;
 
-  --text:#f2f3f4;
-  --muted:#b9bec4;
+  --text:#f4f4f5;
+  --muted:#a1a1aa;
+
+  --font-ui:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --font-mono:'JetBrains Mono','SFMono-Regular',Consolas,monospace;
+
+  --radius-sm:6px;
+  --radius:10px;
+  --radius-lg:14px;
 
   --shadow:0 10px 30px rgba(0,0,0,.35);
+  --shadow-sm:0 2px 10px rgba(0,0,0,.28);
+
+  --sidebar-w:248px;
+  --sidebar-w-collapsed:72px;
+  --topbar-mini-h:56px;
+  --panel-rgb:11,11,15;
 }
 
 *{
@@ -58,15 +82,16 @@ html{
 
 body{
   position:relative;
-  background:
-    radial-gradient(circle at top,#1d3b1d55,transparent 60%),
-    linear-gradient(180deg,#0f1011,#151618 35%,#101113);
+  background:var(--bg);
   color:var(--text);
-  font-family:'Inter',sans-serif;
+  font-family:var(--font-ui);
   line-height:1.6;
   overflow-x:hidden;
 }
 
+/* El grid/glow decorativo original queda apagado por defecto: una
+   herramienta profesional no necesita fondo animado permanente.
+   Se conserva muy atenuado solo detrás del hero de Home. */
 body::before{
   content:"";
   position:fixed;
@@ -74,10 +99,9 @@ body::before{
   z-index:-2;
   pointer-events:none;
   background-image:
-    linear-gradient(rgba(168,85,247,.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(168,85,247,.06) 1px, transparent 1px);
+    linear-gradient(rgba(124,58,237,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,.035) 1px, transparent 1px);
   background-size:42px 42px;
-  animation:bgDrift 26s linear infinite;
 }
 
 body::after{
@@ -86,8 +110,7 @@ body::after{
   inset:-30% ;
   z-index:-1;
   pointer-events:none;
-  background:radial-gradient(circle, rgba(168,85,247,.10), transparent 45%);
-  animation:bgGlowShift 18s ease-in-out infinite;
+  background:radial-gradient(circle, rgba(124,58,237,.06), transparent 45%);
 }
 
 @keyframes bgDrift{
@@ -135,7 +158,7 @@ a{
   display:flex;
   align-items:center;
   gap:12px;
-  font-family:'Press Start 2P',cursive;
+  font-family:var(--font-ui);
 }
 
 .brand-mbsm{
@@ -152,13 +175,6 @@ a{
 
 .brand-accent{
   color:var(--purple);
-  text-shadow:
-    2px 0 0 #1c1e21,
-    -2px 0 0 #1c1e21,
-    0 2px 0 #1c1e21,
-    0 -2px 0 #1c1e21,
-    3px 3px 0 rgba(0,0,0,.55),
-    0 0 10px rgba(168,85,247,.6);
 }
 
 .nav-links{
@@ -179,7 +195,7 @@ a{
 .lang-switch{
   display:flex;
   gap:4px;
-  background:#17191d;
+  background:var(--panel);
   border:1px solid var(--border);
   border-radius:10px;
   padding:4px;
@@ -199,7 +215,7 @@ a{
 }
 
 .lang-btn:hover{
-  color:#fff;
+  color:var(--text);
 }
 
 .lang-btn.active{
@@ -276,7 +292,7 @@ a{
 }
 
 .hero-text h1{
-  font-family:'Press Start 2P',cursive;
+  font-family:var(--font-ui);
   font-size:34px;
   line-height:1.35;
   margin-bottom:22px;
@@ -353,9 +369,9 @@ a{
 }
 
 .pixel-title{
-  font-family:'Press Start 2P',cursive;
+  font-family:var(--font-ui);
   font-size:14px;
-  color:#fff;
+  color:var(--text);
   margin-bottom:18px;
 }
 
@@ -369,7 +385,7 @@ a{
   display:flex;
   align-items:center;
   gap:10px;
-  color:#d9dde2;
+  color:var(--text);
 }
 
 .dot{
@@ -392,7 +408,7 @@ a{
 }
 
 .mini-card{
-  background:#17191d;
+  background:var(--panel);
   border:1px solid #2e3239;
   border-radius:16px;
   padding:18px;
@@ -400,9 +416,9 @@ a{
 }
 
 .mini-number{
-  font-family:'Press Start 2P',cursive;
+  font-family:var(--font-ui);
   font-size:18px;
-  color:#fff;
+  color:var(--text);
 }
 
 .mini-label{
@@ -419,13 +435,13 @@ a{
 }
 
 .section.alt{
-  background:linear-gradient(180deg,#17191d,#141619);
+  background:linear-gradient(180deg,var(--panel),var(--bg));
   border-top:1px solid rgba(255,255,255,.04);
   border-bottom:1px solid rgba(255,255,255,.04);
 }
 
 .section-title{
-  font-family:'Press Start 2P',cursive;
+  font-family:var(--font-ui);
   font-size:18px;
   margin-bottom:28px;
 }
@@ -463,7 +479,7 @@ a{
 
 .dropzone.drag{
   border-color:var(--purple);
-  background:#1d2d1d;
+  background:var(--elevated);
 }
 
 .drop-icon{
@@ -473,13 +489,13 @@ a{
   display:grid;
   place-items:center;
   border-radius:16px;
-  background:#17191d;
-  border:1px solid #30343c;
+  background:var(--panel);
+  border:1px solid var(--border);
   font-size:28px;
 }
 
 .dropzone h3{
-  font-family:'Press Start 2P',cursive;
+  font-family:var(--font-ui);
   font-size:16px;
   margin-bottom:12px;
 }
@@ -516,14 +532,14 @@ a{
 }
 
 .stat-box{
-  background:#17191d;
-  border:1px solid #30343c;
+  background:var(--panel);
+  border:1px solid var(--border);
   border-radius:16px;
   padding:18px;
 }
 
 .stat-number{
-  font-family:'Press Start 2P',cursive;
+  font-family:var(--font-ui);
   font-size:18px;
 }
 
@@ -536,7 +552,7 @@ a{
 }
 
 .stat-number.success{
-  color:var(--purple);
+  color:var(--success);
 }
 
 .stat-label{
@@ -665,11 +681,11 @@ a{
 }
 
 .info-popover-close:hover{
-  color:#fff;
+  color:var(--text);
   border-color:var(--red);
 }
 
-/* ---------- Sub-pestañas (Classic Skins) ---------- */
+/* ---------- Sub-tabs (Classic Skins) ---------- */
 
 .sub-tabs{
   display:flex;
@@ -703,7 +719,7 @@ a{
   font-weight:700;
 }
 
-/* ---------- Ventana de módulo (estilo "app window") ---------- */
+/* ---------- Module window (an "app window" look) ---------- */
 
 .module-window{
   background:var(--panel);
@@ -770,14 +786,14 @@ a{
   display:block;
   font-size:13px;
   font-weight:700;
-  color:#d8dde2;
+  color:var(--text);
   margin-bottom:6px;
 }
 
 .maker-input{
   width:100%;
-  background:#17191d;
-  border:1px solid #30343c;
+  background:var(--panel);
+  border:1px solid var(--border);
   border-radius:10px;
   padding:10px 14px;
   color:var(--text);
@@ -841,7 +857,7 @@ a{
 }
 
 .maker-platform-btn:hover{
-  color:#fff;
+  color:var(--text);
 }
 
 .maker-platform-btn.active{
@@ -914,8 +930,8 @@ a{
   min-width:30px;
   height:26px;
   padding:0 8px;
-  background:#17191d;
-  border:1px solid #30343c;
+  background:var(--panel);
+  border:1px solid var(--border);
   border-radius:6px;
   color:var(--text);
   font-weight:800;
@@ -960,8 +976,8 @@ a{
   width:56px;
   height:56px;
   border-radius:12px;
-  border:1px solid #30343c;
-  background:#17191d;
+  border:1px solid var(--border);
+  background:var(--panel);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -989,8 +1005,8 @@ a{
 }
 
 .maker-skin-item{
-  background:#17191d;
-  border:1px solid #30343c;
+  background:var(--panel);
+  border:1px solid var(--border);
   border-radius:14px;
   padding:12px;
   text-align:center;
@@ -1058,11 +1074,11 @@ a{
 }
 
 .maker-skin-remove:hover{
-  color:#fff;
+  color:var(--text);
   border-color:var(--red);
 }
 
-/* ---------- Tarjetas de la pestaña Home ---------- */
+/* ---------- Home tab cards ---------- */
 
 .home-cards{
   display:grid;
@@ -1113,7 +1129,7 @@ a{
   color:var(--muted);
 }
 
-/* ---------- Sección de features / landing dentro de Home ---------- */
+/* ---------- Features / landing section within Home ---------- */
 
 .home-features{
   margin-top:76px;
@@ -1194,36 +1210,20 @@ a{
   font-size:13.5px;
 }
 
-.feature-card::after{
-  content:"";
-  position:absolute;
-  right:-30px;
-  bottom:-30px;
-  width:110px;
-  height:110px;
-  border-radius:50%;
-  opacity:.10;
-}
-
 .fc-validator .tag{ background:rgba(168,85,247,.15); color:var(--purple); border-color:var(--purple); }
 .fc-validator:hover{ border-color:var(--purple); }
-.fc-validator::after{ background:var(--purple); }
 
 .fc-viewer .tag{ background:rgba(124,155,255,.15); color:var(--info); }
 .fc-viewer:hover{ border-color:var(--info); }
-.fc-viewer::after{ background:var(--info); }
 
 .fc-fixer .tag{ background:rgba(255,90,90,.15); color:var(--red); }
 .fc-fixer:hover{ border-color:var(--red); }
-.fc-fixer::after{ background:var(--red); }
 
 .fc-maker .tag{ background:rgba(255,216,90,.15); color:var(--yellow); }
 .fc-maker:hover{ border-color:var(--yellow); }
-.fc-maker::after{ background:var(--yellow); }
 
 .fc-objskin .tag{ background:rgba(124,155,255,.15); color:var(--info); }
 .fc-objskin:hover{ border-color:var(--info); }
-.fc-objskin::after{ background:var(--info); }
 
 .perks{
   display:grid;
@@ -1327,46 +1327,66 @@ a{
   display:grid;
   place-items:center;
   border-radius:16px;
-  background:#17191d;
-  border:1px solid #30343c;
+  background:var(--panel);
+  border:1px solid var(--border);
   font-size:30px;
 }
 
 .result-placeholder h4{
-  color:#fff;
+  color:var(--text);
   margin-bottom:8px;
 }
 
 .result-item{
-  background:#17191d;
-  border:1px solid #30343c;
-  border-left:6px solid #5d636d;
-  border-radius:16px;
-  padding:16px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-left:3px solid var(--muted);
+  border-radius:var(--radius);
+  padding:14px 16px 14px 42px;
+  position:relative;
+}
+
+.result-item::before{
+  content:"•";
+  position:absolute;
+  left:14px;
+  top:14px;
+  width:18px; height:18px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:800;
+  border-radius:50%;
+  color:#fff;
+  background:var(--muted);
 }
 
 .result-item.success{
-  border-left-color:var(--purple);
+  border-left-color:var(--success);
 }
+.result-item.success::before{ content:"✓"; background:var(--success); }
 
 .result-item.warning{
-  border-left-color:var(--yellow);
+  border-left-color:var(--warning);
 }
+.result-item.warning::before{ content:"!"; background:var(--warning); }
 
 .result-item.error{
   border-left-color:var(--red);
 }
+.result-item.error::before{ content:"✕"; background:var(--red); }
 
 .result-item.info{
   border-left-color:var(--info);
 }
+.result-item.info::before{ content:"i"; background:var(--info); }
 
 .result-item h4{
-  margin-bottom:6px;
+  margin-bottom:4px;
+  font-size:13.5px;
 }
 
 .result-item p{
   color:var(--muted);
+  font-size:12.5px;
 }
 
 .checks-grid{
@@ -1397,8 +1417,8 @@ a{
   display:flex;
   align-items:flex-start;
   gap:14px;
-  background:#17191d;
-  border:1px solid #30343c;
+  background:var(--panel);
+  border:1px solid var(--border);
   border-radius:16px;
   padding:16px;
   cursor:pointer;
@@ -1407,7 +1427,7 @@ a{
 
 .fix-option:hover{
   border-color:var(--purple);
-  background:#1a1d22;
+  background:var(--panel2);
 }
 
 .fix-option input[type="checkbox"]{
@@ -1432,7 +1452,7 @@ a{
 }
 
 .fix-option-text strong{
-  color:#fff;
+  color:var(--text);
   font-size:14px;
 }
 
@@ -1446,14 +1466,14 @@ a{
   width:100%;
 }
 
-/* ---------- Banner de información del paquete ---------- */
+/* ---------- Pack info banner ---------- */
 
 .pack-info-banner{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:18px;
-  background:linear-gradient(135deg,#1d2d1d,#17191d);
+  background:linear-gradient(135deg,var(--elevated),var(--panel));
   border:1px solid var(--border);
   border-radius:18px;
   padding:20px 22px;
@@ -1465,9 +1485,9 @@ a{
 }
 
 .pack-info-name{
-  font-family:'Press Start 2P',cursive;
+  font-family:var(--font-ui);
   font-size:14px;
-  color:#fff;
+  color:var(--text);
   margin-bottom:10px;
   word-break:break-word;
 }
@@ -1484,7 +1504,7 @@ a{
   height:64px;
   border-radius:14px;
   overflow:hidden;
-  border:1px solid #30343c;
+  border:1px solid var(--border);
   background:#101113;
 }
 
@@ -1500,7 +1520,12 @@ a{
   display:grid;
   place-items:center;
   font-size:30px;
-  background:#17191d;
+  background:var(--panel);
+}
+.pack-icon-default img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
 /* ---------- Preview de skins ---------- */
@@ -1517,8 +1542,8 @@ a{
 }
 
 .skin-preview-card{
-  background:#17191d;
-  border:1px solid #30343c;
+  background:var(--panel);
+  border:1px solid var(--border);
   border-radius:16px;
   padding:16px;
   transition:transform .15s, box-shadow .15s, border-color .15s;
@@ -1555,7 +1580,7 @@ a{
 }
 
 .skin-preview-row span{
-  color:#d8dde2;
+  color:var(--text);
   font-weight:600;
   margin-right:4px;
 }
@@ -1563,7 +1588,7 @@ a{
 .skin-preview-animations{
   margin-top:10px;
   padding-top:10px;
-  border-top:1px solid #262a30;
+  border-top:1px solid var(--border);
 }
 
 .skin-preview-animations summary{
@@ -1571,7 +1596,7 @@ a{
   list-style:none;
   font-size:12px;
   font-weight:700;
-  color:#d8dde2;
+  color:var(--text);
   display:flex;
   align-items:center;
   gap:6px;
@@ -1594,7 +1619,7 @@ a{
 }
 
 .skin-preview-animations summary:hover{
-  color:#fff;
+  color:var(--text);
 }
 
 .skin-preview-animations-body{
@@ -1680,16 +1705,16 @@ a{
 }
 
 .footer-brand{
-  font-family:'Press Start 2P',cursive;
+  font-family:var(--font-ui);
   font-size:12px;
 }
 
 .footer-text{
-  color:#8f959c;
+  color:var(--muted);
   font-size:14px;
 }
 
-/* ---------- Sistema de pestañas ---------- */
+/* ---------- Tab system ---------- */
 
 .nav-links .tab-link{
   position:relative;
@@ -1735,8 +1760,8 @@ a{
 }
 
 .viewer-skin-card{
-  background:#17191d;
-  border:1px solid #30343c;
+  background:var(--panel);
+  border:1px solid var(--border);
   border-radius:16px;
   padding:16px;
   transition:transform .15s, box-shadow .15s, border-color .15s;
@@ -1800,7 +1825,7 @@ a{
   max-width:220px;
   margin:0 auto;
   image-rendering:pixelated;
-  border:1px solid #30343c;
+  border:1px solid var(--border);
   border-radius:10px;
   background:#101113;
 }
@@ -1809,7 +1834,7 @@ a{
   width:100%;
   height:280px;
   border-radius:10px;
-  border:1px solid #30343c;
+  border:1px solid var(--border);
   background:radial-gradient(circle at center, #22252a, #101113);
   touch-action:none;
   cursor:grab;
@@ -1828,9 +1853,9 @@ a{
 @media (max-width:980px){
 
   .section{
-    /* El nav se apila en varias filas en mobile (más alto que en
-       escritorio), así que necesita más margen para que
-       scrollIntoView() no deje el título tapado debajo. */
+    /* The nav wraps into several rows on mobile (taller than on
+       desktop), so this needs extra margin or scrollIntoView() would
+       leave the heading hidden underneath it. */
     scroll-margin-top:170px;
   }
 
@@ -1992,7 +2017,7 @@ a{
     max-width:100%;
   }
 
-  /* ---------- Skinpack Maker en móvil ---------- */
+  /* ---------- Skinpack Maker on mobile ---------- */
 
   .maker-skins-list{
     grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
@@ -2020,7 +2045,7 @@ a{
     font-size:16px;
   }
 
-  /* ---------- Objetivos táctiles más grandes ---------- */
+  /* ---------- Bigger touch targets ---------- */
 
   .info-btn{
     width:26px;
@@ -2426,4 +2451,1097 @@ a{
   .bb-status{ padding:10px 14px; line-height:1.5; }
   .bb-collapse-btn{ margin:4px 10px; }
   .bb-instructions{ padding:14px; font-size:12.5px; }
+}
+
+/* ======================================================================
+   MBSM — REDISEÑO 2026 (Fase 1: shell, sidebar, dashboard, componentes)
+   Este bloque se añade al final a propósito para que sus reglas ganen
+   sobre los estilos heredados de cada módulo sin tener que tocar (ni
+   arriesgar romper) el CSS específico de Validator/Fixer/Viewer/Maker/
+   OBJ->Skin, que sigue funcionando igual debajo.
+   ====================================================================== */
+
+/* ---------- Reset de tipografías "pixel" heredadas ---------- */
+.brand-mbsm, .pixel-title, .eyebrow.pixel, .hero-text h1{
+  font-family:var(--font-ui) !important;
+}
+
+/* ---------- Shell general: sidebar fija + contenido ---------- */
+.topbar{ display:none; } /* topbar antigua sustituida por la sidebar */
+
+.mobile-nav-backdrop{
+  display:none;
+  position:fixed; inset:0; z-index:150;
+  background:rgba(0,0,0,.55);
+}
+body.sidebar-mobile-open .mobile-nav-backdrop{ display:block; }
+
+.sidebar{
+  position:fixed;
+  top:0; left:0; bottom:0;
+  width:var(--sidebar-w);
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  z-index:200;
+  transition:width .18s ease;
+}
+body.sidebar-collapsed .sidebar{ width:var(--sidebar-w-collapsed); }
+
+body{ padding-left:var(--sidebar-w); transition:padding-left .18s ease; }
+body.sidebar-collapsed{ padding-left:var(--sidebar-w-collapsed); }
+
+.topbar-mini{ display:none; }
+
+.sidebar-top{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:8px; padding:16px 14px; border-bottom:1px solid var(--border);
+  min-height:var(--topbar-mini-h);
+}
+.sidebar .brand{
+  display:flex; align-items:center; gap:10px; min-width:0;
+  font-family:var(--font-ui);
+  font-weight:700; font-size:15px; letter-spacing:.2px;
+  text-shadow:none;
+}
+.brand-mark{
+  flex:0 0 auto; width:26px; height:26px;
+  display:block; border-radius:6px; overflow:hidden;
+}
+.brand-mark img{ width:100%; height:100%; object-fit:cover; display:block; }
+.brand-label{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.brand-accent{ color:var(--accent); }
+
+.sidebar-collapse-btn{
+  flex:0 0 auto;
+  width:28px; height:28px;
+  display:flex; align-items:center; justify-content:center;
+  background:transparent; border:1px solid var(--border);
+  border-radius:var(--radius-sm); color:var(--muted);
+  cursor:pointer; transition:.15s;
+}
+.sidebar-collapse-btn:hover{ color:var(--text); border-color:var(--primary); }
+.sidebar-collapse-btn svg{ width:15px; height:15px; }
+body.sidebar-collapsed .sidebar-collapse-btn svg{ transform:rotate(180deg); }
+
+/* Con la sidebar colapsada, el logo y el botón de colapsar ya no caben
+   uno junto al otro: se apilan en vertical, se oculta el texto "MBSM"
+   y el botón queda pequeño debajo del icono en lugar de solaparse. */
+body.sidebar-collapsed .sidebar-top{
+  flex-direction:column;
+  gap:8px;
+  padding:14px 8px;
+}
+body.sidebar-collapsed .brand-label{ display:none; }
+body.sidebar-collapsed .brand{ justify-content:center; }
+
+.sidebar-nav{
+  flex:1 1 auto; overflow-y:auto; overflow-x:hidden;
+  padding:14px 10px;
+  display:flex; flex-direction:column; gap:18px;
+}
+.sidebar-group-label{
+  font-size:11px; font-weight:700; letter-spacing:.08em;
+  color:var(--muted); opacity:.7;
+  padding:0 10px 6px;
+  white-space:nowrap;
+}
+body.sidebar-collapsed .sidebar-group-label{ opacity:0; height:0; padding:0; overflow:hidden; }
+
+.sidebar-link{
+  display:flex; align-items:center; gap:12px;
+  padding:9px 10px;
+  border-radius:var(--radius-sm);
+  color:var(--muted);
+  font-size:13.5px; font-weight:500;
+  cursor:pointer;
+  position:relative;
+  transition:background .12s ease,color .12s ease;
+  white-space:nowrap;
+}
+.sidebar-link:hover{ background:var(--panel2); color:var(--text); }
+.sidebar-link.active{
+  background:rgba(124,58,237,.14);
+  color:var(--text);
+}
+.sidebar-link.active .sidebar-link-icon{ color:var(--primary-hover); }
+.sidebar-link.active::before{
+  content:"";
+  position:absolute; left:-10px; top:6px; bottom:6px; width:3px;
+  border-radius:0 3px 3px 0;
+  background:var(--primary);
+}
+.sidebar-link-icon{ flex:0 0 auto; width:18px; height:18px; display:flex; color:inherit; }
+.sidebar-link-icon svg{ width:100%; height:100%; }
+.sidebar-link-label{ overflow:hidden; text-overflow:ellipsis; }
+
+body.sidebar-collapsed .sidebar-link-label{ display:none; }
+body.sidebar-collapsed .sidebar-link{ justify-content:center; padding:10px 0; }
+body.sidebar-collapsed .sidebar-group{ display:flex; flex-direction:column; align-items:center; }
+
+.sidebar-bottom{
+  border-top:1px solid var(--border);
+  padding:10px;
+  display:flex; flex-direction:column; gap:10px;
+}
+
+.sidebar .lang-switch{
+  background:var(--elevated); border:1px solid var(--border);
+  border-radius:var(--radius-sm); padding:3px;
+  display:flex; gap:2px;
+}
+body.sidebar-collapsed .sidebar .lang-switch{ flex-direction:column; }
+.sidebar .lang-btn{
+  flex:1; border-radius:5px;
+}
+.sidebar .lang-btn.active{ box-shadow:none; }
+
+/* ---------- Topbar móvil (visible solo en pantallas pequeñas) ---------- */
+@media (max-width:900px){
+  body{ padding-left:0 !important; padding-top:var(--topbar-mini-h); }
+  .sidebar{
+    transform:translateX(-100%);
+    width:min(280px,82vw) !important;
+    box-shadow:var(--shadow);
+  }
+  body.sidebar-mobile-open .sidebar{ transform:translateX(0); }
+  .sidebar-collapse-btn{ display:none; }
+
+  .topbar-mini{
+    display:flex; align-items:center; gap:12px;
+    position:fixed; top:0; left:0; right:0; z-index:120;
+    height:var(--topbar-mini-h);
+    padding:0 14px;
+    background:rgba(var(--panel-rgb),.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .mobile-nav-toggle{
+    width:34px; height:34px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--panel2); border:1px solid var(--border);
+    border-radius:var(--radius-sm); color:var(--text);
+  }
+  .mobile-nav-toggle svg{ width:18px; height:18px; }
+  .topbar-mini-brand{ font-weight:700; font-size:15px; display:flex; align-items:center; gap:8px; }
+  .topbar-mini-icon{ border-radius:5px; object-fit:cover; }
+}
+
+/* ---------- Dashboard (Home) ---------- */
+.hero-inline{
+  padding:56px 0 48px;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(124,58,237,.14), transparent 45%),
+    linear-gradient(180deg, var(--panel), var(--bg) 70%);
+  border-bottom:1px solid var(--border);
+}
+.hero-particles{ display:none; }
+.hero-overlay{ display:none; }
+
+.hero-text h1{
+  font-size:30px !important;
+  font-weight:800;
+  letter-spacing:-.02em;
+  line-height:1.25 !important;
+  text-transform:none;
+}
+.hero-text p{ font-size:15.5px; color:var(--muted); }
+
+.hero-card{
+  background:var(--elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-sm);
+}
+
+.section-head h2{ font-family:var(--font-ui); font-weight:700; letter-spacing:-.01em; }
+.eyebrow.pixel{
+  font-size:11px; font-weight:700; letter-spacing:.08em;
+  color:var(--accent); text-shadow:none;
+}
+
+.home-features{ padding-top:44px; padding-bottom:12px; }
+.feature-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:16px;
+}
+.feature-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:20px;
+  transition:border-color .15s ease, transform .15s ease, background .15s ease;
+}
+.feature-card:hover{
+  border-color:var(--primary);
+  background:var(--panel2);
+  transform:translateY(-2px);
+}
+.feature-card .tag{
+  display:inline-block;
+  font-size:10.5px; font-weight:700; letter-spacing:.06em;
+  color:var(--primary-hover);
+  background:rgba(124,58,237,.12);
+  border:1px solid rgba(124,58,237,.25);
+  padding:3px 8px; border-radius:999px;
+  margin-bottom:12px;
+}
+.feature-card h3{ font-size:16px; font-weight:700; margin-bottom:8px; }
+.feature-card p{ font-size:13px; color:var(--muted); line-height:1.55; }
+.feature-card::after{
+  content:"→";
+  position:absolute;
+  opacity:0;
+  color:var(--primary-hover);
+  transition:opacity .15s ease, transform .15s ease;
+}
+.feature-card:hover::after{ opacity:1; }
+
+/* ---------- Botones ---------- */
+.btn{
+  font-family:var(--font-ui);
+  border-radius:var(--radius-sm);
+  font-weight:600;
+  font-size:13.5px;
+  transition:background .15s ease, border-color .15s ease, transform .1s ease;
+}
+.btn:active{ transform:translateY(1px); }
+.btn-primary{
+  background:var(--primary);
+  border:1px solid var(--primary);
+  color:#fff;
+  box-shadow:none;
+}
+.btn-primary:hover{ background:var(--primary-hover); border-color:var(--primary-hover); }
+.btn-secondary{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  color:var(--text);
+}
+.btn-secondary:hover{ border-color:var(--primary); color:var(--text); }
+.btn-ghost{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--muted);
+}
+.btn-ghost:hover{ color:var(--text); border-color:var(--muted); }
+
+/* ---------- Tarjetas / paneles genéricos ---------- */
+.card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:none;
+}
+.perk{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+}
+.perk .ico{ filter:none; }
+
+.module-window{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  box-shadow:none;
+  overflow:hidden;
+}
+.module-window-bar{
+  background:var(--elevated);
+  border-bottom:1px solid var(--border);
+}
+.module-window-title{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:.06em;
+  color:var(--muted);
+}
+
+/* ---------- Tabs / sub-tabs ---------- */
+.sub-tabs{
+  display:flex; gap:4px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:4px;
+  width:fit-content;
+  max-width:100%;
+  overflow-x:auto;
+}
+.sub-tab-btn{
+  font-family:var(--font-ui);
+  font-size:12.5px; font-weight:600;
+  color:var(--muted);
+  background:transparent;
+  border:none;
+  border-radius:var(--radius-sm);
+  padding:8px 14px;
+  white-space:nowrap;
+  transition:background .12s ease, color .12s ease;
+}
+.sub-tab-btn:hover{ color:var(--text); }
+.sub-tab-btn.active{
+  background:var(--primary);
+  color:#fff;
+  box-shadow:none;
+}
+
+/* ---------- Números / datos técnicos en monoespaciada ---------- */
+.check-count, .validator-count, .stat-value,
+.sg-model-badge, .bb-instructions code{
+  font-family:var(--font-mono);
+}
+
+/* ---------- Footer ---------- */
+.footer{
+  background:var(--panel);
+  border-top:1px solid var(--border);
+}
+.footer-brand{ font-family:var(--font-ui); font-weight:800; }
+
+/* ---------- Responsive base adicional ---------- */
+@media (max-width:900px){
+  .hero-content{ grid-template-columns:1fr; }
+  .feature-grid{ grid-template-columns:1fr; }
+  .container{ width:min(100%,94%); }
+}
+
+/* ======================================================================
+   MBSM — REDISEÑO 2026 (Fase 2: 4D/5D Viewer, Classic Skins, Inspector,
+   controles del viewport, estados vacíos, drag & drop)
+   ====================================================================== */
+
+/* ---------- 4D/5D Viewer: layout de 3 columnas, viewport dominante ---------- */
+.sg-viewer-layout{
+  display:grid;
+  grid-template-columns:252px minmax(0,1fr) 252px;
+  gap:14px;
+  margin-bottom:24px;
+  align-items:start;
+}
+
+.sg-sidebar, .sg-inspector{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:14px;
+  max-height:78vh;
+  overflow-y:auto;
+}
+
+.sg-inspector-header{
+  font-family:var(--font-mono);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.08em;
+  color:var(--muted);
+  padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+}
+.sg-inspector-subhead{
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.07em;
+  color:var(--muted);
+  opacity:.75;
+  margin-top:4px;
+}
+
+.sg-viewport-card{
+  border-radius:var(--radius-lg);
+  min-height:78vh;
+}
+
+/* ---------- Dropzones: drag & drop moderno ---------- */
+.dropzone, .sg-dropzone-compact{
+  background:var(--elevated);
+  border:1.5px dashed var(--border);
+  border-radius:var(--radius);
+  transition:border-color .15s ease, background .15s ease;
+}
+.dropzone:hover, .sg-dropzone-compact:hover{
+  border-color:var(--primary);
+}
+.dropzone.dragover, .sg-dropzone-compact.dragover,
+.dropzone.drag-active, .sg-dropzone-compact.drag-active{
+  border-color:var(--primary-hover);
+  background:rgba(124,58,237,.08);
+}
+.sg-dropzone-compact .drop-icon, .dropzone .drop-icon{
+  opacity:.85;
+}
+
+/* ---------- Toolbar flotante del viewport (estilo "pill") ---------- */
+.sg-viewport-toolbar{
+  display:flex;
+  gap:6px;
+  background:rgba(18,18,23,.85);
+  backdrop-filter:blur(8px);
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:5px;
+}
+.sg-vt-btn{
+  border-radius:999px;
+  color:var(--muted);
+  transition:background .12s ease, color .12s ease;
+}
+.sg-vt-btn:hover{ color:var(--text); }
+.sg-vt-btn.active{
+  background:var(--primary);
+  color:#fff;
+}
+
+.sg-model-badge{
+  background:rgba(18,18,23,.85);
+  backdrop-filter:blur(8px);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+}
+
+/* ---------- Estado vacío del viewport ---------- */
+.sg-viewport-overlay{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  text-align:center;
+}
+.sg-overlay-ico{
+  width:44px; height:44px;
+  color:var(--muted);
+  opacity:.7;
+}
+.sg-overlay-ico svg{ width:100%; height:100%; }
+
+/* ---------- Toggles (switches) ---------- */
+.sg-switch{
+  background:var(--border);
+  transition:background .15s ease;
+}
+.sg-switch.on{ background:var(--primary); }
+
+/* ---------- Stats / inspector ---------- */
+.stats-grid{ gap:10px; }
+.stat-box{
+  background:var(--elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+}
+.stat-number{ font-family:var(--font-mono); color:var(--text); }
+.stat-label{ color:var(--muted); }
+
+.sg-log-box{
+  background:var(--elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-family:var(--font-mono);
+  font-size:11.5px;
+}
+
+/* ---------- Classic Skins: layout más simple, enfocado en el visor ---------- */
+.studio-layout, .viewer-layout{
+  align-items:start;
+}
+.viewer-card, .sg-viewport-card, .studio-viewport{
+  border-radius:var(--radius-lg);
+}
+
+/* ---------- Responsive: 4D/5D Viewer e inspector se apilan ---------- */
+@media (max-width:1180px){
+  .sg-viewer-layout{
+    grid-template-columns:1fr;
+  }
+  .sg-sidebar, .sg-inspector{
+    max-height:none;
+  }
+  .sg-viewport-card{ order:-1; min-height:60vh; }
+}
+
+/* ---------- Classic Skins: galería de skins ---------- */
+.upload-card{
+  background:transparent;
+  border:none;
+  padding:0;
+  box-shadow:none;
+}
+.viewer-skin-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  transition:border-color .15s ease;
+}
+.viewer-skin-card:hover{ border-color:var(--border-soft); }
+.viewer-skin-header{
+  cursor:pointer;
+}
+.viewer-skin-name{ font-weight:600; }
+.viewer-skin-model{
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--muted);
+}
+
+/* ======================================================================
+   MBSM — REDISEÑO 2026 (Fase 3: Validator/Fixer, Maker, OBJ→Skin,
+   Toast notifications, Command Palette)
+   ====================================================================== */
+
+/* ---------- Fixer: panel de diagnóstico más técnico ---------- */
+.fix-card{ margin-top:20px; }
+.fix-option{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px;
+}
+.fix-option:hover{
+  border-color:var(--primary);
+  background:var(--panel2);
+}
+.fix-option input[type="checkbox"]{ accent-color:var(--primary); }
+.fix-option-icon{ font-size:19px; opacity:.9; }
+.fix-option-text strong{ color:var(--text); font-size:13.5px; }
+
+.pack-info-banner{
+  background:var(--panel) !important;
+  border:1px solid var(--border) !important;
+  border-radius:var(--radius-lg) !important;
+}
+
+.stat-box{ border-radius:var(--radius); }
+.result-placeholder, .maker-empty{ color:var(--muted); }
+.placeholder-icon{ opacity:.75; }
+
+/* ---------- Skinpack Maker: cabecera de pasos tipo wizard ---------- */
+.wizard-steps{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:20px;
+  padding-bottom:16px;
+  border-bottom:1px solid var(--border);
+}
+.wizard-step-pill{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:12px;
+  font-weight:600;
+  color:var(--muted);
+  background:var(--elevated);
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:5px 12px 5px 6px;
+}
+.wizard-step-num{
+  width:18px; height:18px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%;
+  background:var(--primary);
+  color:#fff;
+  font-size:10.5px;
+  font-weight:700;
+}
+.wizard-step-sep{ color:var(--border); font-size:12px; }
+
+.wizard-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:20px; height:20px;
+  border-radius:50%;
+  background:rgba(124,58,237,.16);
+  border:1px solid rgba(124,58,237,.4);
+  color:var(--primary-hover);
+  font-size:11px;
+  font-weight:700;
+  vertical-align:middle;
+}
+.wizard-badge-inline{
+  background:rgba(255,255,255,.18);
+  border-color:rgba(255,255,255,.35);
+  color:#fff;
+}
+.wizard-export-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+@media (max-width:640px){
+  .wizard-steps{ display:none; } /* en móvil, cada card ya lleva su número */
+}
+
+/* ---------- Toast notifications ---------- */
+.toast-container{
+  position:fixed;
+  top:16px;
+  right:16px;
+  z-index:400;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  max-width:min(360px,90vw);
+}
+@media (max-width:900px){
+  .toast-container{ top:calc(var(--topbar-mini-h) + 10px); right:10px; left:10px; max-width:none; }
+}
+.toast{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  background:var(--elevated);
+  border:1px solid var(--border);
+  border-left:3px solid var(--info);
+  border-radius:var(--radius);
+  padding:11px 12px;
+  box-shadow:var(--shadow-sm);
+  animation:toastIn .16s ease;
+}
+.toast.toast-out{ animation:toastOut .16s ease forwards; }
+@keyframes toastIn{ from{ opacity:0; transform:translateX(12px); } to{ opacity:1; transform:none; } }
+@keyframes toastOut{ to{ opacity:0; transform:translateX(12px); } }
+
+.toast-success{ border-left-color:var(--success); }
+.toast-warning{ border-left-color:var(--warning); }
+.toast-error{ border-left-color:var(--red); }
+.toast-info{ border-left-color:var(--info); }
+
+.toast-icon{
+  flex:0 0 auto;
+  width:18px; height:18px;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:800; color:#fff;
+  background:var(--info);
+}
+.toast-success .toast-icon{ background:var(--success); }
+.toast-warning .toast-icon{ background:var(--warning); }
+.toast-error .toast-icon{ background:var(--red); }
+.toast-info .toast-icon{ background:var(--info); }
+
+.toast-message{ flex:1 1 auto; font-size:12.5px; color:var(--text); line-height:1.5; }
+.toast-close{
+  flex:0 0 auto;
+  background:none; border:none; color:var(--muted);
+  font-size:15px; line-height:1; cursor:pointer; padding:0 2px;
+}
+.toast-close:hover{ color:var(--text); }
+
+/* ---------- Botón "Search / Ctrl+K" en la sidebar ---------- */
+.sidebar-cmdk-btn{
+  width:100%;
+  border:none;
+  background:transparent;
+  font-family:var(--font-ui);
+}
+.sidebar-cmdk-kbd{
+  margin-left:auto;
+  font-family:var(--font-mono);
+  font-size:10px;
+  color:var(--muted);
+  background:var(--elevated);
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:2px 5px;
+}
+body.sidebar-collapsed .sidebar-cmdk-kbd{ display:none; }
+
+/* ---------- Command Palette ---------- */
+.cmdk-backdrop{
+  position:fixed; inset:0; z-index:500;
+  background:rgba(0,0,0,.55);
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding-top:12vh;
+}
+/* El atributo [hidden] debe ganar siempre sobre "display:flex" de arriba;
+   si no, la paleta queda visible y bloqueando toda la interfaz al cargar
+   (bug reportado en móvil). */
+.cmdk-backdrop[hidden]{
+  display:none !important;
+}
+.cmdk-panel{
+  width:min(560px,92vw);
+  max-height:60vh;
+  background:var(--elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.cmdk-input-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 14px;
+  border-bottom:1px solid var(--border);
+}
+.cmdk-search-icon{ width:16px; height:16px; color:var(--muted); flex:0 0 auto; }
+.cmdk-input{
+  flex:1 1 auto;
+  background:transparent;
+  border:none;
+  outline:none;
+  color:var(--text);
+  font-family:var(--font-ui);
+  font-size:14px;
+}
+.cmdk-input::placeholder{ color:var(--muted); }
+.cmdk-esc{
+  font-family:var(--font-mono);
+  font-size:10.5px;
+  color:var(--muted);
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:2px 6px;
+}
+.cmdk-list{
+  overflow-y:auto;
+  padding:6px;
+}
+.cmdk-item{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  background:transparent;
+  border:none;
+  border-radius:var(--radius-sm);
+  padding:10px 10px;
+  text-align:left;
+  cursor:pointer;
+  font-family:var(--font-ui);
+}
+.cmdk-item:hover, .cmdk-item.active{ background:var(--panel2); }
+.cmdk-item-label{ font-size:13.5px; color:var(--text); }
+.cmdk-item-hint{ font-size:11px; color:var(--muted); font-family:var(--font-mono); }
+.cmdk-empty{ padding:18px; text-align:center; color:var(--muted); font-size:13px; }
+
+/* ======================================================================
+   MBSM — REDISEÑO 2026 (Fase 4: temas, apariencia del visor,
+   microanimaciones, accesibilidad y responsive final)
+   ====================================================================== */
+
+/* ---------- Tema claro: paleta propia, no una simple inversión ---------- */
+[data-theme="light"]{
+  color-scheme:light;
+  --bg:#f6f5fa;
+  --panel:#ffffff;
+  --panel2:#f1eff8;
+  --elevated:#ffffff;
+  --border:#e4e1ee;
+  --border-soft:#ebe9f3;
+
+  --primary:#7c3aed;
+  --primary-hover:#6d28d9;
+  --accent:#9333ea;
+
+  --text:#18181b;
+  --muted:#65636f;
+
+  --shadow:0 12px 28px rgba(24,16,44,.10);
+  --shadow-sm:0 2px 10px rgba(24,16,44,.06);
+  --panel-rgb:255,255,255;
+}
+[data-theme="light"] body::before{
+  background-image:
+    linear-gradient(rgba(124,58,237,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,.05) 1px, transparent 1px);
+}
+[data-theme="light"] body::after{
+  background:radial-gradient(circle, rgba(124,58,237,.07), transparent 45%);
+}
+[data-theme="light"] .hero-inline{
+  background:
+    radial-gradient(circle at 15% 0%, rgba(124,58,237,.10), transparent 45%),
+    linear-gradient(180deg, var(--panel), var(--bg) 70%);
+}
+[data-theme="light"] .sg-model-badge,
+[data-theme="light"] .sg-viewport-toolbar{
+  background:rgba(255,255,255,.85);
+}
+[data-theme="light"] .cmdk-backdrop{
+  background:rgba(24,16,44,.28);
+}
+[data-theme="light"] .mobile-nav-backdrop{
+  background:rgba(24,16,44,.28);
+}
+[data-theme="light"] .sg-three-viewer canvas,
+[data-theme="light"] .sg-blockbench-viewer{
+  background:var(--bg2,#eceafb);
+}
+
+/* ---------- Selector de tema (Dark / Light / System) ---------- */
+.theme-switch{
+  display:flex;
+  gap:2px;
+  background:var(--elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:3px;
+}
+body.sidebar-collapsed .theme-switch{ flex-direction:column; }
+.theme-btn{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:26px; height:26px;
+  border:none;
+  background:transparent;
+  color:var(--muted);
+  border-radius:5px;
+  cursor:pointer;
+  transition:background .12s ease, color .12s ease;
+}
+.theme-btn svg{ width:14px; height:14px; }
+.theme-btn:hover{ color:var(--text); }
+.theme-btn.active{
+  background:var(--primary);
+  color:#fff;
+}
+
+/* ---------- Panel de apariencia del visor 4D/5D ---------- */
+.sg-appearance{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.sg-appearance-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.sg-appearance-row > span{ font-size:12.5px; color:var(--text); }
+.sg-bg-options{
+  display:flex;
+  gap:6px;
+}
+.sg-bg-opt{
+  width:22px; height:22px;
+  border-radius:6px;
+  border:1.5px solid var(--border);
+  cursor:pointer;
+  transition:border-color .12s ease, transform .12s ease;
+  padding:0;
+}
+.sg-bg-opt:hover{ transform:scale(1.08); }
+.sg-bg-opt.active{ border-color:var(--primary); }
+.sg-bg-opt[data-bg="dark"]{ background:#0b0b0f; }
+.sg-bg-opt[data-bg="light"]{ background:#f1eff8; }
+.sg-bg-opt[data-bg="gradient"]{ background:linear-gradient(135deg,#3b1670,#0b0b0f); }
+.sg-bg-opt[data-bg="transparent"]{
+  background-image:
+    linear-gradient(45deg, #444 25%, transparent 25%),
+    linear-gradient(-45deg, #444 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #444 75%),
+    linear-gradient(-45deg, transparent 75%, #444 75%);
+  background-size:8px 8px;
+  background-position:0 0, 0 4px, 4px -4px, -4px 0px;
+}
+
+/* ---------- Microanimaciones sutiles y consistentes ---------- */
+.feature-card, .card, .perk, .viewer-skin-card, .fix-option, .toast,
+.btn, .sidebar-link, .sub-tab-btn, .cmdk-item, .theme-btn, .sg-bg-opt,
+.wizard-step-pill, .result-item{
+  transition-timing-function:ease;
+}
+.module-window{ animation:panelIn .16s ease; }
+@keyframes panelIn{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:none; } }
+
+.sub-tab-panel{ animation:panelIn .14s ease; }
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:0.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.001ms !important;
+  }
+}
+
+/* ---------- Accesibilidad: foco visible consistente ---------- */
+.sidebar-link:focus-visible,
+.btn:focus-visible,
+.sub-tab-btn:focus-visible,
+.feature-card:focus-visible,
+.cmdk-item:focus-visible,
+.theme-btn:focus-visible,
+.lang-btn:focus-visible,
+.toast-close:focus-visible,
+.sidebar-collapse-btn:focus-visible,
+.mobile-nav-toggle:focus-visible{
+  outline:2px solid var(--primary-hover);
+  outline-offset:2px;
+}
+.cmdk-input:focus{ outline:none; }
+
+/* ---------- Responsive: refinamiento final ---------- */
+@media (max-width:640px){
+  .stats-grid{ grid-template-columns:repeat(2,1fr); }
+  .fix-options-grid{ grid-template-columns:1fr; }
+  .hero-text h1{ font-size:24px !important; }
+  .cmdk-backdrop{ padding-top:8vh; }
+  .toast{ font-size:12px; }
+}
+
+/* ---------- Fondo del viewport controlado desde el panel de apariencia ---------- */
+.sg-viewer-host[data-bg="dark"]{
+  background:
+    radial-gradient(circle at 50% 20%, rgba(168,85,247,.06), transparent 60%),
+    #0c0d10;
+}
+.sg-viewer-host[data-bg="light"]{
+  background:
+    radial-gradient(circle at 50% 20%, rgba(124,58,237,.08), transparent 60%),
+    #ecebf3;
+}
+.sg-viewer-host[data-bg="gradient"]{
+  background:linear-gradient(160deg, #2a0f57, #0b0b0f 65%);
+}
+.sg-viewer-host[data-bg="transparent"]{
+  background-color:transparent;
+  background-image:
+    linear-gradient(45deg, rgba(255,255,255,.06) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,.06) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,.06) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.06) 75%);
+  background-size:22px 22px;
+  background-position:0 0, 0 11px, 11px -11px, -11px 0px;
+}
+
+/* ---------- Icono inline en botones (reemplazo del emoji 🧊) ---------- */
+.btn-icon-img{
+  width:14px;
+  height:14px;
+  object-fit:cover;
+  border-radius:3px;
+  vertical-align:-2px;
+  image-rendering:pixelated;
+}
+
+/* ======================================================================
+   MBSM — Ajustes tras revisión en dispositivo (logo roto en tema claro,
+   navegación redundante, tipografía cursiva de fallback, changelog)
+   ====================================================================== */
+
+/* La barra de sub-pestañas dentro de "Skins 4D/5D" y "Classic Skins" ahora
+   es redundante: la sidebar ya navega directo a cada sub-sección. Se
+   oculta visualmente, pero se conserva en el DOM porque switchTab() en
+   app.js sigue haciendo click() programático sobre estos botones para
+   cambiar de sub-pestaña al navegar desde la sidebar (ese click()
+   funciona igual aunque el elemento esté oculto). Quitarla del DOM
+   rompería esa navegación. */
+.sub-tabs.sub-tabs-legacy-nav{
+  display:none;
+}
+
+/* ---------- Changelog (Home) ---------- */
+.changelog-list{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.changelog-entry{
+  display:flex;
+  gap:16px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:18px 20px;
+}
+.changelog-entry-icon{
+  flex:0 0 auto;
+  width:38px; height:38px;
+  border-radius:9px;
+  overflow:hidden;
+  border:1px solid var(--border);
+}
+.changelog-entry-icon img{
+  width:100%; height:100%;
+  object-fit:cover;
+  display:block;
+}
+.changelog-entry-body{ flex:1 1 auto; min-width:0; }
+.changelog-entry-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+.changelog-version{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  font-weight:700;
+  color:var(--primary-hover);
+  background:rgba(124,58,237,.12);
+  border:1px solid rgba(124,58,237,.28);
+  border-radius:999px;
+  padding:3px 10px;
+}
+.changelog-changes{
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.changelog-changes li{
+  position:relative;
+  padding-left:16px;
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.55;
+}
+.changelog-changes li::before{
+  content:"";
+  position:absolute;
+  left:0; top:8px;
+  width:5px; height:5px;
+  border-radius:50%;
+  background:var(--accent);
+}
+@media (max-width:640px){
+  .changelog-entry{ flex-direction:column; gap:12px; }
+}
+
+/* ---------- Tooltip flotante de la sidebar colapsada ----------
+   Se posiciona con JS y usa position:fixed a propósito: al estar la
+   sidebar dentro de un contenedor con overflow-y:auto (para poder
+   hacer scroll si hay muchas herramientas), un tooltip vía ::after
+   dentro de ese contenedor queda recortado por ese overflow. Un
+   elemento position:fixed en el body no tiene ese problema. */
+.sidebar-floating-tooltip{
+  position:fixed;
+  z-index:600;
+  background:var(--elevated);
+  color:var(--text);
+  border:1px solid var(--border);
+  padding:5px 9px;
+  border-radius:var(--radius-sm);
+  font-size:12px;
+  white-space:nowrap;
+  box-shadow:var(--shadow-sm);
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(-50%);
+  transition:opacity .12s ease;
+}
+.sidebar-floating-tooltip.visible{
+  opacity:1;
 }

@@ -1,13 +1,13 @@
 /* ==========================================================
    Minecraft SkinPack Validator
    fixer.js
-   Sistema de correcciones opcionales
+   Opt-in automatic repair system
    ========================================================== */
 
 
 const Fixer = {
 
-    // Lista de geometrías oficiales de Minecraft Bedrock
+    // List of Minecraft Bedrock's official geometries
     officialGeometry: [
         "geometry.humanoid.custom",
         "geometry.humanoid.customSlim",
@@ -17,7 +17,7 @@ const Fixer = {
 
 
     /**
-     * Aplica únicamente las correcciones seleccionadas
+     * Applies only the repairs the user selected
      *
      * options:
      *
@@ -37,7 +37,7 @@ const Fixer = {
 
         /*
         ==========================================
-        Reparación JSON
+        JSON repair
         ==========================================
         */
 
@@ -53,7 +53,7 @@ const Fixer = {
                     await zip.files[file].async("string");
 
 
-                // Si ya es JSON válido, no lo tocamos.
+                // If it's already valid JSON, leave it alone.
                 try{
                     JSON.parse(content);
                     continue;
@@ -66,9 +66,9 @@ const Fixer = {
 
                 try{
 
-                    // Solo aplicamos el cambio si el resultado es
-                    // realmente JSON válido; de lo contrario no
-                    // sobrescribimos el archivo con algo a medio reparar.
+                    // Only apply the change if the result is actually
+                    // valid JSON; otherwise we'd be overwriting the file
+                    // with something half-repaired.
                     JSON.parse(fixed);
 
                     zip.file(file, fixed);
@@ -143,7 +143,7 @@ const Fixer = {
 
         /*
         ==========================================
-        Remover skins repetidas o no usadas
+        Remove duplicate or unused skins
         ==========================================
         */
 
@@ -165,7 +165,7 @@ const Fixer = {
 
     /*
     --------------------------------------------------
-    Limpieza básica de JSON
+    Basic JSON cleanup
     --------------------------------------------------
     */
 
@@ -174,44 +174,44 @@ const Fixer = {
         let fixed = text;
 
 
-        // Quitar BOM al inicio del archivo
+        // Strip a BOM at the start of the file
         fixed = fixed.replace(/^\uFEFF/, "");
 
 
-        // Comillas "inteligentes" (typográficas) -> comillas normales
+        // "Smart" (typographic) quotes -> plain quotes
         fixed = fixed
             .replace(/[\u201C\u201D]/g, '"')
             .replace(/[\u2018\u2019]/g, "'");
 
 
-        // Comentarios de línea // ... y de bloque /* ... */
-        // (heurística simple; no distingue si están dentro de un string,
-        // pero es un caso muy poco frecuente en skins.json)
+        // Line comments (// ...) and block comments (/* ... */)
+        // (simple heuristic; it doesn't tell whether these are inside a
+        // string, but that's a rare case in skins.json)
         fixed = fixed.replace(/\/\*[\s\S]*?\*\//g, "");
         fixed = fixed.replace(/(^|[^:])\/\/[^\n\r]*/g, "$1");
 
 
-        // Comillas simples 'valor' -> comillas dobles "valor"
+        // Single quotes 'value' -> double quotes "value"
         fixed = fixed.replace(
             /'([^'\\]*(?:\\.[^'\\]*)*)'/g,
             (m, inner) => `"${inner.replace(/"/g, '\\"')}"`
         );
 
 
-        // Claves sin comillas: identificador: valor -> "identificador": valor
+        // Unquoted keys: identifier: value -> "identifier": value
         fixed = fixed.replace(
             /([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)(\s*:)/g,
             '$1"$2"$3'
         );
 
 
-        // Comas sobrantes antes de } o ]
+        // Trailing commas before } or ]
         fixed = fixed.replace(/,(\s*[}])/g, "$1");
         fixed = fixed.replace(/,(\s*])/g, "$1");
 
 
-        // Comas faltantes entre objetos/arreglos consecutivos: "}{" o "][",
-        // un error de sintaxis muy común al copiar/pegar skins a mano.
+        // Missing commas between back-to-back objects/arrays: "}{" or "][",
+        // a very common mistake when hand-copying skins around.
         fixed = fixed.replace(/}(\s*){/g, "},$1{");
         fixed = fixed.replace(/](\s*)\[/g, "],$1[");
         fixed = fixed.replace(/"(\s*\n\s*)"(?=\s*[:,])/g, '",$1"');
@@ -253,8 +253,8 @@ const Fixer = {
 
 
 
-        // Buscar específicamente en_US.lang: es el idioma
-        // obligatorio/principal en Minecraft Bedrock.
+        // Specifically look for en_US.lang: it's Minecraft Bedrock's
+        // required/primary language.
         let langFile =
             Object.keys(zip.files)
             .find(x =>
@@ -267,11 +267,11 @@ const Fixer = {
 
         if(!langFile){
 
-            // Si hay otros .lang, usar su misma carpeta; si no hay
-            // ninguno, crear "texts/" junto a donde esté skins.json
-            // (no siempre en la raíz del zip): si el pack vive en
-            // "skin.zip/persona/skins.json", el resultado debe ser
-            // "skin.zip/persona/texts/en_US.lang", no "skin.zip/texts/...".
+            // If other .lang files exist, use their same folder; if
+            // there are none, create "texts/" right next to wherever
+            // skins.json lives (not always at the zip's root): if the pack
+            // lives at "skin.zip/persona/skins.json", the result should be
+            // "skin.zip/persona/texts/en_US.lang", not "skin.zip/texts/...".
             let skinFolder =
                 skinFile.includes("/")
                 ? skinFile.substring(0, skinFile.lastIndexOf("/") + 1)
@@ -315,8 +315,8 @@ const Fixer = {
 
 
 
-        // localization_name del PAQUETE (top-level en skins.json, junto
-        // a "serialize_name"). Las claves de en_US.lang siguen el formato
+        // The PACK's localization_name (top-level in skins.json, next to
+        // "serialize_name"). Keys in en_US.lang follow the format
         // skin.<packLocalizationName>.<skinLocalizationName>
         let packName =
             (typeof skins.localization_name === "string" && skins.localization_name.trim())
@@ -379,19 +379,19 @@ const Fixer = {
 
     /*
     --------------------------------------------------
-    Crear textos faltantes
+    Create missing text files
     --------------------------------------------------
     --------------------------------------------------
-    (Separado para futuras traducciones)
+    (Kept separate for future translations)
     --------------------------------------------------
     */
 
     async createMissingTexts(zip, changes){
 
-        // Actualmente comparte lógica
-        // con syncLocalization.
-        // Se mantiene separado porque
-        // después permitirá crear:
+        // Currently shares its logic
+        // with syncLocalization.
+        // Kept as a separate method because
+        // it'll later support generating:
         // es_ES.lang
         // en_US.lang
         // pt_BR.lang
@@ -411,14 +411,14 @@ const Fixer = {
 
     /*
     --------------------------------------------------
-    Utilidades de similitud de texto (para "Sincronizar skins")
+    Text-similarity utilities (used by "Sync skins")
     --------------------------------------------------
     */
 
-    // Quita el prefijo "geometry." y la extensión ".png", pasa a
-    // minúsculas y elimina todo lo que no sea letra/número. Así
-    // "Egg_Model", "egg.model" y "geometry.egg.model" se comparan de
-    // forma justa entre sí.
+    // Strips the "geometry." prefix and the ".png" extension, lowercases
+    // everything, and drops anything that isn't a letter or digit. That
+    // way "Egg_Model", "egg.model" and "geometry.egg.model" all get
+    // compared on equal footing.
     normalizeForMatch(str){
 
         return String(str || "")
@@ -430,8 +430,8 @@ const Fixer = {
     },
 
 
-    // Distancia de Levenshtein (número mínimo de ediciones para pasar de
-    // "a" a "b"). Implementación clásica de dos filas.
+    // Levenshtein distance (minimum number of edits to turn "a" into
+    // "b"). Classic two-row implementation.
     levenshtein(a, b){
 
         const m = a.length, n = b.length;
@@ -469,8 +469,8 @@ const Fixer = {
     },
 
 
-    // Similitud entre 0 (nada que ver) y 1 (idénticos), tras normalizar
-    // ambos textos.
+    // Similarity from 0 (nothing alike) to 1 (identical), after
+    // normalizing both strings.
     similarity(a, b){
 
         const na = this.normalizeForMatch(a);
@@ -493,10 +493,10 @@ const Fixer = {
     },
 
 
-    // Entre una lista de candidatos y una o más claves de búsqueda,
-    // regresa el candidato más parecido, o null si ninguno alcanza el
-    // umbral mínimo o si los dos mejores están demasiado cerca (en ese
-    // caso es más seguro no adivinar).
+    // Given a list of candidates and one or more search keys, returns
+    // the closest-matching candidate, or null if nothing clears the
+    // minimum threshold, or if the top two are too close to call (in
+    // that case it's safer not to guess).
     bestMatch(candidates, keys, threshold = 0.55, margin = 0.08){
 
         let best = null, bestScore = 0, second = 0;
@@ -530,13 +530,12 @@ const Fixer = {
 
     /*
     --------------------------------------------------
-    Sincronizar skins: corrige referencias de "geometry" y
-    "texture" mal escritas buscando, dentro de geometry.json y
-    de las imágenes del paquete, el nombre más parecido al
-    localization_name (o al valor actual, si también sirve de
-    pista) de cada skin. No toca nada que ya sea válido: esto
-    es una corrección real (modifica skins.json), no solo un
-    reporte de lo que falta.
+    Sync skins: fixes misspelled "geometry" and "texture"
+    references by searching geometry.json and the pack's images
+    for the name closest to each skin's localization_name (or
+    its current value, if that's a useful hint too). Leaves
+    anything already valid alone -- this is a real fix (it
+    modifies skins.json), not just a report of what's missing.
     --------------------------------------------------
     */
 
@@ -564,8 +563,8 @@ const Fixer = {
 
 
 
-        // Geometrías disponibles: geometry.json (ambos formatos) +
-        // geometrías oficiales de Minecraft.
+        // Available geometries: geometry.json (both formats) + Minecraft's
+        // official geometries.
         let geoFile =
             Object.keys(zip.files)
             .find(x => /(^|\/)geometry\.json$/i.test(x));
@@ -588,7 +587,7 @@ const Fixer = {
                     });
                 }
 
-                // Formato antiguo: claves de nivel superior tipo
+                // Legacy format: top-level keys like
                 // "geometry.egg": { ... }
                 Object.keys(json).forEach(k => {
                     if(/^geometry\./i.test(k)){
@@ -603,16 +602,16 @@ const Fixer = {
         let availableGeometryLower =
             new Set(availableGeometry.map(id => id.toLowerCase()));
 
-        // Las geometrías oficiales son válidas aunque no aparezcan en
-        // geometry.json, pero no tiene sentido "sincronizar" hacia ellas
-        // por similitud de nombre (un modelo humanoide normal no debería
-        // reasignarse por accidente), así que solo se usan para decidir
-        // si la geometría actual YA es válida, no como candidatas.
+        // Official geometries are valid even if they don't appear in
+        // geometry.json, but "syncing" to one of them by name-similarity
+        // wouldn't make sense (a plain humanoid model shouldn't get
+        // reassigned by accident), so they're only used to decide whether
+        // the current geometry is ALREADY valid, never as match candidates.
         this.officialGeometry.forEach(id => availableGeometryLower.add(id.toLowerCase()));
 
 
 
-        // Texturas disponibles dentro del paquete.
+        // Textures available inside the pack.
         let pngFiles =
             Object.keys(zip.files)
             .filter(f => /\.png$/i.test(f) && !zip.files[f].dir)
@@ -655,13 +654,12 @@ const Fixer = {
 
 
             // ---- texture ----
-            // 1) ¿Ya coincide exactamente (mayúsculas y minúsculas
-            //    incluidas)? No tocar.
-            // 2) ¿Coincide solo si se ignoran mayúsculas/minúsculas? Es
-            //    una corrección segura y de alta confianza: se corrige
-            //    directo, sin pasar por la búsqueda difusa.
-            // 3) Si no coincide de ninguna forma, recién ahí se busca por
-            //    parecido de nombre (más riesgoso, por eso va al final).
+            // 1) Does it already match exactly (case included)? Leave it.
+            // 2) Does it match once case is ignored? That's a safe,
+            //    high-confidence fix: correct it directly, no need for
+            //    fuzzy matching.
+            // 3) If it doesn't match at all, only then fall back to
+            //    matching by similar name (riskier, so it goes last).
             let texExact =
                 skin.texture &&
                 pngFiles.includes(skin.texture);
@@ -708,12 +706,11 @@ const Fixer = {
             }
 
 
-            // ---- cape (opcional) ----
-            // Mismo criterio que texture, pero sin búsqueda difusa: una
-            // capa no suele compartir nombre con la skin, así que
-            // adivinar por parecido sería poco confiable. Solo se
-            // corrigen mayúsculas/minúsculas, igual que antes hacía
-            // "Fix upper/lowercase".
+            // ---- cape (optional) ----
+            // Same approach as texture, but without fuzzy matching: a
+            // cape rarely shares a name with the skin, so guessing by
+            // similarity would be unreliable. Only case mismatches get
+            // corrected, same as the old "Fix upper/lowercase" used to do.
             if(skin.cape){
 
                 let capeExact = pngFiles.includes(skin.cape);
@@ -758,13 +755,13 @@ const Fixer = {
 
     /*
     --------------------------------------------------
-    Remover skins repetidas o no usadas
+    Remove duplicate or unused skins
     --------------------------------------------------
-    Repetidas: mismo localization_name ya visto antes
-               (se conserva la primera aparición).
-    No usadas: la textura que la skin referencia no
-               existe físicamente dentro del paquete,
-               por lo que la skin nunca podría mostrarse.
+    Duplicate: same localization_name already seen before
+               (the first occurrence is kept).
+    Unused:    the texture the skin points to doesn't
+               physically exist inside the pack, so the
+               skin could never actually be shown.
     --------------------------------------------------
     */
 
@@ -816,7 +813,7 @@ const Fixer = {
                 skin.localization_name;
 
 
-            // Repetida: ya se vio antes ese localization_name
+            // Duplicate: this localization_name was already seen
             if(name && seenNames.has(name)){
 
                 changes.push(
@@ -828,7 +825,7 @@ const Fixer = {
             }
 
 
-            // No usada: la textura no existe en el paquete
+            // Unused: the texture doesn't exist in the pack
             let textureExists =
                 skin.texture
                 &&

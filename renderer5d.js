@@ -1,21 +1,21 @@
 /* =========================================================================
-   renderer5d.js — Escena Three.js para modelos legacy 4D/5D de Bedrock
+   renderer5d.js — Three.js scene for Bedrock's legacy 4D/5D models
 
-   Responsable EXCLUSIVAMENTE de:
-     - escena, cámara, luces, OrbitControls
-     - construcción de malla desde bones/cubes (4D) y bones/poly_mesh (5D)
-     - texturas, wireframe, cuadrícula, pivotes, auto-rotación, encuadre
+   Responsible ONLY for:
+     - scene, camera, lights, OrbitControls
+     - building meshes from bones/cubes (4D) and bones/poly_mesh (5D)
+     - textures, wireframe, grid, pivots, auto-rotation, framing
 
-   Esta es la misma lógica de reconstrucción de malla que ya funcionaba
-   en el prototipo original (box UV estándar de Minecraft, UV por cara,
-   mirror heredado del hueso, inflate, jerarquía de huesos resuelta con
-   quaterniones en vez de anidado automático de Object3D) — no se cambió
-   ningún cálculo, solo se movió a este módulo.
+   This is the same mesh-reconstruction logic that already worked in the
+   original prototype (Minecraft's standard box UV, per-face UV, mirror
+   inherited from the bone, inflate, bone hierarchy resolved with
+   quaternions instead of automatic Object3D nesting) — no calculation
+   was changed, it was just moved into this module.
 
-   NOTA DE ALCANCE: este renderer sigue usándose para 5D (poly_mesh).
-   También puede dibujar 4D (cubes) si algún día se necesita una vista
-   previa local, pero el camino "oficial" para 4D en SkinGeo Viewer es
-   el panel de Blockbench (ver blockbench.js) — ver viewer.js.
+   SCOPE NOTE: this renderer is still used for 5D (poly_mesh). It can
+   also draw 4D (cubes) if a local preview is ever needed, but the
+   "official" path for 4D in SkinGeo Viewer is the Blockbench panel (see
+   blockbench.js) — see viewer.js.
    ========================================================================= */
 
 const Renderer5D = (function () {
@@ -34,7 +34,7 @@ const Renderer5D = (function () {
     running: false
   };
 
-  /* ----------------------- UV / geometría de cubos ----------------------- */
+  /* ----------------------- cube UV / geometry ----------------------- */
 
   function boxUV(u, v, dx, dy, dz, texW, texH) {
     const px = 1 / texW, py = 1 / texH;
@@ -70,7 +70,7 @@ const Renderer5D = (function () {
     return out;
   }
 
-  // Orden de grupos de BoxGeometry: 0 +x(east) 1 -x(west) 2 +y(up) 3 -y(down) 4 +z(south) 5 -z(north)
+  // BoxGeometry group order: 0 +x(east) 1 -x(west) 2 +y(up) 3 -y(down) 4 +z(south) 5 -z(north)
   function applyBoxUV(geometry, uvMap, mirror) {
     const uvAttr = geometry.attributes.uv;
     const order = ["east", "west", "up", "down", "south", "north"];
@@ -92,7 +92,7 @@ const Renderer5D = (function () {
     uvAttr.needsUpdate = true;
   }
 
-  /* ----------------------- jerarquía de huesos ----------------------- */
+  /* ----------------------- bone hierarchy ----------------------- */
 
   function eulerToQuatThree(rotArr) {
     const r = rotArr || [0, 0, 0];
@@ -141,7 +141,7 @@ const Renderer5D = (function () {
     return world;
   }
 
-  /* ----------------------- construcción de malla ----------------------- */
+  /* ----------------------- mesh construction ----------------------- */
 
   function buildCubeWorldMesh(cube, bonePivot, boneWorld, texW, texH, material) {
     const size = cube.size || [0, 0, 0];
@@ -308,10 +308,10 @@ const Renderer5D = (function () {
   function animate() {
     if (!state.running) return;
     state.frameId = requestAnimationFrame(animate);
-    // ensureScene() puede no haberse llamado todavía (p.ej. show() se
-    // dispara al cargar la página, antes de subir ningún modelo) — sin
-    // esta guarda, state.controls/renderer/camera son null aquí y se
-    // rompe con "Cannot read properties of null (reading 'update')".
+    // ensureScene() may not have run yet (e.g. show() fires on page
+    // load, before any model is uploaded) — without this guard,
+    // state.controls/renderer/camera would be null here and would blow
+    // up with "Cannot read properties of null (reading 'update')".
     if (!state.controls || !state.renderer || !state.camera) return;
     if (state.modelRoot && state.spinning) {
       state.modelRoot.rotation.y += 0.006;
@@ -341,7 +341,7 @@ const Renderer5D = (function () {
     });
   }
 
-  /* ----------------------- API pública ----------------------- */
+  /* ----------------------- public API ----------------------- */
 
   function init(hostEl) {
     state.host = hostEl;
@@ -351,9 +351,9 @@ const Renderer5D = (function () {
     state.textureImg = img || null;
   }
 
-  // Reconstruye la escena a partir de una geoDef normalizada
+  // Rebuilds the scene from a normalized geoDef
   // ({ id, texture_width, texture_height, bones, type }).
-  // Devuelve estadísticas { bones, cubes, polys, meshCount, bboxSize }.
+  // Returns stats: { bones, cubes, polys, meshCount, bboxSize }.
   function loadModel(geoDef) {
     ensureScene();
 
@@ -449,10 +449,10 @@ const Renderer5D = (function () {
   function setShowPivots(v) { state.showPivots = v; }
 
   function show() {
-    // Garantiza que la escena (renderer/cámara/controles) exista antes de
-    // arrancar el bucle de animación, aunque todavía no se haya cargado
-    // ningún modelo — es lo que evita el crash de animate() al abrir la
-    // página con el panel 5D visible por defecto.
+    // Makes sure the scene (renderer/camera/controls) exists before
+    // starting the animation loop, even if no model has been loaded yet —
+    // this is what keeps animate() from crashing when the page opens
+    // with the 5D panel visible by default.
     ensureScene();
     state.running = true;
     if (!state.frameId) animate();

@@ -1,53 +1,53 @@
 // maker.js
-// Skinpack Maker: permite crear un skinpack normal de Minecraft Bedrock
-// desde cero. Importa skins (PNG local, o por nombre de usuario de Java
-// / Bedrock), detecta automáticamente el modelo (wide/slim) y deja
-// corregirlo a mano, configura nombre, descripción e ícono del pack (con
-// selector de colores y formato de Bedrock), y genera un .mcpack
-// descargable con un UUID nuevo en cada generación.
+// Skinpack Maker: lets you build a regular Minecraft Bedrock skinpack
+// from scratch. Imports skins (a local PNG, or by Java/Bedrock username),
+// auto-detects the model (wide/slim) while still letting you correct it
+// by hand, sets up the pack's name, description and icon (with a Bedrock
+// color/format picker), and generates a downloadable .mcpack with a
+// fresh UUID every time you generate one.
 //
-// Importación por usuario: usa varios servicios públicos con CORS
-// habilitado (no hay backend propio). Para Java se prueban en orden
-// minotar.net, mc-heads.net y mineskin.eu -todos aceptan el nombre de
-// usuario directamente, sin resolver un UUID antes-. Para Bedrock se usa
-// la API pública de GeyserMC (nombre de usuario/gamertag -> XUID de Xbox
-// -> id de textura), y la textura final se descarga a través de wsrv.nl
-// (un proxy de imágenes con CORS habilitado) porque textures.minecraft.net
-// no envía cabeceras CORS. Nota: la búsqueda por Bedrock solo encuentra
-// resultado si esa cuenta ya se conectó antes a algún servidor con
-// Geyser, ya que así es como funciona la API de GeyserMC.
+// Import by username: uses a handful of public, CORS-enabled services
+// (there's no backend of our own). For Java, we try minotar.net,
+// mc-heads.net and mineskin.eu in order -- all of them accept the
+// username directly, no need to resolve a UUID first. For Bedrock we use
+// GeyserMC's public API (username/gamertag -> Xbox XUID -> texture id),
+// and the final texture is downloaded through wsrv.nl (a CORS-enabled
+// image proxy) since textures.minecraft.net doesn't send CORS headers.
+// Note: the Bedrock lookup only finds a result if that account has
+// already connected to a Geyser-enabled server before, since that's how
+// GeyserMC's API works under the hood.
 //
-// Nota de orden de carga: este script se ejecuta ANTES que app.js, así
-// que nunca debe llamar a t()/mcFormatToHtml()/escapeHtml() (definidas en
-// app.js) desde código de nivel superior — solo dentro de callbacks que
-// se disparan por interacción del usuario o desde applyLanguage(), que
-// siempre corren después de que app.js ya definió esas funciones.
+// Load-order note: this script runs BEFORE app.js, so it must never call
+// t()/mcFormatToHtml()/escapeHtml() (defined in app.js) from top-level
+// code — only from inside callbacks triggered by user interaction, or
+// from applyLanguage(), both of which always run after app.js has
+// already defined those functions.
 
-// ---------- Estado ----------
+// ---------- State ----------
 let makerSkins = [];       // { id, name, model: "wide"|"slim", dataUrl }
 let makerPackIcon = null;  // { dataUrl } | null
 let makerNextId = 1;
-let makerPlatform = "java"; // "java" | "bedrock", para la importación por usuario
-let makerActiveField = null; // <input> de nombre/descripción con foco más reciente
+let makerPlatform = "java"; // "java" | "bedrock", for username-based import
+let makerActiveField = null; // the name/description <input> that was most recently focused
 
-// ---------- Utilidades ----------
+// ---------- Helpers ----------
 
-// Un skin de Minecraft válido es cuadrado (64x64, 128x128, ...) o tiene
-// la proporción 2:1 del formato antiguo (64x32, 128x64, ...), siempre
-// con el ancho como múltiplo de 64.
+// A valid Minecraft skin is either square (64x64, 128x128, ...) or has
+// the old format's 2:1 ratio (64x32, 128x64, ...), always with a width
+// that's a multiple of 64.
 function makerValidDimensions(width, height) {
   if (!width || !height || width < 64 || width % 64 !== 0) return false;
   return height === width || width === height * 2;
 }
 
-// Detecta si una textura ya dibujada en un canvas usa el modelo "slim"
-// (Alex, brazos de 3px) en vez de "wide" (Steve, brazos de 4px).
+// Detects whether a texture already drawn onto a canvas uses the "slim"
+// model (Alex, 3px arms) instead of "wide" (Steve, 4px arms).
 //
-// Técnica estándar usada por launchers/editores de skins: en el layout
-// 64x64, la manga derecha (capa 2) reserva una franja de 1px que solo se
-// usa en el modelo wide; en las skins slim esa franja queda totalmente
-// transparente. Si esos píxeles son 100% transparentes, es slim.
-// El formato antiguo 64x32 nunca tiene modelo slim.
+// Standard technique used by skin launchers/editors: in the 64x64
+// layout, the right sleeve (layer 2) reserves a 1px strip that's only
+// used by the wide model; on slim skins that strip is fully transparent.
+// If those pixels are 100% transparent, it's slim.
+// The old 64x32 format never has a slim model.
 function makerDetectSlim(ctx, width, height) {
   if (height < 64) return false;
 
@@ -70,10 +70,10 @@ function makerDetectSlim(ctx, width, height) {
   }
 }
 
-// Convierte una imagen local (blob:) en un PNG "limpio" dibujándola en un
-// canvas. Esto normaliza el formato de salida (siempre PNG real) y sirve
-// como validación: si la imagen no es decodificable, el navegador dispara
-// onerror. De paso calcula el modelo probable (wide/slim).
+// Turns a local image (blob:) into a "clean" PNG by drawing it onto a
+// canvas. This normalizes the output format (always a real PNG) and
+// doubles as validation: if the image can't be decoded, the browser
+// fires onerror. Also works out the likely model (wide/slim) along the way.
 function makerImageToPng(sourceUrl) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -127,14 +127,14 @@ function makerDataUrlToBytes(dataUrl) {
   return bytes;
 }
 
-// Genera un UUID v4 nuevo y aleatorio. Se usa una función (no un valor
-// fijo) a propósito: cada paquete generado, incluso con el mismo nombre,
-// debe recibir identificadores distintos.
+// Generates a fresh, random UUID v4. Deliberately a function rather
+// than a fixed value: every generated pack, even with the same name,
+// needs its own distinct identifiers.
 function makerGenerateUUID() {
   if (window.crypto && typeof window.crypto.randomUUID === "function") {
     return window.crypto.randomUUID();
   }
-  // Respaldo para navegadores sin crypto.randomUUID
+  // Fallback for browsers without crypto.randomUUID
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
     const v = c === "x" ? r : (r & 0x3) | 0x8;
@@ -142,21 +142,20 @@ function makerGenerateUUID() {
   });
 }
 
-// Permite escribir códigos de formato de Bedrock de dos formas: pegando
-// el carácter § directamente (p. ej. "§c"), o escribiendo el atajo con
-// ampersand ("&c"), más fácil de teclear. Ambas terminan guardadas como
-// § real en el paquete final.
+// Lets you type Bedrock formatting codes two ways: pasting the § symbol
+// directly (e.g. "§c"), or typing the easier-to-reach ampersand shortcut
+// ("&c"). Both end up saved as a real § in the final pack.
 function makerNormalizeFormatting(str) {
   if (!str) return "";
-  // Códigos válidos de Bedrock: 0-9 y a-u sin huecos (colores 0-9/a-j/m/n/
-  // p/q/s/t/u + formato k/l/o/r), igual que MC_COLORS + mcFormatToHtml en
-  // app.js.
+  // Valid Bedrock codes: 0-9 and a-u with no gaps (colors 0-9/a-j/m/n/
+  // p/q/s/t/u + formatting k/l/o/r), same set as MC_COLORS +
+  // mcFormatToHtml in app.js.
   return str.replace(/&([0-9a-u])/gi, (m, c) => "§" + c.toLowerCase());
 }
 
-// Convierte un nombre libre en un identificador seguro (solo minúsculas,
-// números y guiones bajos) para usarlo como localization_name / prefijo
-// de claves en los .lang.
+// Turns a free-form name into a safe identifier (lowercase letters,
+// digits and underscores only) for use as localization_name / a key
+// prefix in the .lang files.
 function makerSanitizeId(str, fallback) {
   const noFormatting = String(str || "").replace(/§./g, "").replace(/&[0-9a-u]/gi, "");
   let cleaned;
@@ -176,7 +175,7 @@ function makerSetStatus(message, type) {
   el.className = "maker-status" + (type ? " " + type : "");
 }
 
-// ---------- Lista de skins ----------
+// ---------- Skin list ----------
 
 function makerAddSkin(dataUrl, suggestedName, modelGuess) {
   const name = (suggestedName && suggestedName.trim())
@@ -223,8 +222,8 @@ function renderMakerSkinsList() {
   `).join("");
 }
 
-// Delegación de eventos: funciona sin importar cuántas veces se
-// re-renderice la lista (no hace falta re-adjuntar listeners).
+// Event delegation: works no matter how many times the list gets
+// re-rendered (no need to re-attach listeners).
 const makerSkinsListEl = document.getElementById("makerSkinsList");
 
 if (makerSkinsListEl) {
@@ -262,7 +261,7 @@ const makerFileInput = document.getElementById("makerFileInput");
 if (makerFileInput) {
   makerFileInput.addEventListener("change", async (e) => {
     const files = Array.from(e.target.files || []);
-    e.target.value = ""; // permite volver a elegir el mismo archivo después
+    e.target.value = ""; // lets the user pick the same file again later
 
     if (!files.length) return;
 
@@ -287,10 +286,10 @@ if (makerFileInput) {
   });
 }
 
-// ---------- Importar: por nombre de usuario (Java / Bedrock) ----------
+// ---------- Import: by username (Java / Bedrock) ----------
 
-// Todos aceptan el nombre de usuario directamente (sin resolver un UUID
-// antes) y tienen CORS habilitado.
+// All of these accept the username directly (no need to resolve a UUID
+// first) and have CORS enabled.
 const MAKER_JAVA_SKIN_SOURCES = [
   { name: "minotar.net", url: (u) => `https://minotar.net/skin/${u}` },
   { name: "mc-heads.net", url: (u) => `https://mc-heads.net/skin/${u}` },
@@ -306,25 +305,25 @@ async function makerFetchJavaSkin(username) {
       if (!res.ok) continue;
 
       const blob = await res.blob();
-      if (blob.size < 100) continue; // respuesta vacía / placeholder de error
+      if (blob.size < 100) continue; // empty response / error placeholder
 
       const png = await makerBlobToPng(blob);
       if (!makerValidDimensions(png.width, png.height)) continue;
 
       return png;
     } catch (e) {
-      // intentar la siguiente fuente
+      // try the next source
     }
   }
 
   return null;
 }
 
-// GeyserMC expone una API pública para convertir un gamertag de
-// Bedrock/Xbox a su XUID, y de ahí a la última skin que subió a un
-// servidor con Geyser. La textura final se baja a través de wsrv.nl
-// (proxy de imágenes con CORS) porque textures.minecraft.net no envía
-// cabeceras CORS.
+// GeyserMC exposes a public API for converting a Bedrock/Xbox gamertag
+// into its XUID, and from there into the last skin that account uploaded
+// to a Geyser-enabled server. The final texture is downloaded through
+// wsrv.nl (a CORS-enabled image proxy) since textures.minecraft.net
+// doesn't send CORS headers.
 async function makerFetchBedrockSkin(gamertag) {
   try {
     const xuidRes = await fetch(
@@ -417,7 +416,7 @@ if (makerUsernameInput) {
   });
 }
 
-// ---------- Configuración del pack: nombre, descripción, ícono ----------
+// ---------- Pack setup: name, description, icon ----------
 
 const makerPackName = document.getElementById("makerPackName");
 const makerPackDescription = document.getElementById("makerPackDescription");
@@ -443,21 +442,20 @@ function updateMakerPreview() {
 if (makerPackName) makerPackName.addEventListener("input", updateMakerPreview);
 if (makerPackDescription) makerPackDescription.addEventListener("input", updateMakerPreview);
 
-// ---------- Selector de colores y formato ----------
-// Insertan el código § correspondiente en el campo (nombre o
-// descripción) que tuvo el foco más recientemente, en la posición del
-// cursor -igual que si el usuario lo hubiera tecleado a mano-. Así los
-// códigos de Bedrock quedan accesibles con un toque, sin tener que
-// escribir el símbolo § (difícil en la mayoría de los teclados) ni
-// memorizar el atajo &.
+// ---------- Color / formatting picker ----------
+// Inserts the matching § code into whichever field (name or description)
+// was most recently focused, at the cursor's position -- same as if the
+// user had typed it by hand. That way Bedrock's codes are one tap away,
+// without having to type the § symbol (awkward on most keyboards) or
+// memorize the & shortcut.
 [makerPackName, makerPackDescription].forEach(field => {
   if (!field) return;
   field.addEventListener("focus", () => { makerActiveField = field; });
 });
 
-// Nombres de los 16 colores estándar + 11 colores de material exclusivos
-// de Bedrock, en el mismo orden/valores que MC_COLORS (app.js) para que
-// la vista previa coincida exactamente con el swatch elegido.
+// Names for the 16 standard colors + 11 Bedrock-exclusive material
+// colors, in the same order/values as MC_COLORS (app.js) so the preview
+// matches the chosen swatch exactly.
 const MAKER_COLOR_CODES = [
   ["0", "#000000", "colorBlack"], ["1", "#0000AA", "colorDarkBlue"],
   ["2", "#00AA00", "colorDarkGreen"], ["3", "#00AAAA", "colorDarkAqua"],
@@ -475,9 +473,10 @@ const MAKER_COLOR_CODES = [
   ["u", "#9A5CC6", "colorAmethyst"]
 ];
 
-// Solo los códigos que son de verdad funciones de FORMATO en Bedrock
-// (§n y §m, a diferencia de Java, son colores de material acá, no
-// subrayado/tachado -por eso no aparecen como "formato"-).
+// Only the codes that are actually FORMATTING functions in Bedrock
+// (§n and §m, unlike Java, are material colors here rather than
+// underline/strikethrough -- that's why they don't show up as
+// "formatting").
 const MAKER_FORMAT_CODES = [
   ["l", "B", "formatBold"], ["o", "I", "formatItalic"],
   ["k", "?", "formatObfuscated"], ["r", "R", "formatReset"]
@@ -555,20 +554,20 @@ if (makerIconInput) {
   });
 }
 
-// ---------- Generar y descargar el .mcpack ----------
+// ---------- Generate and download the .mcpack ----------
 
 const makerGenerateBtn = document.getElementById("makerGenerateBtn");
 
 async function makerGeneratePack() {
   if (!makerSkins.length) {
-    alert(t("maker.needSkins"));
+    mbsmToast("warning", t("maker.needSkins"));
     return;
   }
 
   const rawName = makerNormalizeFormatting(makerPackName ? makerPackName.value.trim() : "");
 
   if (!rawName) {
-    alert(t("maker.needName"));
+    mbsmToast("warning", t("maker.needName"));
     return;
   }
 
@@ -581,8 +580,8 @@ async function makerGeneratePack() {
   try {
     const zip = new JSZip();
 
-    // UUID nuevos en cada generación: el manifest nunca reutiliza los de
-    // un paquete anterior, ni entre header y module.
+    // Fresh UUIDs every time: the manifest never reuses ones from a
+    // previous pack, or between header and module.
     const headerUuid = makerGenerateUUID();
     const moduleUuid = makerGenerateUUID();
 
@@ -610,10 +609,10 @@ async function makerGeneratePack() {
 
     zip.file("manifest.json", JSON.stringify(manifest, null, 2));
 
-    // ---- skins.json + texturas ----
-    // Las texturas van en la raíz del paquete (junto a manifest.json y
-    // skins.json), igual que en los skinpacks reales: no en una
-    // subcarpeta "skins/".
+    // ---- skins.json + textures ----
+    // Textures live at the pack's root (next to manifest.json and
+    // skins.json), same as in real skinpacks: not inside a "skins/"
+    // subfolder.
     const skinsJson = {
       serialize_name: serializeName,
       localization_name: serializeName,
@@ -644,21 +643,21 @@ async function makerGeneratePack() {
 
     zip.file("skins.json", JSON.stringify(skinsJson, null, 2));
 
-    // ---- textos / idiomas ----
+    // ---- text / language files ----
     zip.file("texts/en_US.lang", enUsLines.join("\n"));
     zip.file("texts/es_ES.lang", esEsLines.join("\n"));
     zip.file("texts/languages.json", JSON.stringify(["en_US", "es_ES"], null, 2));
 
-    // ---- ícono del pack (opcional) ----
+    // ---- pack icon (optional) ----
     if (makerPackIcon) {
       zip.file("pack_icon.png", makerDataUrlToBytes(makerPackIcon.dataUrl));
     }
 
-    // streamFiles:false evita el uso de "data descriptors" (tamaños
-    // escritos después de los datos en vez de en la cabecera local);
-    // algunos antivirus/heurísticas de Windows son más desconfiados con
-    // zips que usan ese modo de streaming, y aquí no hace ninguna falta
-    // porque ya tenemos todos los bytes en memoria de antemano.
+    // streamFiles:false avoids "data descriptors" (sizes written after
+    // the data instead of in the local header); some Windows antivirus
+    // heuristics are more suspicious of zips using that streaming mode,
+    // and there's no need for it here anyway since we already have every
+    // byte in memory up front.
     const output = await zip.generateAsync({
       type: "blob",
       platform: "DOS",
@@ -683,7 +682,7 @@ async function makerGeneratePack() {
 
   } catch (err) {
     console.error(err);
-    alert(t("maker.generateError"));
+    mbsmToast("error", t("maker.generateError"));
   } finally {
     makerGenerateBtn.disabled = false;
     makerGenerateBtn.textContent = originalBtnText;
@@ -694,11 +693,11 @@ if (makerGenerateBtn) {
   makerGenerateBtn.addEventListener("click", makerGeneratePack);
 }
 
-// ---------- Refresco de idioma ----------
-// app.js llama a esta función (si existe) cada vez que se cambia de
-// idioma, para que la lista de skins ya renderizada y la vista previa del
-// nombre/descripción queden también traducidas, ya que se generaron
-// dinámicamente y data-i18n no las cubre.
+// ---------- Language refresh ----------
+// app.js calls this function (if it exists) whenever the language
+// changes, so the already-rendered skin list and the name/description
+// preview get translated too -- they were generated dynamically, so
+// data-i18n doesn't cover them.
 function refreshMakerLanguage() {
   renderMakerSkinsList();
   updateMakerPreview();

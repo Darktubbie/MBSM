@@ -9,18 +9,18 @@
    lados). No edites una regla sin mantener ese prefijo.
    ============================================================ */
 #objSkinStudio {
-  --bg:#0f1011;
-  --bg-elevated:#1b1d20;
-  --bg-elevated-2:#24272b;
-  --border:#343840;
-  --text:#f2f3f4;
-  --text-dim:#b9bec4;
+  --bg:#0b0b0f;
+  --bg-elevated:#18181f;
+  --bg-elevated-2:#1f1f28;
+  --border:#27272f;
+  --text:#f4f4f5;
+  --text-dim:#a1a1aa;
   --accent:#a855f7;
-  --accent-dim:#4a2f6e;
+  --accent-dim:#3a2560;
   --accent-strong:#7c3aed;
-  --danger:#ff5a5a;
-  --danger-dim:#5c1f1f;
-  --warn:#ffd85a;
+  --danger:#ef4444;
+  --danger-dim:#4a1f1f;
+  --warn:#f59e0b;
   --radius:10px;
   --radius-sm:6px;
 }
@@ -170,11 +170,11 @@
 
 #objSkinStudio #partsSection {
   display:flex; flex-direction:column; flex-grow:1; overflow:hidden; padding:10px 0 0;
-  /* Antes se podía aplastar por debajo de la altura de su propio header +
-     buscador (cortando "PARTES DEL MODELO" y el buscador a la mitad) en
-     viewports bajos. min-height asegura que esa cabecera siempre se vea
-     completa; la lista de partes de abajo sigue haciendo su propio scroll
-     interno (#partsList ya tiene overflow-y:auto). */
+  /* This used to be able to get squashed below the height of its own
+     header + search box (cutting "MODEL PARTS" and the search field in
+     half) on short viewports. min-height keeps that header fully visible;
+     the part list below still scrolls internally on its own
+     (#partsList already has overflow-y:auto). */
   min-height:150px;
 }
 #objSkinStudio .sectionHeader { display:flex; align-items:center; justify-content:space-between; padding:0 14px; }
@@ -364,7 +364,7 @@
 #objSkinStudio .partBoneSelect.unassigned { color:var(--warn); border-color:#5a4620; }
 #objSkinStudio .partBoneSelect:focus { outline:none; border-color:var(--accent-dim); color:var(--text); }
 
-/* ---------- Partes anidadas dentro del árbol de huesos ---------- */
+/* ---------- Parts nested inside the bone tree ---------- */
 #objSkinStudio .boneParts { list-style:none; margin:2px 0 4px 20px; padding:0; }
 #objSkinStudio .bonePartChip {
   font-size:10.5px; color:var(--text-dim); padding:2px 0 2px 14px; position:relative;
@@ -376,7 +376,7 @@
   #objSkinStudio #inspector { width:240px; min-width:240px; }
 }
 
-/* ---------- Móvil: sidebar e inspector pasan a paneles deslizables ---------- */
+/* ---------- Mobile: sidebar and inspector become slide-in panels ---------- */
 #objSkinStudio #mobileBackdrop {
   display:none; position:absolute; inset:0; z-index:60; background:rgba(6,9,13,.6);
 }

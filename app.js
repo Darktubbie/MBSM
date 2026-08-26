@@ -1,5 +1,5 @@
 // app.js
-// Maneja la interfaz, drag & drop y carga del archivo ZIP
+// Handles the UI, drag & drop, and loading the ZIP file
 
 let currentZip = null;
 let currentZipName = "";
@@ -14,7 +14,13 @@ const results = document.getElementById("results");
 // ---------- i18n ----------
 const I18N = {
   en: {
-    nav: { home: "Home", validator: "Skins 4D/5D", studio: "Classic Skins", about: "About" },
+    nav: {
+      home: "Home", validator: "Skins 4D/5D", studio: "Classic Skins", about: "About",
+      groupWorkspace: "WORKSPACE", groupViewers: "VIEWERS", groupTools: "TOOLS",
+      viewers4d5d: "4D / 5D", classicSkins: "Classic Skins", validatorTool: "Validator",
+      fixer: "Fixer", maker: "Skinpack Maker", objSkin: "OBJ → Skin 1.8",
+      search: "Search"
+    },
     home: {
       title: "EVERYTHING YOU NEED FOR MINECRAFT BEDROCK SKINS",
       subtitle: "MBSM is a free toolbox for Minecraft Bedrock skin packs that runs almost entirely in your browser. Pick what you need below.",
@@ -47,6 +53,14 @@ const I18N = {
       fcObjSkinTag: "OBJ → SKIN 1.8",
       fcObjSkinTitle: "Turn a 3D model into a working 5D skin",
       fcObjSkinText: "Import an .obj + texture, assign parts to bones, adjust pivots visually, and export a real Bedrock 1.8.0 poly_mesh — ready as a full skin pack."
+    },
+    changelog: {
+      eyebrow: "CHANGELOG",
+      title: "What's new in MBSM",
+      v070: {
+        item1: "Complete visual redesign: new sidebar, dashboard, an Inspector panel for the 4D/5D viewer, Dark/Light/System themes and refreshed tools throughout.",
+        item2: "Several bug fixes across the app."
+      }
     },
     perks: {
       eyebrow: "DETAILS THAT MATTER",
@@ -134,6 +148,10 @@ const I18N = {
       fieldModel: "Detected model",
       statBones: "Bones",
       statCubes: "Cubes / Polys",
+      inspectorTitle: "MODEL",
+      inspectorDisplay: "DISPLAY",
+      appearanceTitle: "APPEARANCE",
+      appearanceBg: "Background",
       toggleSpin: "Auto-rotate",
       toggleWire: "Wireframe",
       toggleGrid: "Floor / grid",
@@ -293,6 +311,10 @@ const I18N = {
       packIcon: "Pack icon (optional)",
       chooseIcon: "Choose icon",
       generateBtn: "Download skin pack",
+      stepAdd: "Add skins",
+      stepManage: "Manage pack",
+      stepSettings: "Pack settings",
+      stepExport: "Export",
       importing: "Importing...",
       importOk: 'Added "{name}".',
       importFailGeneric: "Couldn't import that image.",
@@ -329,7 +351,13 @@ const I18N = {
     }
   },
   es: {
-    nav: { home: "Inicio", validator: "Skins 4D/5D", studio: "Skins Clásicas", about: "Acerca de" },
+    nav: {
+      home: "Inicio", validator: "Skins 4D/5D", studio: "Skins Clásicas", about: "Acerca de",
+      groupWorkspace: "ESPACIO", groupViewers: "VISORES", groupTools: "HERRAMIENTAS",
+      viewers4d5d: "4D / 5D", classicSkins: "Skins Clásicas", validatorTool: "Validador",
+      fixer: "Reparador", maker: "Creador de Skinpacks", objSkin: "OBJ → Skin 1.8",
+      search: "Buscar"
+    },
     home: {
       title: "TODO LO QUE NECESITAS PARA SKINS DE MINECRAFT BEDROCK",
       subtitle: "MBSM es una caja de herramientas gratuita para skinpacks de Minecraft Bedrock que funciona casi por completo en tu navegador. Elige lo que necesites abajo.",
@@ -362,6 +390,14 @@ const I18N = {
       fcObjSkinTag: "OBJ → SKIN 1.8",
       fcObjSkinTitle: "Convierte un modelo 3D en una skin 5D funcional",
       fcObjSkinText: "Importa un .obj + textura, asigna las partes a los huesos, ajusta los pivotes visualmente, y exporta una geometría real Bedrock 1.8.0 (poly_mesh) — lista como paquete de skin completo."
+    },
+    changelog: {
+      eyebrow: "REGISTRO DE CAMBIOS",
+      title: "Novedades de MBSM",
+      v070: {
+        item1: "Rediseño visual completo: nueva sidebar, dashboard, panel Inspector en el visor 4D/5D, temas Oscuro/Claro/Sistema y herramientas renovadas en toda la app.",
+        item2: "Varias correcciones de errores en la app."
+      }
     },
     perks: {
       eyebrow: "DETALLES QUE IMPORTAN",
@@ -449,6 +485,10 @@ const I18N = {
       fieldModel: "Modelo detectado",
       statBones: "Huesos",
       statCubes: "Cubos / Polys",
+      inspectorTitle: "MODELO",
+      inspectorDisplay: "VISTA",
+      appearanceTitle: "APARIENCIA",
+      appearanceBg: "Fondo",
       toggleSpin: "Auto-rotar",
       toggleWire: "Wireframe",
       toggleGrid: "Piso / cuadrícula",
@@ -608,6 +648,10 @@ const I18N = {
       packIcon: "Ícono del pack (opcional)",
       chooseIcon: "Elegir ícono",
       generateBtn: "Descargar skin pack",
+      stepAdd: "Agregar skins",
+      stepManage: "Gestionar pack",
+      stepSettings: "Ajustes del pack",
+      stepExport: "Exportar",
       importing: "Importando...",
       importOk: 'Se agregó "{name}".',
       importFailGeneric: "No se pudo importar esa imagen.",
@@ -674,9 +718,9 @@ async function applyLanguage(lang) {
     el.innerHTML = t(el.getAttribute("data-i18n-html"));
   });
 
-  // Placeholders de <input> (p. ej. los campos del Skinpack Maker): no son
-  // contenido visible vía textContent/innerHTML, así que necesitan su
-  // propio atributo.
+  // <input> placeholders (e.g. the Skinpack Maker's fields) aren't
+  // visible content via textContent/innerHTML, so they need their own
+  // attribute.
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
     el.setAttribute("placeholder", t(el.getAttribute("data-i18n-placeholder")));
   });
@@ -685,9 +729,9 @@ async function applyLanguage(lang) {
     btn.classList.toggle("active", btn.getAttribute("data-lang") === lang);
   });
 
-  // Los mensajes del análisis quedan fijados en el idioma con el que se
-  // generaron, así que si ya hay un paquete cargado se vuelve a analizar
-  // en el nuevo idioma para que los resultados también queden traducidos.
+  // Analysis messages are locked into whatever language they were
+  // generated in, so if a pack is already loaded we re-run the analysis
+  // in the new language so the results get translated too.
   if (currentZip) {
 
     try {
@@ -713,20 +757,20 @@ async function applyLanguage(lang) {
     viewerShowMessage(t("validator.waitingText"));
   }
 
-  // Re-pinta el texto ya mostrado del visor 4D/5D en el nuevo idioma
-  // (estado/instrucciones de Blockbench, y los tags MIXTO/VACÍO del
-  // selector de modelos si corresponde). No reintenta ninguna acción con
-  // efectos secundarios -- solo cambia el idioma del texto ya calculado.
+  // Repaints the 4D/5D viewer's already-shown text in the new language
+  // (Blockbench's status/instructions, and the model selector's
+  // MIXED/EMPTY tags where applicable). Doesn't retry anything with side
+  // effects -- it only re-translates text that's already been computed.
   if (typeof BlockbenchPanel !== "undefined") BlockbenchPanel.refreshLanguage();
   if (typeof SkinGeoViewer !== "undefined") SkinGeoViewer.refreshLanguage();
 
-  // Igual que arriba, pero para el conversor OBJ -> Skin 1.8 (antes una
-  // página aparte, ahora un módulo más de la SPA).
+  // Same idea as above, but for the OBJ -> Skin 1.8 converter (used to
+  // be a separate page, now it's just another module in the SPA).
   if (typeof ObjSkinStudio !== "undefined") ObjSkinStudio.refreshLanguage();
 
-  // El Skinpack Maker genera su lista de skins y su vista previa de forma
-  // dinámica (no vía data-i18n), así que hay que volver a pintarlas cada
-  // vez que cambia el idioma.
+  // The Skinpack Maker builds its skin list and preview dynamically
+  // (not through data-i18n), so they need to be repainted every time the
+  // language changes.
   if (typeof refreshMakerLanguage === "function") {
     refreshMakerLanguage();
   }
@@ -740,7 +784,7 @@ document.querySelectorAll(".lang-btn").forEach(btn => {
   btn.addEventListener("click", () => applyLanguage(btn.getAttribute("data-lang")));
 });
 
-// ---------- Animaciones de aparición al hacer scroll ----------
+// ---------- Fade-in animations on scroll ----------
 if ("IntersectionObserver" in window) {
   const revealObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
@@ -839,7 +883,7 @@ zipInput.addEventListener("change", e => {
   }
 });
 
-// ---------- Validación previa del paquete ----------
+// ---------- Pre-check whether this looks like a skin pack ----------
 async function isLikelySkinPack(zip) {
   const files = Object.keys(zip.files).filter(f => !zip.files[f].dir);
 
@@ -847,34 +891,34 @@ async function isLikelySkinPack(zip) {
   if (!hasSkinsJson) return false;
 
   const manifestPath = files.find(f => /(^|\/)manifest\.json$/i.test(f));
-  if (!manifestPath) return true; // sin manifest: dejamos que el validador reporte el problema
+  if (!manifestPath) return true; // no manifest: let the validator report the problem
 
   try {
     const manifest = JSON.parse(await zip.files[manifestPath].async("string"));
     const modules = manifest.modules || [];
     const isSkinModule = modules.some(m => (m.type || "").toLowerCase() === "skin_pack");
 
-    // Si declara módulos pero ninguno es skin_pack, probablemente no es
-    // un paquete de skins (podría ser un resource/behavior pack normal).
+    // If it declares modules but none of them is skin_pack, this is
+    // probably not a skin pack (could be a regular resource/behavior pack).
     if (modules.length && !isSkinModule) return false;
 
   } catch (e) {
-    // manifest inválido: dejamos que el validador reporte el error específico
+    // invalid manifest: let the validator report the specific error
   }
 
   return true;
 }
 
-// ---------- Códigos de formato de Minecraft (§) ----------
-// Códigos de formato de Minecraft BEDROCK (distintos de Java en algunos casos):
-// Bedrock reutiliza las letras "m" y "n" como colores adicionales de material
-// en vez de tachado/subrayado, y agrega los colores "g" a "u".
+// ---------- Minecraft formatting codes (§) ----------
+// Minecraft BEDROCK's formatting codes (different from Java in some cases):
+// Bedrock reuses the letters "m" and "n" as extra material colors instead
+// of strikethrough/underline, and adds colors "g" through "u".
 const MC_COLORS = {
   "0": "#000000", "1": "#0000AA", "2": "#00AA00", "3": "#00AAAA",
   "4": "#AA0000", "5": "#AA00AA", "6": "#FFAA00", "7": "#AAAAAA",
   "8": "#555555", "9": "#5555FF", "a": "#55FF55", "b": "#55FFFF",
   "c": "#FF5555", "d": "#FF55FF", "e": "#FFFF55", "f": "#FFFFFF",
-  // Colores exclusivos de Bedrock (material/minecoin)
+  // Bedrock-exclusive colors (material/minecoin)
   "g": "#DDD605", "h": "#E3D4D1", "i": "#CECACA", "j": "#443A3B",
   "m": "#971607", "n": "#B4684D", "p": "#DEB12D", "q": "#47A036",
   "s": "#2CBAA8", "t": "#21497B", "u": "#9A5CC6"
@@ -944,16 +988,16 @@ function mcFormatToHtml(text) {
   return html;
 }
 
-// ---------- Banner de información del paquete ----------
+// ---------- Pack info banner ----------
 function renderPackInfo(packInfo) {
   if (!packInfo) return "";
 
   const iconHtml = packInfo.iconDataUrl
     ? `<img src="${packInfo.iconDataUrl}" alt="Pack icon">`
-    : `<div class="pack-icon-default">🧊</div>`;
+    : `<div class="pack-icon-default"><img src="assets/mbsm-icon.png" alt=""></div>`;
 
-  // El validador usa "Paquete de skins 4D" como descripción por defecto;
-  // la traducimos aquí para respetar el idioma activo de la interfaz.
+  // The validator uses "Paquete de skins 4D" as its default description;
+  // we translate it here so it respects the UI's current language.
   const description =
     packInfo.description === "Paquete de skins 4D"
       ? t("js.defaultPackDescription")
@@ -972,13 +1016,13 @@ function renderPackInfo(packInfo) {
   `;
 }
 
-// ---------- Preview de skins ----------
-// Etiqueta 4D/5D coloreada para el validador -- misma clase visual que
-// usa el selector de modelos del visor 4D/5D (azul=4D, morado=5D), para
-// que ambos apartados se vean consistentes. Cualquier tipo que no sea
-// exactamente "4D" o "5D" (geometría mixta, o "VACÍO"/vacía si llegara a
-// aparecer) usa una clase neutra y su texto se traduce según el idioma
-// actual en vez de mostrar la palabra en español fija.
+// ---------- Skin preview ----------
+// A colored 4D/5D tag for the validator -- same visual class the 4D/5D
+// viewer's model selector uses (blue=4D, purple=5D), so both sections
+// look consistent. Anything that isn't exactly "4D" or "5D" (mixed
+// geometry, or "VACÍO"/empty if that ever shows up) gets a neutral class
+// and its text translated for the current language instead of showing
+// the hardcoded Spanish word.
 function renderGeometryTypeTag(type) {
   if (type === "4D" || type === "5D") {
     return `<span class="sg-model-tag sg-model-tag-${type.toLowerCase()}">${type}</span> `;
@@ -1048,7 +1092,7 @@ function renderSkinsPreview(skinDetails) {
   `;
 }
 
-// ---------- Carga del ZIP ----------
+// ---------- Loading the ZIP ----------
 async function handleFile(file) {
   resetStats();
   clearResults();
@@ -1128,7 +1172,7 @@ async function handleFile(file) {
   }
 }
 
-// ---------- Renderiza un reporte completo en #results ----------
+// ---------- Renders a full report into #results ----------
 function renderReport(report) {
   beginResults();
 
@@ -1147,7 +1191,7 @@ function renderReport(report) {
   setStats(report.stats);
 }
 
-// ---------- Ejecutar análisis ----------
+// ---------- Run the analysis ----------
 analyzeBtn.addEventListener("click", async () => {
   if (!currentZip) return;
 
@@ -1160,7 +1204,7 @@ analyzeBtn.addEventListener("click", async () => {
     const resolveAmbiguousGeometry =
       document.getElementById("resolveAmbiguousGeometry")?.checked || false;
 
-    // Esta función estará en validator.js
+    // This function lives in validator.js
     currentReport = await validateSkinPack(currentZip, currentZipName, {
       resolveAmbiguousGeometry,
       lang: currentLang
@@ -1198,7 +1242,7 @@ if(repairButton){
 repairButton.addEventListener("click", async ()=>{
 
 if(!currentZip){
-    alert(t("validator.needPackAlert"));
+    mbsmToast("warning", t("validator.needPackAlert"));
     return;
 }
 
@@ -1235,8 +1279,6 @@ try {
     currentReport
     );
 
-    console.log(changes);
-
     let output =
     await currentZip.generateAsync({
         type:"blob",
@@ -1246,9 +1288,9 @@ try {
         compressionOptions:{ level:6 }
     });
 
-    // Nombre de salida: conserva la extensión original (.zip o .mcpack)
-    // en vez de asumir siempre ".zip", que dejaba el nombre sin cambios
-    // para archivos .mcpack.
+    // Output name: keeps the original extension (.zip or .mcpack)
+    // instead of always assuming ".zip", which used to leave the name
+    // unchanged for .mcpack files.
     const dotIndex = currentZipName.lastIndexOf(".");
     const baseName = dotIndex > -1 ? currentZipName.slice(0, dotIndex) : currentZipName;
     const ext = dotIndex > -1 ? currentZipName.slice(dotIndex) : ".mcpack";
@@ -1261,19 +1303,19 @@ try {
     link.download = downloadName;
     link.style.display = "none";
 
-    // Algunos navegadores (Firefox, Safari) no disparan la descarga si el
-    // enlace no está insertado en el DOM al momento del click.
+    // Some browsers (Firefox, Safari) won't trigger the download if the
+    // link isn't actually inserted into the DOM at the moment it's clicked.
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
-    // Se revoca la URL luego de un momento para no interrumpir la descarga
+    // Revoke the URL after a short delay so we don't interrupt the download
     setTimeout(() => URL.revokeObjectURL(blobUrl), 4000);
 
 } catch (err) {
 
     console.error(err);
-    alert(t("fix.repairError"));
+    mbsmToast("error", t("fix.repairError"));
 
 } finally {
 
@@ -1287,7 +1329,7 @@ try {
 }
 
 // ==========================================================
-// Sistema de pestañas (Validador / Acerca de / Visor)
+// Tab system (Validator / About / Viewer)
 // ==========================================================
 function switchTab(tabId) {
   document.querySelectorAll(".tab-section").forEach(sec => {
@@ -1298,8 +1340,8 @@ function switchTab(tabId) {
     link.classList.toggle("active", link.getAttribute("data-tab") === tabId);
   });
 
-  // Al cambiar de pestaña principal liberamos cualquier escena 3D activa
-  // para no seguir renderizando de fondo.
+  // Switching main tabs disposes of any active 3D scene so it doesn't
+  // keep rendering in the background.
   if (typeof dispose3DViewer === "function") {
     dispose3DViewer();
   }
@@ -1317,11 +1359,11 @@ document.querySelectorAll(".tab-link[data-tab]").forEach(link => {
     e.preventDefault();
     switchTab(link.getAttribute("data-tab"));
 
-    // Si el link también apunta a una sub-pestaña concreta (p. ej. una
-    // tarjeta de la home que debe abrir "4D/5D Studio > 4D/5D Viewer"),
-    // simulamos el click real sobre ese botón de sub-pestaña en vez de
-    // duplicar la lógica de switchSubTab() -- así se dispara también el
-    // hook de inicialización perezosa de SkinGeoViewer si corresponde.
+    // If the link also points to a specific sub-tab (e.g. a home card
+    // meant to open "4D/5D Studio > 4D/5D Viewer"), we simulate a real
+    // click on that sub-tab button instead of duplicating
+    // switchSubTab()'s logic -- that way SkinGeoViewer's lazy-init hook
+    // fires too, if it applies.
     const subtabId = link.getAttribute("data-subtab");
     if (subtabId) {
       const target = document.getElementById(link.getAttribute("data-tab"));
@@ -1332,8 +1374,8 @@ document.querySelectorAll(".tab-link[data-tab]").forEach(link => {
 });
 
 // ==========================================================
-// Sub-pestañas (dentro de una pestaña principal, p. ej. Classic Skins:
-// Skin Viewer / Skinpack Maker, o los métodos de importación del Maker)
+// Sub-tabs (nested inside a main tab, e.g. Classic Skins: Skin
+// Viewer / Skinpack Maker, or the Maker's import methods)
 // ==========================================================
 function switchSubTab(btn) {
   const targetId = btn.getAttribute("data-subtab") || btn.getAttribute("data-importtab");
@@ -1342,9 +1384,9 @@ function switchSubTab(btn) {
   const group = btn.closest(".sub-tabs");
   if (!group) return;
 
-  // Los botones de este grupo activan paneles hermanos: buscamos el
-  // contenedor padre de "group" y dentro de él los .sub-tab-panel o
-  // .import-panel que correspondan a cada botón del mismo grupo.
+  // This group's buttons activate sibling panels: we look up the
+  // "group"'s parent container and, inside it, the .sub-tab-panel or
+  // .import-panel that matches each button in this same group.
   const container = group.parentElement;
   if (!container) return;
 
@@ -1355,8 +1397,8 @@ function switchSubTab(btn) {
     panel.classList.toggle("active-subtab", panel.id === targetId);
   });
 
-  // Si la sub-pestaña que se abandona era el Skin Viewer (donde puede
-  // haber una vista 3D activa), la liberamos.
+  // If the sub-tab we're leaving was the Skin Viewer (which may have
+  // an active 3D view), dispose of it.
   if (typeof dispose3DViewer === "function") {
     dispose3DViewer();
   }
@@ -1367,7 +1409,7 @@ document.querySelectorAll(".sub-tab-btn").forEach(btn => {
 });
 
 // ==========================================================
-// Ventana flotante de información (botones "?")
+// Floating info window (the "?" buttons)
 // ==========================================================
 const INFO_CONTENT = {
   ambiguous: { titleKey: "validator.ambiguousInfoTitle", textKey: "validator.ambiguousInfoText" },
@@ -1415,7 +1457,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 // ==========================================================
-// Visor de skin packs normales (no 4D)
+// Viewer for regular (non-4D) skin packs
 // ==========================================================
 const viewerDropzone = document.getElementById("viewerDropzone");
 const viewerZipInput = document.getElementById("viewerZipInput");
@@ -1450,7 +1492,7 @@ function renderViewerSkins(skins) {
 
         <div class="viewer-skin-actions">
           <button type="button" class="btn btn-secondary viewer-btn-texture" data-index="${i}">🖼 ${t("viewer.viewTexture")}</button>
-          <button type="button" class="btn btn-secondary viewer-btn-3d" data-index="${i}">🧊 ${t("viewer.view3D")}</button>
+          <button type="button" class="btn btn-secondary viewer-btn-3d" data-index="${i}"><img src="assets/mbsm-icon.png" alt="" class="btn-icon-img"> ${t("viewer.view3D")}</button>
         </div>
 
         <div class="viewer-skin-content" id="viewerContent-${i}"></div>
@@ -1458,7 +1500,7 @@ function renderViewerSkins(skins) {
     `;
   }).join("");
 
-  // Guardamos los datos para que los botones puedan usarlos
+  // Store the data so the buttons can use it
   viewerResults._skinsData = skins;
 
   viewerResults.querySelectorAll(".viewer-skin-header").forEach(header => {
@@ -1500,7 +1542,7 @@ function renderViewerSkins(skins) {
       content.innerHTML = `<canvas class="viewer-3d-canvas"></canvas>`;
       const canvas = content.querySelector("canvas");
 
-      // Se espera un frame para que el canvas tenga tamaño real en el DOM
+      // Wait a frame so the canvas has a real size in the DOM
       requestAnimationFrame(() => {
         open3DViewer(canvas, skin.textureDataUrl, skin.isSlim);
       });
@@ -1586,10 +1628,10 @@ try {
 applyLanguage(savedLang);
 
 // ==========================================================
-// 4D/5D Viewer (SkinGeo Viewer) -- inicializacion perezosa: solo
-// arranca Three.js/Blockbench la primera vez que el usuario entra a
-// esa subpestana, para no gastar recursos si nunca la abre. No toca
-// switchTab()/switchSubTab() ni viewer.js.
+// 4D/5D Viewer (SkinGeo Viewer) -- lazy init: only starts up
+// Three.js/Blockbench the first time the user opens that sub-tab, so we
+// don't burn resources if they never do. Doesn't touch
+// switchTab()/switchSubTab() or viewer.js.
 // ==========================================================
 (function () {
   var sgTabBtn = document.querySelector('.sub-tab-btn[data-subtab="sgTabViewer"]');
@@ -1600,9 +1642,9 @@ applyLanguage(savedLang);
 })();
 
 // ==========================================================
-// OBJ -> Skin 1.8 (antes obj-skin-studio.html, cargado por iframe) --
-// misma inicialización perezosa: arranca Three.js/su UI solo la primera
-// vez que el usuario entra a esa sub-pestaña.
+// OBJ -> Skin 1.8 (used to be obj-skin-studio.html, loaded via iframe) --
+// same lazy-init idea: only starts up Three.js/its UI the first time the
+// user opens that sub-tab.
 // ==========================================================
 (function () {
   var objSkinTabBtn = document.querySelector('.sub-tab-btn[data-subtab="sgTabObjSkin"]');

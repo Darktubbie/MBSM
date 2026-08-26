@@ -1,27 +1,27 @@
 /* =========================================================================
-   skinGeoViewer.js — UI y orquestación del visualizador 4D/5D de MBSM
-   (basado en el código funcional de SkinGeo Viewer/Fixer)
+   skinGeoViewer.js — UI and orchestration for MBSM's 4D/5D viewer
+   (built on the working code from SkinGeo Viewer/Fixer)
 
-   Responsable de:
-     - dropzones (pack / geometría suelta / textura suelta)
-     - selector de modelos
-     - conmutar el panel visible (Renderer5D para 5D, BlockbenchPanel
-       para 4D) dentro del mismo host, sin recargar la página
-     - togglear controles (auto-rotar, wireframe, cuadrícula, pivotes) —
-       estos solo aplican al panel 5D; en 4D esos controles viven dentro
-       del propio Blockbench embebido
-     - registro (log)
+   Responsible for:
+     - dropzones (pack / standalone geometry / standalone texture)
+     - the model selector
+     - switching the visible panel (Renderer5D for 5D, BlockbenchPanel
+       for 4D) within the same host, without reloading the page
+     - toggling controls (auto-rotate, wireframe, grid, pivots) — these
+       only apply to the 5D panel; in 4D those controls live inside
+       Blockbench itself
+     - logging
 
-   AISLAMIENTO: todo vive dentro del namespace SkinGeoViewer (IIFE). No
-   declara ninguna variable global (`state`, `log`, `$`...) como hacía el
-   viewer.js original de SkinGeo — eso habría chocado potencialmente con
-   otros módulos de MBSM. Los IDs del DOM que usa están todos prefijados
-   con "sg" y viven exclusivamente dentro de la subpestaña de esta
-   herramienta en index.html.
+   ISOLATION: everything lives inside the SkinGeoViewer namespace (an
+   IIFE). It doesn't declare any global variable (`state`, `log`, `$`...)
+   the way SkinGeo's original viewer.js did — that would have risked
+   colliding with other MBSM modules. The DOM ids it uses are all
+   prefixed with "sg" and live exclusively inside this tool's sub-tab in
+   index.html.
 
-   IMPORTANTE: este archivo es un módulo INDEPENDIENTE del viewer.js
-   original de MBSM (visualizador de Skin Packs normales). No lo
-   sustituye, no lo modifica y no comparte estado con él.
+   IMPORTANT: this file is a module INDEPENDENT from MBSM's original
+   viewer.js (the regular Skin Pack viewer). It doesn't replace it,
+   doesn't modify it, and shares no state with it.
    ========================================================================= */
 
 const SkinGeoViewer = (function () {
@@ -51,33 +51,33 @@ const SkinGeoViewer = (function () {
   function clearLog() { if (logBox) logBox.innerHTML = ""; }
 
   /* ---------------------------------------------------------------------
-     Conmutación de panel (5D <-> 4D) dentro del host
+     Switching the panel (5D <-> 4D) within the host
      --------------------------------------------------------------------- */
 
   function showPanelFor(type) {
     const is4D = type === "4D";
     $("sgThreeViewer").style.display = is4D ? "none" : "block";
-    // OJO: tiene que ser "flex", no "block" -- .sg-blockbench-viewer está
-    // definido en CSS como flex-direction:column para que el iframe
-    // (.bb-frame-wrap, flex:1 1 auto) crezca y llene el espacio sobrante y
-    // la barra de estado quede siempre pegada abajo. Con "block" ese
-    // layout no se activa: los hijos se apilan en flujo normal y el
-    // espacio extra del min-height queda como hueco vacío al final, sin
-    // que el iframe lo aproveche.
+    // Heads up: this has to be "flex", not "block" -- .sg-blockbench-viewer
+    // is defined in CSS with flex-direction:column so the iframe
+    // (.bb-frame-wrap, flex:1 1 auto) can grow to fill the remaining space
+    // and keep the status bar pinned to the bottom. With "block" that
+    // layout never kicks in: the children just stack in normal flow, and
+    // any extra min-height ends up as empty space at the end that the
+    // iframe never claims.
     $("sgBlockbenchViewer").style.display = is4D ? "flex" : "none";
     $("sgViewportToolbar").style.display = is4D ? "none" : "flex";
-    // La placa flotante con el nombre/medidas del modelo solo tiene sentido
-    // sobre el canvas 3D fijo del Renderer5D. En 4D, Blockbench ya muestra
-    // esa misma información en su propio panel de estado/instrucciones, y
-    // como ese panel tiene texto de altura variable, la placa (posición
-    // absoluta) terminaba superpuesta con ese texto en pantallas angostas.
-    // selectModelOption() ya se encarga de volver a mostrarla para 5D.
+    // The floating badge with the model's name/size only makes sense over
+    // Renderer5D's fixed 3D canvas. In 4D, Blockbench already shows that
+    // same info in its own status/instructions panel, and since that
+    // panel's text height varies, the badge (absolutely positioned) ended
+    // up overlapping it on narrow screens. selectModelOption() already
+    // brings the badge back for 5D models.
     if (is4D) $("sgModelBadge").style.display = "none";
-    // Los controles del sidebar (auto-rotar, wireframe, cuadrícula,
-    // pivotes, encuadrar) solo aplican al Renderer5D — en 4D no tienen
-    // ningún efecto porque el modelo vive dentro de Blockbench, así que
-    // se quedan en gris y sin interacción mientras dure la selección 4D,
-    // y vuelven a activarse al elegir un modelo 5D.
+    // The sidebar controls (auto-rotate, wireframe, grid, pivots, fit)
+    // only apply to Renderer5D — they have no effect in 4D since that
+    // model lives inside Blockbench, so they're greyed out and
+    // non-interactive for as long as a 4D model is selected, and become
+    // active again once a 5D model is picked.
     $("sgRenderer5dControls").classList.toggle("controls-disabled", is4D);
 
     if (is4D) {
@@ -182,13 +182,14 @@ const SkinGeoViewer = (function () {
   }
 
   /* ---------------------------------------------------------------------
-     Selección de modelo -> enruta a 5D (Three.js) o 4D (Blockbench)
+     Model selection -> routes to 5D (Three.js) or 4D (Blockbench)
      --------------------------------------------------------------------- */
 
-  // "4D"/"5D" son etiquetas neutras (no se traducen). Los casos borde que
-  // devuelve SkinPack.detectGeometryType -- "MIXTO" (cubes + poly_mesh en
-  // el mismo modelo) y "VACÍO" (ningún bone con contenido) -- sí son
-  // palabras en español y deben respetar el idioma actual de la UI.
+  // "4D"/"5D" are neutral labels (never translated). The edge cases
+  // returned by SkinPack.detectGeometryType -- "MIXTO" (cubes + poly_mesh
+  // in the same model) and "VACÍO" (no bone has any content) -- are
+  // actual Spanish words in the data and need to follow whatever
+  // language the UI is currently in.
   function tagDisplayText(type) {
     if (type === "4D" || type === "5D") return type;
     if (type === "MIXTO") return (typeof t === "function") ? t("sg.tagMixed") : type;
@@ -318,7 +319,7 @@ const SkinGeoViewer = (function () {
   }
 
   /* ---------------------------------------------------------------------
-     Controles de la UI (solo aplican al panel 5D)
+     UI controls (only apply to the 5D panel)
      --------------------------------------------------------------------- */
 
   function bindSwitch(id, vtId, initial, onChange) {
@@ -337,8 +338,8 @@ const SkinGeoViewer = (function () {
   }
 
   /* ---------------------------------------------------------------------
-     Inicialización — llamada una vez desde index.html (o al entrar a
-     la subpestaña por primera vez)
+     Initialization — called once from index.html (or the first time
+     the sub-tab is opened)
      --------------------------------------------------------------------- */
 
   let initialized = false;
@@ -376,14 +377,14 @@ const SkinGeoViewer = (function () {
       if (!$("sgModelSelect").contains(e.target)) closeModelSelect();
     });
 
-    // Panel 5D visible por defecto hasta que se cargue algo.
+    // Show the 5D panel by default until something gets loaded.
     showPanelFor("5D");
   }
 
-  // Vuelve a pintar los tags del selector de modelos (relevante solo para
-  // los casos borde MIXTO/VACÍO, que sí son palabras traducibles -- "4D"
-  // y "5D" son etiquetas neutras). No reselecciona nada ni vuelve a tocar
-  // el modelo cargado.
+  // Repaints the model selector's tags (only actually matters for the
+  // MIXED/EMPTY edge cases, since those are translatable words -- "4D"
+  // and "5D" stay as neutral labels). Doesn't reselect anything or touch
+  // the currently loaded model.
   function refreshLanguage() {
     if (state.currentOptions) populateModelSelect(state.currentOptions);
     if (state.geoData && state.selectedGeo !== null && state.currentOptions) {

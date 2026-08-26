@@ -1,25 +1,26 @@
 /* =========================================================================
-   skinpack.js — Carga y parsing de Skin Packs de Minecraft Bedrock
-   (.zip / .mcpack, geometry.json, skins.json, texturas .png)
+   skinpack.js — Loading and parsing Minecraft Bedrock Skin Packs
+   (.zip / .mcpack, geometry.json, skins.json, .png textures)
 
-   Responsable EXCLUSIVAMENTE de:
-     - abrir .zip/.mcpack con JSZip
-     - localizar y parsear geometry.json (única fuente de modelos)
-     - detectar 4D (cubes) vs 5D (poly_mesh) por ESTRUCTURA real de cada
-       geometría — nunca por format_version ni por el nombre del modelo
-     - leer skins.json para emparejar cada geometría con su textura real
-     - extraer texturas del zip bajo demanda
+   Responsible ONLY for:
+     - opening .zip/.mcpack files with JSZip
+     - locating and parsing geometry.json (the only source of models)
+     - detecting 4D (cubes) vs 5D (poly_mesh) by each geometry's actual
+       STRUCTURE — never by format_version or the model's name
+     - reading skins.json to pair each geometry with its real texture
+     - extracting textures from the zip on demand
 
-   NO conoce Three.js ni Blockbench: es puro parsing/estado de datos.
-   Toda esta lógica es la misma que ya funcionaba en el prototipo
-   original — solo se movió aquí y se desacopló de la UI mediante un
-   parámetro logFn(msg, kind) en vez de escribir directo al log del DOM.
+   Doesn't know about Three.js or Blockbench: it's pure data
+   parsing/state. All of this logic is the same that already worked in
+   the original prototype — it was just moved here and decoupled from
+   the UI via a logFn(msg, kind) parameter instead of writing straight
+   to the DOM log.
    ========================================================================= */
 
 const SkinPack = (function () {
 
-  // Repara errores de JSON comunes en archivos editados a mano (comas
-  // sobrantes antes de "}" o "]"). Si el JSON ya es válido, no cambia nada.
+  // Repairs common JSON mistakes in hand-edited files (trailing commas
+  // before "}" or "]"). If the JSON is already valid, this changes nothing.
   function repairAndParseJSON(text) {
     try {
       return JSON.parse(text);
@@ -33,10 +34,11 @@ const SkinPack = (function () {
     }
   }
 
-  // Detecta si UNA geometría individual (ya extraída de geometry.json) es
-  // 4D o 5D, mirando la ESTRUCTURA REAL de sus bones.
-  //   - Bones con "cubes" (con al menos un cubo)      -> señal de 4D
-  //   - Bones con "poly_mesh.positions" + "polys"     -> señal de 5D
+  // Detects whether ONE individual geometry (already extracted from
+  // geometry.json) is 4D or 5D, by looking at the ACTUAL STRUCTURE of its
+  // bones.
+  //   - Bones with "cubes" (at least one cube)          -> 4D signal
+  //   - Bones with "poly_mesh.positions" + "polys"       -> 5D signal
   function detectGeometryType(g) {
     const bones = g.bones || [];
     const hasCubes = bones.some(b => Array.isArray(b.cubes) && b.cubes.length > 0);
@@ -47,10 +49,11 @@ const SkinPack = (function () {
     return "VACÍO";
   }
 
-  // Convierte un geometry.json con la envoltura legacy (identificador
-  // como llave de nivel superior) a una lista interna uniforme:
-  // [{ id, texture_width, texture_height, bones, type }]. NO reconoce el
-  // formato moderno "minecraft:geometry" a propósito: se rechaza antes.
+  // Converts a geometry.json using the legacy wrapper (identifier as
+  // the top-level key) into a uniform internal list:
+  // [{ id, texture_width, texture_height, bones, type }]. Deliberately
+  // does NOT recognize the modern "minecraft:geometry" format: that gets
+  // rejected earlier.
   function normalizeGeometry(json) {
     const out = [];
     Object.keys(json).forEach(key => {
@@ -77,9 +80,9 @@ const SkinPack = (function () {
     return s;
   }
 
-  // Carga una geometría suelta (geometry.json individual, sin pack).
-  // Devuelve { normalized, formatVersion } o null si no es válida.
-  // Los avisos/errores se reportan vía logFn, igual que en el resto.
+  // Loads a standalone geometry (a single geometry.json, no pack around
+  // it). Returns { normalized, formatVersion }, or null if it isn't valid.
+  // Warnings/errors are reported through logFn, same as everywhere else.
   function loadStandaloneGeometry(json, label, logFn) {
     if (!json || typeof json !== "object") {
       logFn(label + " no es un JSON válido.", "err");
@@ -106,9 +109,9 @@ const SkinPack = (function () {
     return normalized;
   }
 
-  // Abre un .zip/.mcpack completo y construye la lista de opciones
-  // (modelo <-> textura vía skins.json). logFn(msg, kind) reporta al log
-  // de la UI igual que antes. Devuelve { geoData, zip, options } o null.
+  // Opens a full .zip/.mcpack and builds the list of options (model <->
+  // texture, matched through skins.json). logFn(msg, kind) reports to the
+  // UI log same as before. Returns { geoData, zip, options }, or null.
   async function parsePackFile(file, logFn) {
     logFn("Abriendo " + file.name + "…");
     let zip;
@@ -129,9 +132,9 @@ const SkinPack = (function () {
       else if (lower.endsWith(".png")) texPaths.push(path);
     });
 
-    // SOLO lee modelos del archivo que se llama exactamente
-    // "geometry.json". Si hay más de uno, nunca se combinan: se avisa y
-    // se usa el más cercano a la raíz del pack.
+    // ONLY reads models from a file literally named "geometry.json".
+    // If there's more than one, they're never merged: we warn and use
+    // whichever sits closest to the root of the pack.
     const basename = (p) => p.split("/").pop().toLowerCase();
     const geometryJsonCandidates = jsonPaths.filter(p => basename(p) === "geometry.json");
     let geometryJsonPath = null;
@@ -198,7 +201,7 @@ const SkinPack = (function () {
       return null;
     }
 
-    // Emparejamiento modelo <-> textura vía skins.json.
+    // Matching models to textures through skins.json.
     const options = [];
     if (skinsJson) {
       logFn(`skins.json encontrado (${skinsJson.path}): ${skinsJson.data.skins.length} skins.`, "ok");
@@ -235,8 +238,8 @@ const SkinPack = (function () {
     return { geoData: allGeo, zip, options };
   }
 
-  // Busca y decodifica la textura emparejada dentro del zip. Devuelve
-  // una promesa que resuelve a { url, img } o null.
+  // Finds and decodes the matched texture inside the zip. Returns a
+  // promise that resolves to { url, img }, or null.
   function getTextureFromZip(zip, textureFile, logFn) {
     return new Promise((resolve) => {
       if (!textureFile || !zip) { resolve(null); return; }

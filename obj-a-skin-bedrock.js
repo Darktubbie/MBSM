@@ -3,22 +3,21 @@
 
 /* ============================================================
    OBJ -> Skin Bedrock 1.8 (poly_mesh) converter
-   Herramienta independiente, escrita desde cero con three.js +
-   THREE.OBJLoader + JSZip. Entiende conceptualmente el formato
-   público de Minecraft Bedrock (geometry.json / skins.json) pero
-   no reutiliza código de ningún sitio de terceros.
+   A standalone tool, written from scratch with three.js +
+   THREE.OBJLoader + JSZip. It understands Minecraft Bedrock's public
+   format (geometry.json / skins.json) conceptually, but doesn't reuse
+   code from any third-party project.
    ============================================================ */
 
 /* ==================== i18n (ES / EN) ====================
-   Mismo patrón que el resto de MBSM: atributos data-i18n /
-   data-i18n-title / data-i18n-placeholder / data-i18n-html sobre el HTML
-   estático, más la función t(key, vars) para los textos que arma el JS
-   dinámicamente (mensajes de estado, avisos, errores del validador). El
-   idioma se guarda en localStorage bajo la MISMA clave que usa MBSM
-   ("mbsm_lang"), así que si esta herramienta se abre integrada dentro de
-   MBSM (misma página/origen), hereda automáticamente el idioma elegido
-   ahí — y el selector propio de aquí también lo actualiza para el resto
-   del sitio. */
+   Same pattern as the rest of MBSM: data-i18n / data-i18n-title /
+   data-i18n-placeholder / data-i18n-html attributes on the static HTML,
+   plus a t(key, vars) function for the text the JS builds dynamically
+   (status messages, warnings, validator errors). The language is stored
+   in localStorage under the SAME key MBSM uses ("mbsm_lang"), so if this
+   tool is opened embedded inside MBSM (same page/origin) it automatically
+   inherits whatever language was chosen there — and its own switcher
+   updates that choice for the rest of the site too. */
 const I18N = {
   es: {
     'drop.text': 'Suelta tu .obj y tu textura aquí',
@@ -86,11 +85,14 @@ const I18N = {
     'status.exportBlocked': (err) => `Exportación bloqueada: ${err}`,
     'status.noModelsToExport': 'No hay modelos listos para exportar.',
     'status.objReadError': (msg) => `Error leyendo el .obj: ${msg}`,
+    'errors.noValidMeshes': 'No se encontraron mallas válidas en el .obj',
+    'errors.unnamedPart': (n) => `parte_${n}`,
     'status.partsReassigned': 'Partes reasignadas por nombre.',
     'warn.noTexture': 'No hay textura cargada: el geometry.json se puede exportar, pero necesitas una textura para que la skin se vea bien en el juego.',
     'warn.unassignedParts': (n) => `${n} parte(s) sin asignar a ningún hueso no se incluirán en la exportación.`,
     'warn.noBonesWithParts': 'Ningún hueso tiene partes asignadas todavía.',
     'defaultModelName': (n) => `Modelo ${n}`,
+    'bones.defaultName': 'hueso',
     'partsLoadedShort': (n) => `${n} parte(s)`,
     'partsLoadedLong': (n) => `${n} parte(s) cargadas`,
     'val.invalidJson': (msg) => `El resultado no es JSON válido: ${msg}`,
@@ -184,11 +186,14 @@ const I18N = {
     'status.exportBlocked': (err) => `Export blocked: ${err}`,
     'status.noModelsToExport': 'No models ready to export.',
     'status.objReadError': (msg) => `Error reading the .obj: ${msg}`,
+    'errors.noValidMeshes': 'No valid meshes were found in the .obj file',
+    'errors.unnamedPart': (n) => `part_${n}`,
     'status.partsReassigned': 'Parts reassigned by name.',
     'warn.noTexture': 'No texture loaded: the geometry.json can still be exported, but you need a texture for the skin to look right in-game.',
     'warn.unassignedParts': (n) => `${n} part(s) not assigned to any bone won't be included in the export.`,
     'warn.noBonesWithParts': 'No bone has any parts assigned yet.',
     'defaultModelName': (n) => `Model ${n}`,
+    'bones.defaultName': 'bone',
     'partsLoadedShort': (n) => `${n} part(s)`,
     'partsLoadedLong': (n) => `${n} part(s) loaded`,
     'val.invalidJson': (msg) => `The result isn't valid JSON: ${msg}`,
@@ -222,7 +227,7 @@ function detectInitialLang() {
   try {
     const stored = localStorage.getItem('mbsm_lang');
     if (stored === 'es' || stored === 'en') return stored;
-  } catch (e) { /* localStorage puede estar bloqueado (iframe sandboxed, etc.) */ }
+  } catch (e) { /* localStorage may be blocked (sandboxed iframe, etc.) */ }
   const nav = (navigator.language || 'es').toLowerCase();
   return nav.startsWith('en') ? 'en' : 'es';
 }
@@ -244,7 +249,7 @@ function applyI18n() {
   document.querySelectorAll('[data-oss-i18n-title]').forEach((el) => { el.title = t(el.getAttribute('data-oss-i18n-title')); });
   document.querySelectorAll('[data-oss-i18n-placeholder]').forEach((el) => { el.placeholder = t(el.getAttribute('data-oss-i18n-placeholder')); });
   document.querySelectorAll('.lang-btn').forEach((b) => { b.classList.toggle('active', b.dataset.lang === lang); });
-  // refrescar textos que la app arma dinámicamente y no pasan por data-i18n
+  // refresh text the app builds dynamically and that data-i18n doesn't cover
   if (typeof refreshProjectList === 'function' && document.getElementById('projectList')) refreshProjectList();
   if (typeof refreshExportPanel === 'function' && document.getElementById('exportContent')) refreshExportPanel();
   if (typeof refreshBoneTree === 'function' && document.getElementById('boneTree')) refreshBoneTree();
@@ -252,34 +257,34 @@ function applyI18n() {
 
 function setLang(lang) {
   state_i18n.lang = (lang === 'en') ? 'en' : 'es';
-  try { localStorage.setItem('mbsm_lang', state_i18n.lang); } catch (e) { /* ignorar si no hay storage */ }
+  try { localStorage.setItem('mbsm_lang', state_i18n.lang); } catch (e) { /* ignore if storage isn't available */ }
   applyI18n();
-  // Propaga el cambio al resto de MBSM cuando esta herramienta vive
-  // integrada en la misma página (index.html): applyLanguage() es la
-  // función global del sitio principal (definida en app.js).
+  // Propagates the change to the rest of MBSM when this tool lives
+  // embedded in the same page (index.html): applyLanguage() is the main
+  // site's global function (defined in app.js).
   if (typeof applyLanguage === 'function') applyLanguage(state_i18n.lang);
 }
 
 const GEOMETRY_FORMAT_VERSION = '1.8.0';
 
-/* ==================== Esqueleto humanoide estándar ====================
-   Nombres y pivotes estándar del modelo "humanoid" de Bedrock (dato
-   público de formato, no expresión creativa). El usuario puede editar,
-   borrar o agregar huesos libremente. */
+/* ==================== Standard humanoid skeleton ====================
+   Standard names and pivots for Bedrock's "humanoid" model (public
+   format data, not creative work of ours). The user is free to edit,
+   delete or add bones. */
 function createDefaultSkeleton() {
-  // Jerarquía y orden de hermanos calcados 1:1 del outliner real de
-  // Blockbench para el esqueleto humanoid (root>waist>body>head>hat,
-  // luego cape/leftArm/rightArm/jacket como hermanos de head, cada brazo
-  // con su sleeve+item, y las piernas como hermanas de waist bajo root).
-  // Pivotes de izquierda/derecha calcados del esqueleto humanoid vanilla
-  // real de Bedrock (confirmado con geometry_1_16_0.json de referencia:
+  // Hierarchy and sibling order copied 1:1 from Blockbench's actual
+  // outliner for the humanoid skeleton (root>waist>body>head>hat, then
+  // cape/leftArm/rightArm/jacket as head's siblings, each arm with its
+  // own sleeve+item, and the legs as waist's siblings under root).
+  // Left/right pivots copied from Bedrock's actual vanilla humanoid
+  // skeleton (confirmed against the reference geometry_1_16_0.json:
   // leftArm=[-5,22,0], rightArm=[5,22,0], leftLeg=[-1.9,12,0],
   // rightLeg=[1.9,12,0]).
-  // EXCEPCIÓN: leftItem/rightItem NO siguen ese mismo signo. Se probaron
-  // en el juego (huesos custom, no vanilla, para sostener props en la
-  // mano) y con el signo "vanilla" el objeto aparecía en la mano
-  // contraria a la esperada, así que aquí van invertidos respecto a su
-  // brazo: leftItem con X positiva, rightItem con X negativa.
+  // EXCEPTION: leftItem/rightItem do NOT follow that same sign. These
+  // were tested in-game (custom bones, not vanilla, meant for holding
+  // props in the hand) and with the "vanilla" sign the object showed up
+  // in the wrong hand, so here they're flipped relative to their arm:
+  // leftItem gets a positive X, rightItem a negative X.
   return [
     { name: 'root', parent: null, pivot: [0, 0, 0] },
     { name: 'waist', parent: 'root', pivot: [0, 12, 0] },
@@ -289,8 +294,8 @@ function createDefaultSkeleton() {
     { name: 'cape', parent: 'body', pivot: [0, 24, 3] },
     { name: 'leftArm', parent: 'body', pivot: [-5, 22, 0] },
     { name: 'leftSleeve', parent: 'leftArm', pivot: [-5, 22, 0] },
-    // huesos extra para objetos sostenidos en la mano (no forman parte del
-    // esqueleto vanilla, pero son útiles para posicionar props con pivot)
+    // extra bones for props held in the hand (not part of the vanilla
+    // skeleton, but useful for positioning props via their pivot)
     { name: 'leftItem', parent: 'leftArm', pivot: [5, 13, 0] },
     { name: 'rightArm', parent: 'body', pivot: [5, 22, 0] },
     { name: 'rightSleeve', parent: 'rightArm', pivot: [5, 22, 0] },
@@ -303,7 +308,7 @@ function createDefaultSkeleton() {
   ];
 }
 
-/* Heurística de auto-asignación por nombre de parte del .obj */
+/* Heuristic for auto-assigning bones by the .obj part's name */
 const BONE_ALIASES = [
   { bone: 'head', re: /head|cabeza|skull/i },
   { bone: 'hat', re: /hat|gorro|helmet|casco/i },
@@ -328,7 +333,7 @@ function guessBoneForPartName(name) {
   return null;
 }
 
-/* ==================== Estado global ==================== */
+/* ==================== Global state ==================== */
 const state = { projects: [], activeId: null, activeBoneName: null, nextId: 1, nextPartColor: 0, exportStyle: 'fancy', packName: 'Mi Skin Pack' };
 
 /* ==================== Three.js ==================== */
@@ -373,8 +378,9 @@ function initThree() {
   parentLinkGroup = new THREE.Group();
   scene.add(parentLinkGroup);
 
-  /* ---- postprocesado: contorno de silueta (no un cubo) para el hueso/parte
-     seleccionados, visible incluso detrás de otra geometría (hiddenEdgeColor) ---- */
+  /* ---- post-processing: a silhouette outline (not a bounding cube) for
+     the selected bone/part, still visible behind other geometry
+     (hiddenEdgeColor) ---- */
   composer = new THREE.EffectComposer(renderer);
   composer.addPass(new THREE.RenderPass(scene, camera));
 
@@ -398,8 +404,8 @@ function initThree() {
   copyPass.renderToScreen = true;
   composer.addPass(copyPass);
 
-  /* ---- gizmo de arrastre para el pivote (flechas de color, como en la
-     página de referencia) ---- */
+  /* ---- draggable gizmo for the pivot (colored arrows, like the
+     reference tool) ---- */
   pivotDummy = new THREE.Object3D();
   scene.add(pivotDummy);
   transformControls = new THREE.TransformControls(camera, renderer.domElement);
@@ -409,7 +415,7 @@ function initThree() {
   transformControls.visible = false;
   transformControls.addEventListener('dragging-changed', (ev) => {
     controls.enabled = !ev.value;
-    if (!ev.value) commitPivotFromGizmo(); // al soltar, reconstruye el modelo con el pivote final
+    if (!ev.value) commitPivotFromGizmo(); // on release, rebuild the model with the final pivot
   });
   transformControls.addEventListener('objectChange', () => {
     const project = getActiveProject();
@@ -424,12 +430,33 @@ function initThree() {
 
   window.addEventListener('resize', onResize);
   onResize();
-  renderer.setAnimationLoop(() => { controls.update(); composer.render(); });
+  renderer.setAnimationLoop(renderFrame);
+
+  // This tool lives inside a tab that can be hidden (display:none) without
+  // ever being destroyed, so the render loop would otherwise keep spinning
+  // in the background forever after the user's first visit. Pausing it
+  // while the container isn't visible saves a real chunk of CPU/GPU/battery,
+  // and we do one resize + manual frame on the way back in case the
+  // container's size changed while we weren't looking.
+  const visibilityRoot = document.getElementById('objSkinStudio');
+  if (visibilityRoot && 'IntersectionObserver' in window) {
+    const visibilityObserver = new IntersectionObserver((entries) => {
+      const visible = entries[entries.length - 1].isIntersecting;
+      renderer.setAnimationLoop(visible ? renderFrame : null);
+      if (visible) { onResize(); composer.render(); }
+    });
+    visibilityObserver.observe(visibilityRoot);
+  }
+}
+
+function renderFrame() {
+  controls.update();
+  composer.render();
 }
 
 function commitPivotFromGizmo() {
   const project = getActiveProject();
-  if (project) maybeBuildPreview(project); // reconstruye la jerarquía con la posición final del pivote
+  if (project) maybeBuildPreview(project); // rebuild the hierarchy with the pivot's final position
 }
 
 function onResize() {
@@ -452,8 +479,8 @@ function fitCameraToObject(obj) {
   const maxDim = Math.max(size.x, size.y, size.z, 0.1);
   const fitDist = maxDim / (2 * Math.tan((camera.fov * Math.PI / 180) / 2)) * 1.8;
   controls.target.copy(center);
-  // vista desde -Z: la mayoría de exportadores OBJ (p. ej. Blender por defecto)
-  // ponen el frente del personaje mirando hacia -Z
+  // view from -Z: most OBJ exporters (e.g. Blender by default) put the
+  // character's front facing -Z
   const dir = new THREE.Vector3(0.75, 0.55, -1).normalize();
   camera.position.copy(center.clone().add(dir.multiplyScalar(fitDist)));
   camera.near = Math.max(fitDist / 100, 0.01);
@@ -469,12 +496,11 @@ function dolly(factor) {
   controls.update();
 }
 
-/* ==================== Resaltado 3D (hueso seleccionado / parte en hover) ====================
-   Usa OutlinePass (contorno alrededor de la silueta real de la malla, no
-   una caja) con hiddenEdgeColor para que se vea incluso detrás de otra
-   geometría. El pivote del hueso seleccionado se controla con un gizmo de
-   arrastre (TransformControls) igual que las flechas de la página de
-   referencia. */
+/* ==================== 3D highlighting (selected bone / hovered part) ====================
+   Uses OutlinePass (an outline around the mesh's actual silhouette, not
+   a box) with hiddenEdgeColor so it stays visible behind other geometry.
+   The selected bone's pivot is controlled with a draggable gizmo
+   (TransformControls), same as the reference tool's arrows. */
 function meshesForBone(project, boneName) {
   if (!currentPreviewGroup || !boneName) return [];
   const out = [];
@@ -509,9 +535,9 @@ function updatePivotGizmo(bone) {
   transformControls.visible = true;
 }
 
-/* Dibuja una línea entre el pivote del hueso seleccionado y el de su hueso
-   padre, con un punto sobre el pivote del padre, para que sea evidente a
-   qué "carpeta principal" se conecta la subcarpeta seleccionada. */
+/* Draws a line between the selected bone's pivot and its parent's, with
+   a dot over the parent's pivot, so it's obvious which "main folder" the
+   selected sub-folder connects to. */
 function updateParentLink(project, bone) {
   parentLinkGroup.clear();
   if (!bone || !bone.parent) return;
@@ -538,8 +564,8 @@ function updateParentLink(project, bone) {
   parentLinkGroup.add(marker);
 }
 
-/* Recalcula el contorno del hueso activo y reubica el gizmo de pivote
-   (llamar después de reconstruir la vista previa o de mover un pivote). */
+/* Recomputes the active bone's outline and repositions the pivot gizmo
+   (call this after rebuilding the preview or moving a pivot). */
 function refreshHighlights() {
   const project = getActiveProject();
   const bone = project && state.activeBoneName ? project.bones.find((b) => b.name === state.activeBoneName) : null;
@@ -548,7 +574,7 @@ function refreshHighlights() {
   updateParentLink(project, bone);
 }
 
-/* ==================== Utilidades ==================== */
+/* ==================== Utilities ==================== */
 function readAsText(file) {
   return new Promise((resolve, reject) => {
     const r = new FileReader();
@@ -576,7 +602,7 @@ function colorForIndex(i) {
   return new THREE.Color(`hsl(${h}, 70%, 60%)`);
 }
 
-/* ==================== Parseo de OBJ ==================== */
+/* ==================== OBJ parsing ==================== */
 async function parseObjFile(file) {
   const text = await readAsText(file);
   const loader = new THREE.OBJLoader();
@@ -593,7 +619,7 @@ async function parseObjFile(file) {
         const count = geo.attributes.position.count;
         geo.setAttribute('uv', new THREE.Float32BufferAttribute(new Float32Array(count * 2), 2));
       }
-      const name = (child.name && child.name.trim()) || `parte_${idx + 1}`;
+      const name = (child.name && child.name.trim()) || t('errors.unnamedPart', idx + 1);
       parts.push({
         id: idx,
         name,
@@ -607,9 +633,9 @@ async function parseObjFile(file) {
     }
   });
 
-  // .obj sin objetos/grupos nombrados: todo queda como una sola malla
+  // .obj with no named objects/groups: everything ends up as one single mesh
   if (!parts.length) {
-    throw new Error('No se encontraron mallas válidas en el .obj');
+    throw new Error(t('errors.noValidMeshes'));
   }
   return parts;
 }
@@ -648,9 +674,20 @@ function autoAssignParts(project) {
   });
 }
 
+// Frees the GPU-side resources (geometries/textures) a project is holding
+// onto. Three.js doesn't garbage-collect these on its own when you just
+// drop a reference, so anywhere we replace or remove a project's model or
+// texture, we dispose the old one first to avoid piling up orphaned memory
+// over a long editing session.
+function disposePartGeometries(parts) {
+  if (!parts) return;
+  parts.forEach((part) => { if (part.geometry) part.geometry.dispose(); });
+}
+
 async function setProjectObj(project, file) {
   setStatus(t('status.readingObj'));
   const parts = await parseObjFile(file);
+  disposePartGeometries(project.parts);
   project.parts = parts;
   project.hasObj = true;
   autoAssignParts(project);
@@ -661,6 +698,7 @@ async function setProjectTexture(project, file) {
   if (project.textureURL) URL.revokeObjectURL(project.textureURL);
   const loaded = await loadImageFile(file);
   if (!loaded) { setStatus(t('status.texError'), true); return; }
+  if (project.texture) project.texture.dispose();
   project.textureFile = file;
   project.textureURL = loaded.url;
   project.texW = loaded.img.naturalWidth;
@@ -674,12 +712,21 @@ async function setProjectTexture(project, file) {
   if (project.material) {
     project.material.map = tex;
     project.material.color.set(0xffffff);
-    project.material.needsUpdate = true; // three.js necesita esto al pasar de "sin mapa" a "con mapa"
+    project.material.needsUpdate = true; // three.js needs this flag to react when a material gains a map it didn't have before
   }
 }
 
 function maybeBuildPreview(project) {
   if (currentPreviewGroup) { scene.remove(currentPreviewGroup); currentPreviewGroup = null; }
+  // The skeleton lines/dots below are rebuilt from scratch on every call
+  // (every pivot drag, bone rename, etc.), and Group.clear() only detaches
+  // children — it doesn't free their geometries/materials. Dispose them
+  // ourselves so an active editing session doesn't quietly pile up
+  // hundreds of orphaned buffers.
+  skeletonGroup.children.forEach((child) => {
+    if (child.geometry) child.geometry.dispose();
+    if (child.material) child.material.dispose();
+  });
   skeletonGroup.clear();
   if (!project || !project.hasObj) return;
 
@@ -719,7 +766,7 @@ function maybeBuildPreview(project) {
     targetGroup.add(mesh);
   });
 
-  // esqueleto (líneas + puntos en cada pivote)
+  // skeleton (lines + a dot at each pivot)
   const linePositions = [];
   project.bones.forEach((b) => {
     if (!b.parent) return;
@@ -742,7 +789,7 @@ function maybeBuildPreview(project) {
   refreshHighlights();
 }
 
-/* ==================== Selección de proyecto ==================== */
+/* ==================== Project selection ==================== */
 function selectProject(id, opts) {
   state.activeId = id;
   if (!(opts && opts.keepBoneSelection)) state.activeBoneName = null;
@@ -793,6 +840,9 @@ function deleteProject(id) {
   if (idx === -1) return;
   const project = state.projects[idx];
   if (project.textureURL) URL.revokeObjectURL(project.textureURL);
+  if (project.texture) project.texture.dispose();
+  if (project.material) project.material.dispose();
+  disposePartGeometries(project.parts);
   state.projects.splice(idx, 1);
   if (state.activeId === id) {
     state.activeId = null;
@@ -803,7 +853,7 @@ function deleteProject(id) {
   }
 }
 
-/* ==================== UI: lista de proyectos ==================== */
+/* ==================== UI: project list ==================== */
 function refreshProjectList() {
   const ul = document.getElementById('projectList');
   ul.innerHTML = '';
@@ -829,7 +879,7 @@ function refreshProjectList() {
   updatePackageButtonLabel();
 }
 
-/* ==================== UI: lista de partes ==================== */
+/* ==================== UI: parts list ==================== */
 function refreshPartsList() {
   const project = getActiveProject();
   const ul = document.getElementById('partsList');
@@ -875,7 +925,7 @@ function refreshPartsList() {
   });
 }
 
-/* ==================== UI: árbol de huesos ==================== */
+/* ==================== UI: bone tree ==================== */
 function showBonesEmpty() {
   document.getElementById('bonesEmpty').hidden = false;
   document.getElementById('bonesContent').hidden = true;
@@ -949,7 +999,7 @@ function ancestryChain(project, bone) {
   let guard = 0;
   while (current.parent && guard++ < 64) {
     const parent = project.bones.find((b) => b.name === current.parent);
-    if (!parent || chain.includes(parent)) break; // por si hay un ciclo accidental
+    if (!parent || chain.includes(parent)) break; // in case of an accidental cycle
     chain.unshift(parent);
     current = parent;
   }
@@ -965,8 +1015,8 @@ function showBoneDetail(bone) {
   document.getElementById('pivotY').value = bone.pivot[1];
   document.getElementById('pivotZ').value = bone.pivot[2];
 
-  // migaja de pan: a qué hueso "principal" se conecta esta subcarpeta, con
-  // toda la cadena hasta la raíz, y cada nombre es clicable
+  // breadcrumb: which "main" bone this sub-folder connects to, showing
+  // the full chain up to the root, with every name clickable
   const crumbWrap = document.getElementById('boneBreadcrumb');
   crumbWrap.innerHTML = '';
   const chain = ancestryChain(project, bone);
@@ -1035,10 +1085,10 @@ function refreshExportPanel() {
   updatePackageButtonLabel();
 }
 
-/* ==================== Construcción de geometry.json ====================
-   Estructura REAL del formato clásico Geometry 1.8.0 (la misma que usa
-   el archivo de referencia geometry.sploot que se analizó para esta
-   herramienta):
+/* ==================== Building geometry.json ====================
+   The ACTUAL structure of the classic Geometry 1.8.0 format (the same
+   one used by the geometry.sploot reference file this tool was built
+   from):
 
      {
        "format_version": "1.8.0",
@@ -1046,9 +1096,9 @@ function refreshExportPanel() {
          "bones": [
            {
              "name": "...",
-             "parent": "...",           // opcional
+             "parent": "...",           // optional
              "pivot": [x, y, z],
-             "rotation": [x, y, z],     // opcional
+             "rotation": [x, y, z],     // optional
              "poly_mesh": {
                "normalized_uvs": true,
                "positions": [[x,y,z], ...],
@@ -1066,27 +1116,27 @@ function refreshExportPanel() {
        }
      }
 
-   A diferencia del formato moderno (1.12+/1.16+), en 1.8.0 NO existe
-   "minecraft:geometry" (array), NO existe el objeto "description", y
-   el ancho/alto de textura se llaman "texturewidth"/"textureheight"
-   (todo junto, sin guion bajo) y viven directamente dentro del objeto
-   de geometría, no dentro de "description". La clave raíz de la
-   geometría es literalmente "geometry.<identificador>". */
+   Unlike the modern format (1.12+/1.16+), 1.8.0 has NO
+   "minecraft:geometry" array, NO "description" object, and the texture
+   width/height are called "texturewidth"/"textureheight" (all one word,
+   no underscore) and live directly inside the geometry object, not
+   inside "description". The geometry's root key is literally
+   "geometry.<identifier>". */
 function buildGeometryJSON(project) {
   const identifier = `geometry.${slugify(project.name)}`;
   const bones = project.bones.map((b) => {
     const out = { name: b.name };
     if (b.parent) out.parent = b.parent;
-    // IMPORTANTE: el pivote del hueso NO se invierte en X. Los valores de
-    // b.pivot ya están en la convención real de Bedrock (por ejemplo
-    // leftArm=[5,22,0] / rightArm=[-5,22,0], igual que la geometría
-    // humanoid vanilla), tal como se usan en la vista previa 3D. Negar X
-    // aquí (como hacía la versión anterior) intercambiaba los pivotes de
-    // izquierda y derecha entre sí — el hueso "leftArm" terminaba con el
-    // pivote que le correspondía a "rightArm" y viceversa. La negación de
-    // X sí es necesaria para los VÉRTICES del poly_mesh (más abajo),
-    // porque esos datos vienen del OBJ importado y sí requieren esa
-    // conversión de sistema de coordenadas; el pivote del hueso no.
+    // IMPORTANT: the bone's pivot does NOT get its X flipped. b.pivot's
+    // values are already in Bedrock's real convention (e.g.
+    // leftArm=[5,22,0] / rightArm=[-5,22,0], same as the vanilla humanoid
+    // geometry), exactly as used in the 3D preview. Negating X here (like
+    // an earlier version of this code did) swapped the left/right pivots
+    // with each other -- the "leftArm" bone ended up with the pivot meant
+    // for "rightArm" and vice versa. Negating X IS needed for the
+    // poly_mesh's VERTICES (below), since that data comes from the
+    // imported OBJ and does need that coordinate-system conversion; the
+    // bone's pivot doesn't.
     out.pivot = [b.pivot[0], b.pivot[1], b.pivot[2]];
     if (Array.isArray(b.rotation) && b.rotation.some((v) => v)) {
       out.rotation = b.rotation;
@@ -1110,15 +1160,15 @@ function buildGeometryJSON(project) {
         const triCount = vCount / 3;
         for (let t = 0; t < triCount; t++) {
           const a = offset + t * 3, b2 = a + 1, c = a + 2;
-          // Cada vértice de un poly se referencia como
-          // [indice_posicion, indice_normal, indice_uv], igual que en el
-          // archivo de referencia 1.8.0 (geometry.sploot). Como aquí
-          // positions/normals/uvs se generan 1:1 por vértice del OBJ, los
-          // tres índices coinciden numéricamente, pero se guardan en el
-          // orden correcto para que la estructura sea la real de 1.8.0
-          // (no una coincidencia casual). Los triángulos se guardan como
-          // "cuadriláteros" degenerados (4º vértice repetido), que es la
-          // forma segura y ya usada por poly_mesh en Bedrock.
+          // Every poly vertex is referenced as
+          // [posIndex, normalIndex, uvIndex], same as in the 1.8.0
+          // reference file (geometry.sploot). Since positions/normals/uvs
+          // are generated 1:1 per OBJ vertex here, the three indices end
+          // up numerically identical, but they're stored in the correct
+          // order so the structure matches 1.8.0's real shape (it's not
+          // just a coincidence). Triangles are stored as degenerate
+          // "quads" (4th vertex repeated), which is the safe approach
+          // poly_mesh already uses in Bedrock.
           polys.push([[a, a, a], [b2, b2, b2], [c, c, c], [c, c, c]]);
         }
         offset += vCount;
@@ -1138,16 +1188,16 @@ function buildGeometryJSON(project) {
   };
 }
 
-/* ==================== Validador de exportación 1.8.0 ====================
-   Comprueba que el JSON generado sea REALMENTE compatible con Geometry
-   1.8.0 y estructuralmente equivalente al archivo de referencia, y que
-   no se haya colado por accidente ninguna estructura de formato moderno
-   (minecraft:geometry, description, texture_width/texture_height, etc).
-   Devuelve { valid: boolean, errors: string[] }. */
+/* ==================== 1.8.0 export validator ====================
+   Checks that the generated JSON is REALLY compatible with Geometry
+   1.8.0 and structurally equivalent to the reference file, and that no
+   modern-format structure snuck in by accident (minecraft:geometry,
+   description, texture_width/texture_height, etc).
+   Returns { valid: boolean, errors: string[] }. */
 function validateGeometry18(json) {
   const errors = [];
 
-  // 12. El JSON debe ser válido / serializable.
+  // 12. The JSON must be valid / serializable.
   let asString;
   try {
     asString = JSON.stringify(json);
@@ -1161,12 +1211,12 @@ function validateGeometry18(json) {
     return { valid: false, errors };
   }
 
-  // 1. format_version exacto.
+  // 1. Exact format_version.
   if (json.format_version !== '1.8.0') {
     errors.push(t('val.wrongVersion', JSON.stringify(json.format_version)));
   }
 
-  // 3. Nada de estructuras de formatos posteriores coladas por accidente.
+  // 3. No structures from later formats sneaking in by accident.
   if (Object.prototype.hasOwnProperty.call(json, 'minecraft:geometry')) {
     errors.push(t('val.modernGeometryArray'));
   }
@@ -1177,11 +1227,11 @@ function validateGeometry18(json) {
     errors.push(t('val.modernTextureUnderscore'));
   }
 
-  // 2. Estructura raíz: format_version + al menos una clave "geometry.<id>".
-  //    Un mismo geometry.json 1.8.0 puede contener VARIAS geometrías (una
-  //    por modelo) como claves distintas en la raíz — así es como esta
-  //    herramienta empaqueta varios modelos en un único archivo llamado
-  //    literalmente "geometry.json", que es el nombre que exige Bedrock.
+  // 2. Root structure: format_version + at least one "geometry.<id>" key.
+  //    A single 1.8.0 geometry.json can hold SEVERAL geometries (one per
+  //    model) as separate root keys — this is how this tool packs
+  //    multiple models into a single file literally named
+  //    "geometry.json", which is the name Bedrock requires.
   const geoKeys = Object.keys(json).filter((k) => k !== 'format_version');
   if (geoKeys.length === 0) {
     errors.push(t('val.noGeometryKey'));
@@ -1193,7 +1243,7 @@ function validateGeometry18(json) {
     }
   });
 
-  // 4-11. Cada geometría de la raíz debe tener su propia estructura válida.
+  // 4-11. Each geometry at the root must have its own valid structure.
   geoKeys.forEach((geoKey) => {
     const geo = json[geoKey];
     if (!geo || typeof geo !== 'object') {
@@ -1212,7 +1262,7 @@ function validateGeometry18(json) {
       errors.push(t('val.missingTextureHeight', geoKey));
     }
 
-    // 5. Que existan los bones.
+    // 5. The bones must actually exist.
     if (!Array.isArray(geo.bones) || geo.bones.length === 0) {
       errors.push(t('val.noBones', geoKey));
       return;
@@ -1225,7 +1275,7 @@ function validateGeometry18(json) {
         errors.push(t('val.boneNoName', geoKey, label));
         return;
       }
-      // 6. Padres válidos.
+      // 6. Valid parents.
       if (b.parent) {
         if (!boneNames.has(b.parent)) {
           errors.push(t('val.parentNotFound', geoKey, b.name, b.parent));
@@ -1234,11 +1284,11 @@ function validateGeometry18(json) {
           errors.push(t('val.selfParent', geoKey, b.name));
         }
       }
-      // 7. Pivotes con estructura válida.
+      // 7. Pivots with a valid structure.
       if (!Array.isArray(b.pivot) || b.pivot.length !== 3 || b.pivot.some((n) => typeof n !== 'number' || Number.isNaN(n))) {
         errors.push(t('val.invalidPivot', geoKey, b.name));
       }
-      // 9, 10, 11. poly_mesh completo y con índices válidos.
+      // 9, 10, 11. A complete poly_mesh with valid indices.
       if (b.poly_mesh !== undefined) {
         const pm = b.poly_mesh;
         if (!pm || typeof pm !== 'object') {
@@ -1279,15 +1329,15 @@ function validateGeometry18(json) {
   return { valid: errors.length === 0, errors };
 }
 
-/* Combina la geometría de varios proyectos en UN SOLO objeto geometry.json
-   1.8.0, cada uno bajo su propia clave "geometry.<id>". Esto es necesario
-   porque Bedrock exige que el archivo se llame literalmente "geometry.json"
-   (no "geometry.<nombre>.json"); para poder llevar varios modelos en un
-   mismo paquete sin perder ninguno, se combinan aquí en un único archivo
-   con formato_version compartido y una clave de geometría distinta por
-   modelo (deduplicando el identificador si dos modelos generan el mismo
-   slug). Devuelve { json, entries } donde entries mapea cada proyecto a
-   su identificador final dentro del archivo combinado. */
+/* Combines several projects' geometry into a SINGLE 1.8.0 geometry.json
+   object, each under its own "geometry.<id>" key. This is needed because
+   Bedrock requires the file to be literally named "geometry.json" (not
+   "geometry.<name>.json"); to carry multiple models in the same pack
+   without losing any of them, they're combined here into one file with a
+   shared format_version and a distinct geometry key per model
+   (deduplicating the identifier if two models produce the same slug).
+   Returns { json, entries }, where entries maps each project to its
+   final identifier inside the combined file. */
 function buildCombinedGeometryJSON(projects) {
   const combined = { format_version: GEOMETRY_FORMAT_VERSION };
   const usedKeys = new Set();
@@ -1308,9 +1358,9 @@ function buildCombinedGeometryJSON(projects) {
   return { json: combined, entries };
 }
 
-/* Ejecuta el validador sobre el JSON de un proyecto, muestra los errores
-   en el panel de exportación (sin permitir la descarga) y devuelve true
-   solo si es válido. */
+/* Runs the validator against a project's JSON, shows any errors in the
+   export panel (blocking the download), and returns true only if it's
+   valid. */
 function validateAndShowErrors(json) {
   const result = validateGeometry18(json);
   const warnBox = document.getElementById('exportWarnings');
@@ -1342,7 +1392,7 @@ function validateAndShowErrors(json) {
   return result.valid;
 }
 
-/* ==================== Descargas ==================== */
+/* ==================== Downloads ==================== */
 function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1351,33 +1401,33 @@ function downloadBlob(blob, filename) {
   setTimeout(() => URL.revokeObjectURL(url), 4000);
 }
 
-/* Serializa la geometría combinada según el estilo elegido en el toggle
-   Fancy / Compacto:
-   - "fancy": JSON.stringify con indentación de 2 espacios (como se venía
-     exportando).
-   - "compact": todo el archivo en una sola línea, sin espacios extra —
-     igual que el geometry.json de referencia (geometry.sploot) que se
-     analizó para esta herramienta, que llega como un único renglón. */
+/* Serializes the combined geometry according to the Fancy/Compact
+   toggle:
+   - "fancy": JSON.stringify with 2-space indentation (how this always
+     used to be exported).
+   - "compact": the whole file on a single line, no extra whitespace --
+     same as the reference geometry.json (geometry.sploot) this tool was
+     built from, which arrives as a single line. */
 function stringifyGeometry(json) {
   return state.exportStyle === 'compact' ? JSON.stringify(json) : JSON.stringify(json, null, 2);
 }
 
-/* Descarga UN SOLO paquete .zip con TODOS los modelos exportables, con la
-   estructura REAL que Minecraft Bedrock necesita para cargar un skin pack
-   (analizada a partir de un skins.json/manifest.json/lang reales que
-   funcionan en el juego):
-   - manifest.json: identifica el paquete ante Minecraft (sin esto, el
-     paquete ni siquiera aparece en la lista de skin packs).
-   - geometry.json: combina todas las geometrías (una clave "geometry.<id>"
-     por modelo). Nombre fijo, requerido por Bedrock.
-   - skins.json: objeto (NO un array suelto) con "skins", "serialize_name"
-     y "localization_name" a nivel de paquete. Cada skin usa un
-     "localization_name" SIN espacios (obligatorio: Bedrock no reconoce
-     nombres con espacio ahí) que además sirve de clave para el lang.
-   - texts/en_US.lang: define el nombre visible del paquete
-     (skinpack.<clave>) y de cada skin (skin.<clave>.<skin>) — sin esto el
-     juego no tiene de dónde sacar el texto a mostrar.
-   - una textura .png por modelo (si la tiene). */
+/* Downloads a SINGLE .zip package with EVERY exportable model, using the
+   REAL structure Minecraft Bedrock needs to load a skin pack (worked out
+   from an actual skins.json/manifest.json/lang set that works in-game):
+   - manifest.json: identifies the pack to Minecraft (without this, the
+     pack doesn't even show up in the skin pack list).
+   - geometry.json: combines every geometry (one "geometry.<id>" key per
+     model). Fixed name, required by Bedrock.
+   - skins.json: an object (NOT a bare array) with "skins",
+     "serialize_name" and a pack-level "localization_name". Each skin
+     uses a "localization_name" WITHOUT spaces (required: Bedrock doesn't
+     recognize names with a space there), which also doubles as the lang
+     key.
+   - texts/en_US.lang: defines the pack's visible name
+     (skinpack.<key>) and each skin's (skin.<key>.<skin>) — without this
+     the game has nowhere to pull the displayed text from.
+   - one .png texture per model (if it has one). */
 async function downloadSkinPackage() {
   const exportable = state.projects.filter((p) => p.hasObj && p.parts.some((pt) => pt.boneName));
   if (!exportable.length) { setStatus(t('status.noModelsToExport'), true); return; }
@@ -1406,11 +1456,11 @@ async function downloadSkinPackage() {
       usedTexNames.add(texName);
       zip.file(texName, project.textureFile);
     }
-    // localization_name NUNCA lleva espacios (ni acentos/símbolos raros):
-    // Bedrock lo usa como clave de identificación interna y como parte de
-    // la clave del lang; con espacio el juego simplemente no lo reconoce.
-    // El nombre "bonito" que el usuario le puso al modelo se conserva tal
-    // cual, pero solo como VALOR visible dentro del .lang.
+    // localization_name NEVER has spaces (or accents/unusual symbols):
+    // Bedrock uses it as an internal identification key and as part of
+    // the lang key; with a space, the game just won't recognize it. The
+    // "pretty" name the user gave the model is kept exactly as typed,
+    // but only as the VISIBLE value inside the .lang file.
     let skinKey = slugify(project.name) || 'skin';
     let n = 2;
     while (usedSkinKeys.has(skinKey)) { skinKey = `${slugify(project.name) || 'skin'}_${n}`; n += 1; }
@@ -1450,11 +1500,12 @@ async function downloadSkinPackage() {
   downloadBlob(blob, zipName);
 }
 
-/* Genera un UUID v4 para manifest.json. Usa crypto.randomUUID() cuando el
-   navegador lo soporta (contextos https/localhost); si no está disponible
-   (p. ej. abriendo el archivo con file://), cae a una generación manual —
-   no necesita ser criptográficamente segura, solo un identificador único
-   para que Minecraft distinga este paquete de otros. */
+/* Generates a v4 UUID for manifest.json. Uses crypto.randomUUID() when
+   the browser supports it (https/localhost contexts); if that isn't
+   available (e.g. opening the file via file://), it falls back to a
+   manual generation -- it doesn't need to be cryptographically secure,
+   just a unique identifier so Minecraft can tell this pack apart from
+   others. */
 function generateUUIDv4() {
   if (window.crypto && typeof window.crypto.randomUUID === 'function') {
     return window.crypto.randomUUID();
@@ -1466,10 +1517,10 @@ function generateUUIDv4() {
   });
 }
 
-/* Actualiza el texto y el estado (habilitado/deshabilitado) del botón
-   único de descarga según cuántos modelos hay listos para exportar en
-   TODO el proyecto (no solo el modelo activo), como pidió el usuario:
-   singular para un modelo, plural para varios. */
+/* Updates the single download button's text and state
+   (enabled/disabled) based on how many models are ready to export
+   across the WHOLE project (not just the active one): singular wording
+   for one model, plural for several. */
 function updatePackageButtonLabel() {
   const btn = document.getElementById('btnDownloadPackage');
   if (!btn) return;
@@ -1478,7 +1529,7 @@ function updatePackageButtonLabel() {
   btn.disabled = exportable.length === 0;
 }
 
-/* ==================== Estado / mensajes ==================== */
+/* ==================== Status / messages ==================== */
 function setStatus(msg, isWarn) {
   const el = document.getElementById('viewportStatus');
   el.textContent = msg;
@@ -1499,7 +1550,7 @@ function applyToggleStates() {
   if (project && project.material) project.material.wireframe = toggles.wireframe;
 }
 
-/* ==================== Wiring de UI ==================== */
+/* ==================== Wiring up the UI ==================== */
 function initUI() {
   document.getElementById('btnNewProject').addEventListener('click', () => {
     const p = createProject(t('defaultModelName', state.projects.length + 1));
@@ -1507,7 +1558,7 @@ function initUI() {
   });
   document.getElementById('btnEmptyNewProject').addEventListener('click', () => document.getElementById('btnNewProject').click());
 
-  // filas de archivo: modelo .obj / textura (dentro de la barra lateral, ya no en el visor)
+  // file rows: .obj model / texture (in the sidebar now, no longer in the viewport)
   function wireDropzone(el, input, onFile) {
     el.addEventListener('click', () => input.click());
     input.addEventListener('change', async (e) => {
@@ -1591,12 +1642,12 @@ function initUI() {
   document.getElementById('btnAddBone').addEventListener('click', () => {
     const project = getActiveProject(); if (!project) return;
     const parentBone = project.bones.find((b) => b.name === state.activeBoneName);
-    let base = 'hueso', n = 1;
+    let base = t('bones.defaultName'), n = 1;
     while (project.bones.some((b) => b.name === base + n)) n++;
     const name = base + n;
-    // se crea DENTRO del hueso seleccionado (como subcarpeta); si no hay
-    // ninguno seleccionado, se crea en la raíz. Siempre se puede mover
-    // después cambiando el "Hueso padre" en el panel.
+    // Created INSIDE the currently selected bone (as a sub-folder); if
+    // none is selected, it's created at the root. It can always be moved
+    // afterwards by changing "Parent bone" in the panel.
     const startPivot = parentBone ? [...parentBone.pivot] : [0, 0, 0];
     project.bones.push({ name, parent: parentBone ? parentBone.name : 'root', pivot: startPivot });
     state.activeBoneName = name;
@@ -1659,7 +1710,7 @@ function initUI() {
     else document.exitFullscreen();
   });
 
-  // drag & drop global -> primer archivo .obj y primera imagen encontrados
+  // global drag & drop -> first .obj file and first image found
   const app = document.getElementById('app');
   const overlay = document.getElementById('dropOverlay');
   ['dragenter', 'dragover'].forEach((ev) => app.addEventListener(ev, (e) => { e.preventDefault(); overlay.classList.add('active'); }));
@@ -1667,7 +1718,7 @@ function initUI() {
   app.addEventListener('drop', async (e) => {
     e.preventDefault();
     overlay.classList.remove('active');
-    if (e.target.closest('#fileRowObj') || e.target.closest('#fileRowTex')) return; // ya lo maneja su propia zona
+    if (e.target.closest('#fileRowObj') || e.target.closest('#fileRowTex')) return; // already handled by its own zone
     const files = Array.from(e.dataTransfer.files);
     const objFile = files.find((f) => /\.obj$/i.test(f.name));
     const texFile = files.find((f) => /\.(png|jpe?g)$/i.test(f.name));
@@ -1702,11 +1753,11 @@ function initUI() {
   document.getElementById('btnCloseSidebar').addEventListener('click', closeMobilePanels);
   document.getElementById('btnCloseInspector').addEventListener('click', closeMobilePanels);
   mobileBackdrop.addEventListener('click', closeMobilePanels);
-  // en móvil, elegir/crear un modelo cierra el panel para ver el visor 3D
+  // on mobile, picking/creating a model closes the panel so you can see the 3D viewport
   document.getElementById('projectList').addEventListener('click', () => { if (window.innerWidth <= 760) closeMobilePanels(); });
   document.getElementById('btnNewProject').addEventListener('click', () => { if (window.innerWidth <= 760) closeMobilePanels(); });
 
-  // ---------- Selector de idioma (ES/EN), sincronizado con MBSM ----------
+  // ---------- Language switcher (ES/EN), synced with MBSM ----------
   document.getElementById('objSkinLangSwitch').addEventListener('click', (ev) => {
     const btn = ev.target.closest('.lang-btn');
     if (!btn) return;
@@ -1714,7 +1765,7 @@ function initUI() {
   });
 }
 
-/* ==================== Arranque ==================== */
+/* ==================== Startup ==================== */
 let ossInitialized = false;
 function initObjSkinStudio() {
   if (ossInitialized) return;
@@ -1722,8 +1773,8 @@ function initObjSkinStudio() {
   initThree();
   initUI();
   applyI18n();
-  // si otra pestaña/ventana (documento distinto) cambia el idioma en
-  // localStorage, esta herramienta se actualiza sola sin necesitar recargar
+  // if another tab/window (a different document) changes the language
+  // in localStorage, this tool updates itself without needing a reload
   window.addEventListener('storage', (ev) => {
     if (ev.key === 'mbsm_lang' && (ev.newValue === 'es' || ev.newValue === 'en')) {
       state_i18n.lang = ev.newValue;
@@ -1732,14 +1783,14 @@ function initObjSkinStudio() {
   });
 }
 
-// API pública: index.html la usa para inicializar esta herramienta de
-// forma perezosa (solo la primera vez que se abre su sub-pestaña) y para
-// refrescar sus textos cuando el selector de idioma principal del sitio
-// cambia de idioma (ver applyLanguage() en app.js). refreshLanguage() no
-// puede ser simplemente applyI18n: primero hay que sincronizar
-// state_i18n.lang con el idioma actual del sitio (currentLang, variable
-// global de app.js) -- si no, se repintaría con el idioma que esta
-// herramienta tenía guardado, no con el que el usuario acaba de elegir.
+// Public API: index.html uses this to lazily initialize this tool
+// (only the first time its sub-tab is opened) and to refresh its text
+// when the site's main language switcher changes language (see
+// applyLanguage() in app.js). refreshLanguage() can't just be applyI18n:
+// state_i18n.lang has to be synced with the site's current language
+// (currentLang, a global variable from app.js) first -- otherwise it
+// would repaint with whatever language this tool had saved, not with
+// the one the user just picked.
 window.ObjSkinStudio = {
   init: initObjSkinStudio,
   refreshLanguage: function () {

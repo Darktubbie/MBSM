@@ -1,8 +1,8 @@
 // validator.js
-// Analizador principal para skinpacks 4D de Minecraft Bedrock
+// Main analyzer for Minecraft Bedrock 4D skinpacks
 
 // ----------------------------
-// Diccionario de mensajes (ES/EN)
+// Message dictionary (ES/EN)
 // ----------------------------
 const VALIDATOR_MESSAGES = {
   es: {
@@ -146,16 +146,16 @@ async function validateSkinPack(zip, zipName, options = {}) {
   const lang = (options.lang === "en") ? "en" : "es";
   const M = VALIDATOR_MESSAGES[lang];
 
-  // Devuelve solo el nombre de archivo (sin la ruta de carpetas), ya que
-  // la carpeta contenedora no afecta el proceso de validación en sí.
+  // Returns just the filename (no folder path), since the containing
+  // folder doesn't affect the validation itself.
   const bn = (p) => (p ? p.split("/").pop() : p);
 
-  // Si es true, cuando el nombre base de un modelo (p. ej. "NombreDelModelo"
-  // en "geometry.NombreDelModelo") coincide con MÁS DE UNA geometría distinta
-  // dentro de geometry.json (p. ej. "geometry.NombreDelModelo" y
-  // "geometry.custom.NombreDelModelo" al mismo tiempo), el validador
-  // resolverá la ambigüedad automáticamente en lugar de detenerse a reportar
-  // el conflicto. Por defecto está desactivado para no enmascarar errores.
+  // When true, if a model's base name (e.g. "ModelName" in
+  // "geometry.ModelName") matches MORE THAN ONE distinct geometry inside
+  // geometry.json (e.g. both "geometry.ModelName" and
+  // "geometry.custom.ModelName" at once), the validator will resolve the
+  // ambiguity on its own instead of stopping to report the conflict.
+  // Off by default so it doesn't end up masking real errors.
   const resolveAmbiguousGeometry = !!options.resolveAmbiguousGeometry;
   const report = {
     results: [],
@@ -176,12 +176,12 @@ async function validateSkinPack(zip, zipName, options = {}) {
     if (type === "error") report.stats.errors++;
     if (type === "warning") report.stats.warnings++;
     if (type === "success") report.stats.success++;
-    // el tipo "info" no se cuenta en las estadísticas: no es un
-    // error/advertencia/éxito, se usa para notas neutrales (ej. geometry.null)
+    // the "info" type isn't counted in the stats: it's not an
+    // error/warning/success, it's used for neutral notes (e.g. geometry.null)
   }
 
   // ----------------------------
-  // Obtener todos los archivos
+  // Get every file
   // ----------------------------
   const fileList = Object.keys(zip.files).filter(f => !zip.files[f].dir);
 
@@ -192,7 +192,7 @@ async function validateSkinPack(zip, zipName, options = {}) {
   );
 
   // ----------------------------
-  // Buscar archivos importantes
+  // Look for the important files
   // ----------------------------
   const manifestPath = fileList.find(f => /(^|\/)manifest\.json$/i.test(f));
   const skinsPath = fileList.find(f => /(^|\/)skins\.json$/i.test(f));
@@ -209,7 +209,7 @@ async function validateSkinPack(zip, zipName, options = {}) {
   );
 
   // ----------------------------
-  // Verificar existencia
+  // Check they exist
   // ----------------------------
   if (manifestPath)
     push("success", "manifest.json", M.fileFound);
@@ -217,7 +217,7 @@ async function validateSkinPack(zip, zipName, options = {}) {
     push("warning", "manifest.json", M.manifestNotFound);
 
   // ----------------------------
-  // Información del paquete (nombre, descripción, icono)
+  // Pack info (name, description, icon)
   // ----------------------------
   {
     let packName = null;
@@ -272,7 +272,7 @@ async function validateSkinPack(zip, zipName, options = {}) {
   push("success", M.geometriesTitle, M.geometryFileFound);
 
   // ----------------------------
-  // Leer JSON
+  // Parse the JSON
   // ----------------------------
   let skinsJson = null;
 
@@ -285,17 +285,17 @@ async function validateSkinPack(zip, zipName, options = {}) {
   }
 
   // ----------------------------
-  // Leer geometría (geometry.json)
+  // Read the geometry (geometry.json)
   // ----------------------------
   const geometryIdentifiers = new Set();
-  const geometryIdentifiersLower = new Map(); // lower-case id -> id original
-  const geometryModelNames = new Map();        // nombre de modelo completo (tras "geometry.") -> id original
+  const geometryIdentifiersLower = new Map(); // lower-case id -> original id
+  const geometryModelNames = new Map();        // full model name (after "geometry.") -> original id
 
-  // nombre BASE del modelo (último segmento tras el último punto de lo que
-  // sigue a "geometry.") -> lista de ids originales que comparten ese nombre.
-  // Esto permite que "geometry.custom.NombreDelModelo" se reconozca como
-  // una variación de "geometry.NombreDelModelo" (y viceversa), ya que ambos
-  // comparten el nombre base "NombreDelModelo".
+  // The model's BASE name (last segment after the last dot in whatever
+  // follows "geometry.") -> list of original ids sharing that name. This
+  // is what lets "geometry.custom.ModelName" be recognized as a variant
+  // of "geometry.ModelName" (and vice versa), since both share the base
+  // name "ModelName".
   const geometryBaseNames = new Map();
 
   function getGeometrySuffix(id) {
@@ -310,14 +310,14 @@ async function validateSkinPack(zip, zipName, options = {}) {
     return parts[parts.length - 1].toLowerCase();
   }
 
-  // Compara dos sufijos de geometría COMPLETOS (no solo la última
-  // palabra). Esto es lo que permite detectar con precisión modelos con
-  // nombres de varias palabras (ej. "egg.and.friends" o
-  // "egg.and.friends.name"): si uno es una versión truncada o extendida
-  // del otro —respetando límites de punto—, se consideran el mismo
-  // modelo. Comparar solo la última palabra sería impreciso aquí, ya que
-  // "chicken.and.friends" y "egg.and.friends" comparten la última
-  // palabra ("friends") sin ser el mismo modelo en absoluto.
+  // Compares two FULL geometry suffixes (not just the last word). This
+  // is what lets multi-word model names be detected accurately (e.g.
+  // "egg.and.friends" or "egg.and.friends.name"): if one is a truncated
+  // or extended version of the other -- respecting dot boundaries --
+  // they're treated as the same model. Comparing only the last word
+  // would be inaccurate here, since "chicken.and.friends" and
+  // "egg.and.friends" share their last word ("friends") without being
+  // the same model at all.
   function geometrySuffixesRelated(suffixA, suffixB) {
     if (!suffixA || !suffixB) return false;
     const a = suffixA.toLowerCase();
@@ -380,23 +380,23 @@ async function validateSkinPack(zip, zipName, options = {}) {
 
     if (!usingFallbackOnly && geo) {
 
-      // Formato nuevo (1.12.0+): array "minecraft:geometry"
+      // New format (1.12.0+): a "minecraft:geometry" array
       const arr = geo["minecraft:geometry"] || [];
       arr.forEach(g => addGeometryIdentifier(g?.description?.identifier));
 
-      // Formato antiguo: la geometría es una clave de nivel superior,
-      // p. ej. { "geometry.egg": { ... } }
+      // Legacy format: the geometry is a top-level key,
+      // e.g. { "geometry.egg": { ... } }
       Object.keys(geo).forEach(k => {
         if (/^geometry\./i.test(k)) addGeometryIdentifier(k);
       });
 
     }
 
-    // Búsqueda profunda de respaldo: cualquier "geometry.Modelo" presente
-    // en cualquier parte del archivo. Se ejecuta siempre: si el JSON es
-    // válido sirve para detectar identificadores en estructuras inusuales;
-    // si el JSON es inválido y se decidió continuar, es la única fuente
-    // de datos disponible.
+    // Fallback deep search: any "geometry.Model" string found anywhere
+    // in the file. This always runs: when the JSON is valid it catches
+    // identifiers sitting in unusual structures; when the JSON is invalid
+    // and the user chose to continue anyway, it's the only source of
+    // data available.
     const deepMatches = geometryText.match(/"geometry\.[A-Za-z0-9_.\-]+"/gi) || [];
     deepMatches.forEach(m => addGeometryIdentifier(m.slice(1, -1)));
 
@@ -405,12 +405,12 @@ async function validateSkinPack(zip, zipName, options = {}) {
     }
 
     // ----------------------------
-    // Detección de tipo (4D/5D) por identificador de geometría, para
-    // mostrar una etiqueta junto a cada skin detectada. Misma lógica que
-    // el visor 4D/5D (por huesos individuales: "cubes" = 4D, "poly_mesh"
-    // = 5D -- nunca por format_version ni por el nombre del modelo).
-    // Deliberadamente self-contenido: no depende de SkinPack (del visor
-    // 4D/5D) para que el validador siga siendo un módulo independiente.
+    // Type detection (4D/5D) by geometry identifier, used to show a tag
+    // next to each detected skin. Same logic as the 4D/5D viewer (per
+    // individual bone: "cubes" = 4D, "poly_mesh" = 5D -- never by
+    // format_version or by the model's name). Deliberately self-contained
+    // here: it doesn't depend on SkinPack (the viewer's module) so the
+    // validator stays an independent module.
     // ----------------------------
     function findGeometryBones(id) {
       if (usingFallbackOnly || !geo || !id) return null;
@@ -435,11 +435,11 @@ async function validateSkinPack(zip, zipName, options = {}) {
     }
 
     // ----------------------------
-    // Detección de "geometry.null" (entrada de relleno típica de
-    // paquetes 4D). Cuando aparece, se activa además la validación
-    // de animaciones dentro de skins.json. No se marca como advertencia
-    // (amarillo): es una nota neutral, se usa el tipo "info" con su
-    // propio color, distinto de error/advertencia/éxito.
+    // Detecting "geometry.null" (a placeholder entry typical of 4D
+    // packs). When it shows up, it also turns on the extra animation
+    // validation inside skins.json. It isn't flagged as a warning
+    // (yellow): it's a neutral note, using the "info" type with its own
+    // color, distinct from error/warning/success.
     // ----------------------------
     const hasGeometryNull =
       geometryIdentifiers.has("geometry.null") ||
@@ -456,12 +456,12 @@ async function validateSkinPack(zip, zipName, options = {}) {
   }
 
   // ----------------------------
-  // Leer archivos LANG
+  // Read the LANG files
   // ----------------------------
   const enUsPath = langPaths.find(f => /(^|\/)en_US\.lang$/i.test(f));
 
-  let langEntries = new Map();   // claves combinadas de todos los .lang -> valor (uso informativo)
-  let enUsEntries = new Map();   // claves solo de en_US.lang -> valor (idioma obligatorio en Bedrock)
+  let langEntries = new Map();   // keys merged from every .lang file -> value (informational use)
+  let enUsEntries = new Map();   // keys from en_US.lang only -> value (Bedrock's required language)
 
   for (const path of langPaths) {
     const text = await zip.file(path).async("string");
@@ -499,11 +499,11 @@ async function validateSkinPack(zip, zipName, options = {}) {
   }
 
   // ----------------------------
-  // Validar skins
+  // Validate the skins
   // ----------------------------
   // ----------------------------
-  // Geometrías oficiales de Minecraft Bedrock
-  // (válidas aunque no existan dentro del ZIP)
+  // Minecraft Bedrock's official geometries
+  // (valid even if they don't exist inside the ZIP)
   // ----------------------------
   const builtinGeometries = new Set([
     "geometry.humanoid.custom",      // Steve
@@ -514,9 +514,9 @@ async function validateSkinPack(zip, zipName, options = {}) {
 
   const skins = skinsJson.skins || [];
 
-  // localization_name del PAQUETE (top-level, junto a "serialize_name",
-  // no pertenece a ninguna skin). En_US.lang usa este valor como
-  // prefijo de cada clave: skin.<packLocalizationName>.<skinLocalizationName>
+  // The PACK's localization_name (top-level, next to "serialize_name",
+  // doesn't belong to any single skin). en_US.lang uses this value as
+  // the prefix for every key: skin.<packLocalizationName>.<skinLocalizationName>
   const packLocalizationName =
     (typeof skinsJson.localization_name === "string" && skinsJson.localization_name.trim())
       ? skinsJson.localization_name.trim()
@@ -564,12 +564,11 @@ async function validateSkinPack(zip, zipName, options = {}) {
       if (!exactMatch && !caseInsensitiveMatch) {
 
         // ----------------------------------------------------------
-        // Paso adicional 1: coincidencia por SUFIJO COMPLETO del
-        // modelo (más preciso, funciona con nombres de varias
-        // palabras). Trata "geometry.egg.and.friends" como el mismo
-        // modelo que "geometry.egg.and.friends.name" (en cualquier
-        // dirección), ya que uno es una versión truncada/extendida del
-        // otro respetando límites de punto.
+        // Extra step 1: match by the model's FULL SUFFIX (more precise,
+        // works with multi-word names). Treats "geometry.egg.and.friends"
+        // as the same model as "geometry.egg.and.friends.name" (in
+        // either direction), since one is a truncated/extended version
+        // of the other, respecting dot boundaries.
         // ----------------------------------------------------------
         const skinSuffix = getGeometrySuffix(skin.geometry);
         const suffixCandidates = skinSuffix
@@ -577,13 +576,13 @@ async function validateSkinPack(zip, zipName, options = {}) {
           : [];
 
         // ----------------------------------------------------------
-        // Paso adicional 2 (respaldo, menos preciso): coincidencia por
-        // NOMBRE BASE del modelo (último segmento tras el último punto
-        // de lo que sigue a "geometry."). Trata "geometry.custom.Egg"
-        // como si fuera "geometry.Egg" (y viceversa), útil cuando solo
-        // cambia el espacio de nombres del modelo. Solo se usa si el
-        // paso 1 no encontró nada, ya que comparar solo la última
-        // palabra es menos confiable en nombres largos.
+        // Extra step 2 (fallback, less precise): match by the model's
+        // BASE NAME (last segment after the last dot in whatever
+        // follows "geometry."). Treats "geometry.custom.Egg" the same
+        // as "geometry.Egg" (and vice versa), useful when only the
+        // model's namespace changed. Only used if step 1 found nothing,
+        // since comparing just the last word is less reliable on long
+        // names.
         // ----------------------------------------------------------
         const skinBaseName = getGeometryBaseName(skin.geometry);
         const baseNameCandidates = skinBaseName ? (geometryBaseNames.get(skinBaseName) || []) : [];
@@ -593,7 +592,7 @@ async function validateSkinPack(zip, zipName, options = {}) {
 
         if (baseCandidates.length === 1) {
 
-          // Coincidencia única y sin ambigüedad: se puede resolver de forma segura.
+          // A single, unambiguous match: safe to resolve automatically.
           const resolvedId = baseCandidates[0];
           usedGeometries.add(resolvedId);
 
@@ -603,10 +602,10 @@ async function validateSkinPack(zip, zipName, options = {}) {
 
         } else if (baseCandidates.length > 1) {
 
-          // Ambigüedad: el mismo nombre base aparece en más de una geometría
-          // distinta dentro de geometry.json (p. ej. con y sin namespace).
-          // No se resuelve automáticamente para evitar asignar la geometría
-          // incorrecta, salvo que el usuario decida continuar de todas formas.
+          // Ambiguous: the same base name shows up on more than one
+          // distinct geometry inside geometry.json (e.g. with and without
+          // a namespace). Not resolved automatically, to avoid assigning
+          // the wrong geometry, unless the user chooses to continue anyway.
           if (resolveAmbiguousGeometry) {
 
             const resolvedId = baseCandidates[0];
@@ -624,10 +623,10 @@ async function validateSkinPack(zip, zipName, options = {}) {
 
           push("error", name, M.geometryNotFoundForSkin(skin.geometry));
 
-          // Intentar sugerencia: comparar tanto contra el propio texto de
-          // "geometry" como contra el localization_name de la skin. Se
-          // compara en ambas direcciones porque el nombre real puede ser
-          // más largo O más corto que el escrito en la skin.
+          // Try to suggest something: compare both against the skin's own
+          // "geometry" text and against its localization_name. Compared
+          // in both directions since the real name could be either
+          // longer OR shorter than what's written on the skin.
           const geoSuffix = skin.geometry.replace(/^geometry\./i, "").toLowerCase();
           const nameLower = name.toLowerCase();
 
@@ -707,16 +706,16 @@ async function validateSkinPack(zip, zipName, options = {}) {
     }
 
     // localization
-    // Formato correcto: skin.<localization_name del paquete>.<localization_name de la skin>
+    // Correct format: skin.<pack's localization_name>.<skin's localization_name>
     let displayName = null;
 
     if (!skin.localization_name) {
 
-      // Sin localization_name no hay forma de generar una clave de
-      // en_US.lang con sentido, y el fixer "Sync localization_name" salta
-      // estas skins a propósito (no puede inventar un nombre). Avisar de
-      // esto en vez del mensaje genérico de "clave faltante", que sugiere
-      // (incorrectamente) que ese fix la resolvería.
+      // With no localization_name there's no way to build a meaningful
+      // en_US.lang key, and the "Sync localization_name" fixer skips
+      // these skins on purpose (it can't invent a name). We warn about
+      // this specifically instead of the generic "missing key" message,
+      // which would (incorrectly) imply that fix could solve it.
       push("error", name, M.missingLocalizationName);
 
     } else {
@@ -729,9 +728,9 @@ async function validateSkinPack(zip, zipName, options = {}) {
 
       const matched =
         [...enUsEntries.keys()].find(k => k === expectedKey) ||
-        // Respaldo: por si el prefijo de paquete difiere en mayúsculas/minúsculas
+        // Fallback: in case the pack prefix differs only in case
         [...enUsEntries.keys()].find(k => k.toLowerCase() === expectedKey.toLowerCase()) ||
-        // Respaldo: coincidencia solo por el nombre de la skin al final de la clave
+        // Fallback: match by just the skin's name at the end of the key
         [...enUsEntries.keys()].find(k => k === `skin.${name}` || k.endsWith(`.${name}`));
 
       if (!matched) {
@@ -791,7 +790,7 @@ async function validateSkinPack(zip, zipName, options = {}) {
 
     }
 
-    // Datos para el apartado de previsualización de skins
+    // Data for the skin preview section
     const hasIssue =
       report.stats.errors > errorsBefore ||
       report.stats.warnings > warningsBefore;
@@ -809,24 +808,24 @@ async function validateSkinPack(zip, zipName, options = {}) {
   }
 
   // ----------------------------
-  // Texturas sin usar
+  // Unused textures
   // ----------------------------
   pngFiles.forEach(tex => {
-    if (/(^|\/)pack_icon\.png$/i.test(tex)) return; // no es una textura de skin
+    if (/(^|\/)pack_icon\.png$/i.test(tex)) return; // not a skin texture
     if (!usedTextures.has(tex)) {
       push("warning", M.unusedTextureTitle, M.unusedTexture(tex));
     }
   });
 
   // ----------------------------
-  // Geometrías sin usar
+  // Unused geometries
   // ----------------------------
   geometryIdentifiers.forEach(id => {
     if (usedGeometries.has(id)) return;
 
     if (id.toLowerCase() === "geometry.null") {
-      // "geometry.null" es una entrada de relleno habitual: no se marca
-      // en amarillo/advertencia, se usa el tipo "info" (color distinto).
+      // "geometry.null" is a common placeholder entry: it isn't flagged
+      // as a yellow warning, it uses the "info" type (a different color).
       push("info", M.geometryNullTitle, M.geometryNullUnused);
       return;
     }
