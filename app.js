@@ -1731,20 +1731,6 @@ document.querySelectorAll(".sub-tab-btn").forEach(btn => {
 // browser's back/forward buttons move between them.
 // ==========================================================
 
-// If we just bounced back from /404.html (GitHub Pages has no real
-// server-side routing, so a direct link or refresh on a tool URL lands
-// there first), restore the path the user actually asked for before
-// figuring out the route, then clean up the marker.
-(function restoreRedirectedPath() {
-  try {
-    const redirected = sessionStorage.getItem("mbsm_redirect_path");
-    if (redirected) {
-      sessionStorage.removeItem("mbsm_redirect_path");
-      history.replaceState(null, "", redirected);
-    }
-  } catch (e) {}
-})();
-
 // Every "page" the app can land on: which main tab + (optional) sub-tab
 // it corresponds to, and the URL segment used for it. Keep this in sync
 // with the sub-tab groups in index.html (the sgTab* ones inside
@@ -1764,6 +1750,13 @@ const ROUTES = [
 // at "/<repo>/", e.g. "/MBSM/"), so instead of hardcoding that we work
 // it out from the current URL: strip a trailing known route segment
 // (and/or "index.html") off the pathname, whatever's left is the base.
+//
+// IMPORTANT: this must run against the URL of the page *actually loaded
+// right now* -- which, thanks to 404.html, is always either a valid tool
+// URL, plain index.html, or the site root. It must NOT run against a
+// redirected/typo'd path restored from sessionStorage below (that path
+// can be anything the user typed, e.g. "/MBSM/validatos/", and trying to
+// strip a base out of THAT is what used to send the router in circles).
 function computeRouteBasePath() {
   let path = window.location.pathname;
   const knownSegments = ROUTES.map(r => r.path).filter(Boolean);
@@ -1800,6 +1793,22 @@ function routeForPath(pathname) {
   const match = ROUTES.find(r => r.path && r.path.toLowerCase() === rel.toLowerCase());
   return match || ROUTES[0];
 }
+
+// If we just bounced back from /404.html (GitHub Pages has no real
+// server-side routing, so a direct link or refresh on a tool URL lands
+// there first), figure out which page was actually requested -- using
+// the ROUTE_BASE_PATH computed above from the real page we're on, never
+// by trusting the redirected path as a base itself. An unrecognized/
+// typo'd page (routeForPath() falling back to ROUTES[0]) just lands on
+// Home instead of looping.
+let initialRoute = routeForPath(window.location.pathname);
+try {
+  const redirected = sessionStorage.getItem("mbsm_redirect_path");
+  if (redirected) {
+    sessionStorage.removeItem("mbsm_redirect_path");
+    initialRoute = routeForPath(redirected);
+  }
+} catch (e) {}
 
 // Only the *top-level* sub-tab group defines a "page" (a tool's import
 // method tabs, for instance, are a nested group and don't count).
@@ -2109,7 +2118,7 @@ applyLanguage(savedLang);
 // 4D/5D Viewer or OBJ -> Skin 1.8, on their lazy-init click hooks (just
 // above) already being attached so a direct link actually starts them.
 // ==========================================================
-applyRoute(routeForPath(window.location.pathname));
+applyRoute(initialRoute);
 
 // Normalize the address bar to the canonical route path (covers things
 // like a trailing-slash mismatch or a stray "index.html").

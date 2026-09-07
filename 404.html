@@ -17,17 +17,54 @@
     // Keep this segment list in sync with the ROUTES array in app.js.
     var KNOWN_SEGMENTS = ["4D-5D-Viewer", "Classic-Skins", "Validator", "Maker", "Obj-Skin", "About"];
 
+    // Fallback for when NONE of the segments above match -- i.e. a typo'd
+    // or otherwise invalid URL (e.g. "/MBSM/validatos/"). How many leading
+    // path segments make up the site's own base directory, independent of
+    // MBSM's routes: 1 for a typical GitHub Pages project site
+    // ("<user>.github.io/MBSM/..."), 0 if MBSM is hosted at a domain's
+    // root. Adjust this if you fork/self-host MBSM somewhere else.
+    var BASE_SEGMENTS_FALLBACK = 1;
+
     var path = window.location.pathname;
+    var matchedKnown = false;
     for (var i = 0; i < KNOWN_SEGMENTS.length; i++) {
       var re = new RegExp("/" + KNOWN_SEGMENTS[i] + "/?$", "i");
       if (re.test(path)) {
         path = path.replace(re, "/");
+        matchedKnown = true;
         break;
       }
     }
-    if (!/\/$/.test(path)) {
-      path = path.replace(/[^/]*$/, "");
+
+    if (matchedKnown) {
+      if (!/\/$/.test(path)) {
+        path = path.replace(/[^/]*$/, "");
+      }
+    } else {
+      // Nothing matched -- do NOT try to guess a base path out of the
+      // leftover segment(s). That's exactly what used to send this page
+      // in circles: redirecting "/MBSM/validatos/" to
+      // "/MBSM/validatos/index.html" (which doesn't exist either, so
+      // GitHub Pages serves 404.html again, forever). Collapse straight to
+      // the site's own base directory instead.
+      var segments = path.split("/").filter(Boolean);
+      path = "/" + segments.slice(0, BASE_SEGMENTS_FALLBACK).join("/");
+      if (path !== "/") path += "/";
     }
+
+    var target = path + "index.html";
+
+    // Belt-and-suspenders loop guard: if we're somehow about to redirect
+    // to the exact target we just tried, stop and go to the domain root
+    // instead of possibly looping forever.
+    try {
+      if (sessionStorage.getItem("mbsm_404_last_target") === target) {
+        sessionStorage.removeItem("mbsm_404_last_target");
+        target = "/";
+      } else {
+        sessionStorage.setItem("mbsm_404_last_target", target);
+      }
+    } catch (e) {}
 
     try {
       sessionStorage.setItem(
@@ -36,7 +73,7 @@
       );
     } catch (e) {}
 
-    window.location.replace(path + "index.html");
+    window.location.replace(target);
   })();
 </script>
 </head>
