@@ -36,7 +36,7 @@ No installation, no server-side processing for validation or repair, and no acco
 
 **v0.7.0 beta** brought a complete visual redesign, and **v0.8.0** refined it further:
 
-* **Sidebar navigation** — grouped by Workspace / Viewers / Tools, collapsible, with a command palette (`⌘K` / `Ctrl+K`) to jump to any tool instantly.
+* **Sidebar navigation** — grouped by Workspace / Viewers / Tools, collapsible, with a command palette (`Ctrl+K`) to jump to any tool instantly.
 * **Home dashboard** — quick-access cards for every tool, a Recent Projects list, and an in-app changelog.
 * **Per-tool URLs** — every tool has its own address (e.g. `/Validator/`), so links can be shared directly and the browser's back/forward buttons work as expected.
 * **Inspector panel** — a dedicated side panel in the 4D/5D viewer for model info, display options and appearance settings.
