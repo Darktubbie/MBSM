@@ -680,6 +680,9 @@ async function makerGeneratePack() {
 
     setTimeout(() => URL.revokeObjectURL(blobUrl), 4000);
 
+    if (typeof mbsmBumpStat === "function") mbsmBumpStat("packs", 1);
+    if (typeof mbsmAddRecent === "function") mbsmAddRecent("pack", downloadName);
+
   } catch (err) {
     console.error(err);
     mbsmToast("error", t("maker.generateError"));

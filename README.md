@@ -34,12 +34,14 @@ No installation, no server-side processing for validation or repair, and no acco
 
 </div>
 
-**v0.7.0 beta** brought a complete visual redesign:
+**v0.7.0 beta** brought a complete visual redesign, and **v0.8.0** refined it further:
 
 * **Sidebar navigation** — grouped by Workspace / Viewers / Tools, collapsible, with a command palette (`⌘K` / `Ctrl+K`) to jump to any tool instantly.
-* **Home dashboard** — quick-access cards for every tool plus an in-app changelog.
+* **Home dashboard** — quick-access cards for every tool, a Recent Projects list, and an in-app changelog.
+* **Per-tool URLs** — every tool has its own address (e.g. `/Validator/`), so links can be shared directly and the browser's back/forward buttons work as expected.
 * **Inspector panel** — a dedicated side panel in the 4D/5D viewer for model info, display options and appearance settings.
-* **Dark / Light / System themes**, switchable from the sidebar.
+* **Mobile navigation** — a bottom nav with quick pickers for Viewers and Tools, plus a dedicated Settings sheet for language, theme and the GitHub link.
+* **Dark / Light / System themes**, switchable from the sidebar (or the mobile Settings sheet).
 * **Full Spanish and English interface**, with automatic browser-language detection.
 
 ---
@@ -138,6 +140,8 @@ git clone https://github.com/Darktubbie/MBSM.git
 Then open **index.html** in a modern browser — it's the single HTML entry point for the whole toolkit (every tool, including OBJ → Skin 1.8, lives inside this one page now).
 
 No build process or local server is currently required.
+
+> **Deep links:** each tool updates the address bar (e.g. `/Validator/`) via the History API, but there's no real server-side route behind it. On GitHub Pages this is already handled by `404.html`, which bounces a direct link or refresh back to `index.html` so the app can restore the right tool. If you self-host MBSM somewhere else, point your server's 404/error page at `index.html` the same way — otherwise a direct link straight to `/Validator/` (skipping the root page first) will just 404.
 
 ---
 

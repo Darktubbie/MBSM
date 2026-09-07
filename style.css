@@ -39,6 +39,7 @@
   --sidebar-w:248px;
   --sidebar-w-collapsed:72px;
   --topbar-mini-h:56px;
+  --bottom-nav-h:60px;
   --panel-rgb:11,11,15;
 }
 
@@ -58,11 +59,6 @@
   50%{ transform:translateY(-14px) rotate(6deg); }
 }
 
-@keyframes pulseGlow{
-  0%,100%{ box-shadow:0 0 12px rgba(168,85,247,.7); }
-  50%{ box-shadow:0 0 22px rgba(168,85,247,1); }
-}
-
 .reveal{
   opacity:0;
   transform:translateY(24px);
@@ -70,10 +66,6 @@
 
 .reveal.in-view{
   animation:fadeInUp .7s ease forwards;
-}
-
-.online{
-  animation:pulseGlow 2.2s ease-in-out infinite;
 }
 
 html{
@@ -373,31 +365,6 @@ a{
   font-size:14px;
   color:var(--text);
   margin-bottom:18px;
-}
-
-.hero-status{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.status-item{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  color:var(--text);
-}
-
-.dot{
-  width:10px;
-  height:10px;
-  border-radius:999px;
-  display:inline-block;
-}
-
-.online{
-  background:var(--purple);
-  box-shadow:0 0 12px rgba(168,85,247,.7);
 }
 
 .hero-mini-grid{
@@ -2494,6 +2461,85 @@ body.sidebar-collapsed{ padding-left:var(--sidebar-w-collapsed); }
 
 .topbar-mini{ display:none; }
 
+/* ---------- App Topbar (desktop) ---------- */
+.app-topbar{
+  position:sticky;
+  top:0;
+  z-index:150;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:14px 28px;
+  background:rgba(18,18,23,.82);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.app-topbar-crumb-wrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--text);
+  font-weight:700;
+  font-size:14px;
+}
+.app-topbar-crumb-icon{ width:16px; height:16px; color:var(--muted); display:flex; }
+.app-topbar-crumb-icon svg{ width:100%; height:100%; }
+
+.app-topbar-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.topbar-search-pill{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:9px;
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:var(--muted);
+  font-family:var(--font-ui);
+  font-size:12.5px;
+  cursor:pointer;
+  transition:border-color .15s ease, color .15s ease;
+  min-width:190px;
+}
+.topbar-search-pill:hover{ border-color:var(--purple); color:var(--text); }
+.topbar-search-pill-icon{ width:14px; height:14px; flex:0 0 auto; }
+.topbar-search-pill span{ flex:1 1 auto; text-align:left; }
+.topbar-search-pill kbd{
+  font-family:var(--font-mono);
+  font-size:10px;
+  color:var(--muted);
+  background:var(--elevated);
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:2px 5px;
+}
+
+.topbar-icon-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:34px;
+  height:34px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:var(--muted);
+  cursor:pointer;
+  transition:border-color .15s ease, color .15s ease, background .15s ease;
+}
+.topbar-icon-btn:hover{ border-color:var(--purple); color:var(--text); background:var(--elevated); }
+.topbar-icon-btn svg{ width:16px; height:16px; }
+
+@media (max-width:900px){
+  .app-topbar{ display:none; }
+}
+
 .sidebar-top{
   display:flex; align-items:center; justify-content:space-between;
   gap:8px; padding:16px 14px; border-bottom:1px solid var(--border);
@@ -2599,7 +2645,7 @@ body.sidebar-collapsed .sidebar .lang-switch{ flex-direction:column; }
 
 /* ---------- Topbar móvil (visible solo en pantallas pequeñas) ---------- */
 @media (max-width:900px){
-  body{ padding-left:0 !important; padding-top:var(--topbar-mini-h); }
+  body{ padding-left:0 !important; padding-top:var(--topbar-mini-h); padding-bottom:var(--bottom-nav-h); }
   .sidebar{
     transform:translateX(-100%);
     width:min(280px,82vw) !important;
@@ -2618,14 +2664,48 @@ body.sidebar-collapsed .sidebar .lang-switch{ flex-direction:column; }
     border-bottom:1px solid var(--border);
   }
   .mobile-nav-toggle{
+    /* The bottom nav now covers every destination the drawer had
+       (Home / Viewers / Tools / About) plus a dedicated Settings sheet
+       for language, theme and the GitHub link, so this hamburger --
+       which only opened that same drawer -- is redundant on mobile. */
+    display:none;
+  }
+  .topbar-mini-brand{ font-weight:700; font-size:15px; display:flex; align-items:center; gap:8px; flex:1 1 auto; }
+  .topbar-mini-icon{ border-radius:5px; object-fit:cover; }
+  .topbar-mini-search{
     width:34px; height:34px;
+    flex:0 0 auto;
     display:flex; align-items:center; justify-content:center;
     background:var(--panel2); border:1px solid var(--border);
-    border-radius:var(--radius-sm); color:var(--text);
+    border-radius:var(--radius-sm); color:var(--muted);
   }
-  .mobile-nav-toggle svg{ width:18px; height:18px; }
-  .topbar-mini-brand{ font-weight:700; font-size:15px; display:flex; align-items:center; gap:8px; }
-  .topbar-mini-icon{ border-radius:5px; object-fit:cover; }
+  .topbar-mini-search svg{ width:17px; height:17px; }
+
+  .mobile-bottom-nav{
+    display:flex;
+    position:fixed; left:0; right:0; bottom:0; z-index:120;
+    height:var(--bottom-nav-h);
+    padding-bottom:env(safe-area-inset-bottom, 0);
+    background:rgba(var(--panel-rgb),.94);
+    backdrop-filter:blur(10px);
+    border-top:1px solid var(--border);
+  }
+  .mobile-bottom-nav-item{
+    flex:1 1 0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:3px;
+    background:none; border:none;
+    color:var(--muted);
+    font-family:var(--font-ui);
+    padding:6px 2px 0;
+  }
+  .mobile-bottom-nav-item .mbn-icon{ width:21px; height:21px; display:flex; }
+  .mobile-bottom-nav-item .mbn-icon svg{ width:100%; height:100%; }
+  .mobile-bottom-nav-item .mbn-label{ font-size:10.5px; font-weight:600; }
+  .mobile-bottom-nav-item.active{ color:var(--primary-hover); }
+}
+@media (min-width:901px){
+  .mobile-bottom-nav{ display:none; }
 }
 
 /* ---------- Dashboard (Home) ---------- */
@@ -2698,6 +2778,395 @@ body.sidebar-collapsed .sidebar .lang-switch{ flex-direction:column; }
   transition:opacity .15s ease, transform .15s ease;
 }
 .feature-card:hover::after{ opacity:1; }
+
+/* ---------- Modelos protagonistas en cards del Dashboard (v0.8.0) ---------- */
+.feature-card.has-model{
+  padding-top:0;
+  overflow:hidden;
+}
+
+.fc-model-stage{
+  position:relative;
+  height:150px;
+  margin:0 -20px 18px;
+  background:
+    radial-gradient(ellipse 70% 80% at 50% 100%, rgba(124,58,237,.22), transparent 70%),
+    linear-gradient(180deg, #101019, #0b0b10);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.feature-card.has-model:hover .fc-model-stage{
+  background:
+    radial-gradient(ellipse 70% 80% at 50% 100%, rgba(124,58,237,.34), transparent 70%),
+    linear-gradient(180deg, #121019, #0b0b10);
+}
+
+/* Render voxel real (PNG) del modelo dentro del stage de la card */
+.fc-model-img{
+  width:150px;
+  height:150px;
+  object-fit:contain;
+  margin-bottom:-14px;
+  filter:drop-shadow(0 12px 14px rgba(0,0,0,.5)) drop-shadow(0 0 20px rgba(168,85,247,.22));
+  animation:mfFloat 4.5s ease-in-out infinite;
+  transition:filter .2s ease;
+}
+.feature-card.has-model:hover .fc-model-img{
+  filter:drop-shadow(0 14px 16px rgba(0,0,0,.55)) drop-shadow(0 0 26px rgba(168,85,247,.4));
+}
+@media (prefers-reduced-motion: reduce){
+  .fc-model-img{ animation:none; }
+}
+
+/* Figura estilo Steve/Alex construida en CSS puro: sin depender de ningún asset */
+.model-figure{
+  --mf-scale:1;
+  position:relative;
+  width:calc(64px * var(--mf-scale));
+  height:calc(112px * var(--mf-scale));
+  transform-style:preserve-3d;
+  animation:mfFloat 4.5s ease-in-out infinite;
+  filter:drop-shadow(0 10px 14px rgba(0,0,0,.55)) drop-shadow(0 0 22px rgba(168,85,247,.28));
+}
+
+.model-figure .mf-head{
+  position:absolute;
+  top:0; left:50%;
+  width:calc(30px * var(--mf-scale));
+  height:calc(30px * var(--mf-scale));
+  margin-left:calc(-15px * var(--mf-scale));
+  border-radius:4px;
+  background:linear-gradient(155deg,#e7c9a5,#c99b6d 60%,#a9784f);
+  box-shadow:inset -4px -6px 0 rgba(0,0,0,.18), inset 3px 3px 0 rgba(255,255,255,.08);
+}
+.model-figure .mf-torso{
+  position:absolute;
+  top:calc(29px * var(--mf-scale)); left:50%;
+  width:calc(34px * var(--mf-scale));
+  height:calc(46px * var(--mf-scale));
+  margin-left:calc(-17px * var(--mf-scale));
+  border-radius:3px;
+  background:linear-gradient(155deg,#8b7bdb,#6c4fd1 55%,#54399f);
+  box-shadow:inset -4px -6px 0 rgba(0,0,0,.2), inset 3px 3px 0 rgba(255,255,255,.10);
+}
+.model-figure .mf-arm{
+  position:absolute;
+  top:calc(30px * var(--mf-scale));
+  width:calc(13px * var(--mf-scale));
+  height:calc(44px * var(--mf-scale));
+  border-radius:3px;
+  background:linear-gradient(155deg,#e7c9a5,#c99b6d 60%,#a9784f);
+  box-shadow:inset -3px -5px 0 rgba(0,0,0,.18), inset 2px 2px 0 rgba(255,255,255,.08);
+  transform-origin:top center;
+  animation:mfArmSwing 4.5s ease-in-out infinite;
+}
+.model-figure .mf-arm.left{ left:calc(-11px * var(--mf-scale)); }
+.model-figure .mf-arm.right{ right:calc(-11px * var(--mf-scale)); animation-delay:-2.25s; }
+.model-figure .mf-leg{
+  position:absolute;
+  top:calc(74px * var(--mf-scale));
+  width:calc(14px * var(--mf-scale));
+  height:calc(38px * var(--mf-scale));
+  border-radius:3px;
+  background:linear-gradient(155deg,#3a3550,#26223a 60%,#1a1729);
+  box-shadow:inset -3px -5px 0 rgba(0,0,0,.25), inset 2px 2px 0 rgba(255,255,255,.05);
+}
+.model-figure .mf-leg.left{ left:calc(2px * var(--mf-scale)); }
+.model-figure .mf-leg.right{ left:calc(18px * var(--mf-scale)); }
+
+.model-figure .mf-rim{
+  position:absolute;
+  inset:-6px;
+  border-radius:6px;
+  background:linear-gradient(100deg, rgba(168,85,247,.35), transparent 40%);
+  mix-blend-mode:screen;
+  pointer-events:none;
+}
+
+@keyframes mfFloat{
+  0%,100%{ transform:translateY(0) rotate(-2deg); }
+  50%{ transform:translateY(-9px) rotate(2deg); }
+}
+@keyframes mfArmSwing{
+  0%,100%{ transform:rotate(-6deg); }
+  50%{ transform:rotate(6deg); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .model-figure, .model-figure .mf-arm{ animation:none; }
+}
+
+/* Placeholder de skin clásica: silueta un poco más ancha, colores skin por defecto */
+.fc-classic-viewer .model-figure .mf-torso{
+  background:linear-gradient(155deg,#5ba6a0,#3f8b85 55%,#2c6864);
+}
+.fc-classic-viewer .model-figure .mf-arm{
+  background:linear-gradient(155deg,#e7c9a5,#c99b6d 60%,#a9784f);
+}
+
+/* ---------- Modelo decorativo del Hero (v0.8.0) ---------- */
+.hero-model-decor{
+  position:absolute;
+  right:4%;
+  bottom:0;
+  opacity:.5;
+  pointer-events:none;
+  z-index:0;
+}
+.hero-model-decor img{
+  width:300px;
+  height:300px;
+  object-fit:contain;
+  filter:drop-shadow(0 18px 22px rgba(0,0,0,.5)) drop-shadow(0 0 34px rgba(168,85,247,.3));
+  animation:mfFloat 6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce){
+  .hero-model-decor img{ animation:none; }
+}
+@media (max-width:980px){
+  .hero-model-decor{ display:none; }
+}
+
+/* El home usa el dashboard (.dash-inline) como cabecera propia, así que
+   no necesita el padding-top genérico de .section (pensado para las demás
+   secciones); si no, queda un hueco enorme debajo del topbar. */
+#home.section{
+  padding-top:0;
+}
+
+/* ---------- Dashboard: welcome + stats (v0.9.0) ---------- */
+.dash-inline{
+  padding:24px 0 8px;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(124,58,237,.14), transparent 45%),
+    linear-gradient(180deg, var(--panel), var(--bg) 70%);
+  border-bottom:1px solid var(--border);
+}
+.dash-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:24px;
+  padding-bottom:32px;
+}
+.dash-welcome{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+.dash-avatar{
+  width:64px; height:64px;
+  flex:0 0 auto;
+  border-radius:var(--radius-lg);
+  background:linear-gradient(155deg, rgba(124,58,237,.35), rgba(168,85,247,.12));
+  border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 30px rgba(168,85,247,.18);
+}
+.dash-avatar img{ width:38px; height:38px; object-fit:contain; }
+.dash-welcome-text h1{
+  font-size:26px !important;
+  font-weight:800;
+  letter-spacing:-.02em;
+  line-height:1.2 !important;
+  text-transform:none;
+  display:flex; align-items:center; gap:8px;
+}
+.dash-wave{
+  display:inline-block;
+  animation:dashWave 2.4s ease-in-out infinite;
+  transform-origin:70% 70%;
+}
+@keyframes dashWave{
+  0%,60%,100%{ transform:rotate(0deg); }
+  10%{ transform:rotate(14deg); }
+  20%{ transform:rotate(-8deg); }
+  30%{ transform:rotate(14deg); }
+  40%{ transform:rotate(-4deg); }
+}
+.dash-welcome-text p{
+  font-size:14.5px; color:var(--muted); margin:2px 0 8px;
+}
+.dash-version-badge{
+  display:inline-block;
+  font-size:11px; font-weight:700; letter-spacing:.04em;
+  color:var(--primary-hover);
+  background:rgba(124,58,237,.14);
+  border:1px solid rgba(124,58,237,.3);
+  padding:3px 9px; border-radius:999px;
+}
+.dash-version-row{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+/* Holder for the latest release's badge (Minor/Patch/Major), cloned in
+   next to the version pill so both sit on the same line/height. Empty
+   (and takes up no space) until JS fills it in. */
+.dash-latest-badge:empty{ display:none; }
+.dash-latest-badge .changelog-badge{ margin:0; }
+
+.dash-stats{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.dash-stat-card{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:var(--elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-sm);
+  padding:14px 18px;
+  min-width:128px;
+}
+.dash-stat-icon{
+  width:38px; height:38px;
+  flex:0 0 auto;
+  border-radius:var(--radius-sm);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--primary-hover);
+  background:rgba(124,58,237,.14);
+}
+.dash-stat-icon svg{ width:19px; height:19px; }
+.dash-stat-icon-skins{ color:#4ade80; background:rgba(34,197,94,.14); }
+.dash-stat-icon-packs{ color:#fbbf24; background:rgba(245,158,11,.14); }
+.dash-stat-body{ display:flex; flex-direction:column; }
+.dash-stat-label{ font-size:11.5px; color:var(--muted); font-weight:600; letter-spacing:.02em; }
+.dash-stat-value{ font-size:20px; font-weight:800; letter-spacing:-.01em; }
+
+/* ---------- Dashboard: Recent Projects ---------- */
+.dash-secondary{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+  padding-top:28px;
+  padding-bottom:36px;
+}
+.dash-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:20px;
+}
+.dash-card-title{
+  font-size:14px; font-weight:700; margin-bottom:14px;
+}
+
+/* "View all updates" teaser, relocated under the version row in the
+   welcome header (used to live inside the now-removed System status
+   card). Only holds the hint/link now -- the release badge lives in
+   .dash-latest-badge, right next to the version pill above. */
+.dash-welcome-changelog{
+  display:block;
+  margin-top:8px;
+  max-width:360px;
+}
+.dash-welcome-changelog .changelog-teaser-hint{ margin-top:0; }
+
+.dash-recent-card{
+  display:flex;
+  flex-direction:column;
+}
+.dash-recent-head{ display:flex; align-items:center; justify-content:space-between; }
+.dash-recent-viewall{
+  background:none; border:none;
+  color:var(--primary-hover);
+  font-size:12px; font-weight:600;
+  cursor:pointer;
+  padding:2px;
+}
+.dash-recent-viewall:hover{ text-decoration:underline; }
+.dash-recent-list{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.dash-recent-empty{
+  font-size:12.5px;
+  color:var(--muted);
+  line-height:1.5;
+  padding:8px 0;
+}
+.dash-recent-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 6px;
+  border-radius:var(--radius-sm);
+  transition:background .12s ease;
+}
+.dash-recent-item:hover{ background:var(--panel2); }
+.dash-recent-icon{
+  width:32px; height:32px;
+  flex:0 0 auto;
+  border-radius:var(--radius-sm);
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(124,58,237,.14);
+  color:var(--primary-hover);
+}
+.dash-recent-icon svg{ width:15px; height:15px; }
+.dash-recent-icon-skin{ color:#4ade80; background:rgba(34,197,94,.14); }
+.dash-recent-icon-pack{ color:#fbbf24; background:rgba(245,158,11,.14); }
+.dash-recent-body{ display:flex; flex-direction:column; min-width:0; flex:1 1 auto; }
+.dash-recent-name{
+  font-size:12.5px; font-weight:600;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.dash-recent-time{ font-size:11px; color:var(--muted); }
+
+@media (max-width:640px){
+  .dash-top{ flex-direction:column; align-items:flex-start; }
+  .dash-stats{ width:100%; gap:8px; }
+  .dash-stat-card{ flex:1 1 0; min-width:0; padding:10px 8px; gap:8px; }
+  .dash-stat-icon{ width:32px; height:32px; }
+  .dash-stat-icon svg{ width:16px; height:16px; }
+  .dash-stat-label{ font-size:10.5px; }
+  .dash-stat-value{ font-size:17px; }
+  .dash-welcome-text h1{ font-size:22px !important; }
+}
+
+/* ---------- Home: tarjetas de herramientas en 2 columnas + caption
+   corta en móvil (en vez del párrafo largo, como en la app nativa) ---------- */
+.fc-caption{
+  display:none;
+  align-items:center;
+  gap:4px;
+  margin-top:10px;
+  font-size:12px;
+  font-weight:600;
+  color:var(--primary-hover);
+}
+.fc-caption svg{ width:13px; height:13px; }
+
+.home-features-mobile-title{
+  display:none;
+  font-size:15px;
+  font-weight:700;
+  margin:0 0 12px;
+}
+
+@media (max-width:900px){
+  .home-features .section-head{ display:none; }
+  .home-features-mobile-title{ display:block; }
+  .home-features{ padding-top:20px; }
+  .home-features .feature-grid{ grid-template-columns:repeat(2,1fr) !important; gap:10px; }
+  .home-features .feature-card{ padding:12px; }
+  .home-features .feature-card h3{ font-size:13.5px; line-height:1.3; margin:8px 0 0; }
+  .home-features .feature-card .tag{ font-size:9.5px; padding:2px 7px; }
+  .home-features .feature-card p{ display:none; }
+  .home-features .feature-card .fc-caption{ display:flex; }
+  .home-features .fc-model-stage{ height:110px; margin:-12px -12px 0; }
+  .home-features .fc-model-img{ width:100px; height:100px; }
+}
 
 /* ---------- Botones ---------- */
 .btn{
@@ -3138,25 +3607,6 @@ body.sidebar-collapsed .sidebar .lang-switch{ flex-direction:column; }
 }
 .toast-close:hover{ color:var(--text); }
 
-/* ---------- Botón "Search / Ctrl+K" en la sidebar ---------- */
-.sidebar-cmdk-btn{
-  width:100%;
-  border:none;
-  background:transparent;
-  font-family:var(--font-ui);
-}
-.sidebar-cmdk-kbd{
-  margin-left:auto;
-  font-family:var(--font-mono);
-  font-size:10px;
-  color:var(--muted);
-  background:var(--elevated);
-  border:1px solid var(--border);
-  border-radius:4px;
-  padding:2px 5px;
-}
-body.sidebar-collapsed .sidebar-cmdk-kbd{ display:none; }
-
 /* ---------- Command Palette ---------- */
 .cmdk-backdrop{
   position:fixed; inset:0; z-index:500;
@@ -3453,6 +3903,99 @@ body.sidebar-collapsed .theme-switch{ flex-direction:column; }
 }
 
 /* ---------- Changelog (Home) ---------- */
+body.no-scroll{ overflow:hidden; }
+
+/* Teaser: solo la última versión, visible en la Home */
+.changelog-teaser-wrap{
+  display:block;
+  width:100%;
+  text-align:left;
+  background:none;
+  border:none;
+  padding:0;
+  cursor:pointer;
+  font-family:var(--font-ui);
+}
+.changelog-teaser-wrap .changelog-entry{
+  transition:border-color .15s ease, transform .15s ease;
+}
+.changelog-teaser-wrap:hover .changelog-entry{
+  border-color:var(--purple);
+  transform:translateY(-2px);
+}
+.changelog-teaser-hint{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:12px;
+  color:var(--purple);
+  font-size:12.5px;
+  font-weight:700;
+}
+.changelog-teaser-hint svg{ width:14px; height:14px; }
+
+/* Modal con el historial completo */
+.changelog-modal-backdrop{
+  position:fixed; inset:0;
+  z-index:600;
+  background:rgba(6,6,9,.72);
+  backdrop-filter:blur(3px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .15s ease;
+}
+.changelog-modal-backdrop.open{
+  opacity:1;
+  pointer-events:auto;
+}
+.changelog-modal{
+  width:100%;
+  max-width:640px;
+  max-height:min(78vh,720px);
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  box-shadow:0 30px 70px rgba(0,0,0,.5);
+  display:flex;
+  flex-direction:column;
+  transform:translateY(10px) scale(.98);
+  transition:transform .15s ease;
+}
+.changelog-modal-backdrop.open .changelog-modal{
+  transform:translateY(0) scale(1);
+}
+.changelog-modal-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 20px;
+  border-bottom:1px solid var(--border);
+  flex:0 0 auto;
+}
+.changelog-modal-head h3{ font-size:16px; font-weight:700; margin:0; }
+.changelog-modal-close{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:32px; height:32px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:var(--muted);
+  cursor:pointer;
+  transition:border-color .15s ease, color .15s ease;
+}
+.changelog-modal-close:hover{ border-color:var(--purple); color:var(--text); }
+.changelog-modal-close svg{ width:15px; height:15px; }
+.changelog-modal-body{
+  padding:20px;
+  overflow-y:auto;
+}
+
 .changelog-list{
   display:flex;
   flex-direction:column;
@@ -3477,6 +4020,54 @@ body.sidebar-collapsed .theme-switch{ flex-direction:column; }
   width:100%; height:100%;
   object-fit:cover;
   display:block;
+}
+
+/* Iconos de bloque para Patch (obsidiana) y Major Release (amatista):
+   más grandes que el icono base y sin recorte, para que se vean como
+   un bloque "flotando" en vez de una miniatura cuadrada. */
+.changelog-entry-icon.type-patch,
+.changelog-entry-icon.type-major{
+  width:44px; height:44px;
+  border:none;
+  background:none;
+  overflow:visible;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.changelog-entry-icon.type-patch img,
+.changelog-entry-icon.type-major img{
+  width:100%; height:100%;
+  object-fit:contain;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.45));
+}
+.changelog-entry-icon.type-major img{
+  filter:drop-shadow(0 4px 10px rgba(168,85,247,.45));
+}
+
+.changelog-badge{
+  font-family:var(--font-ui);
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.04em;
+  padding:3px 9px;
+  border-radius:999px;
+  text-transform:uppercase;
+}
+.changelog-badge.badge-minor{
+  color:var(--purple);
+  background:rgba(168,85,247,.14);
+  border:1px solid rgba(168,85,247,.32);
+}
+.changelog-badge.badge-patch{
+  color:#b9a8ff;
+  background:rgba(90,60,140,.16);
+  border:1px solid rgba(140,110,200,.35);
+}
+.changelog-badge.badge-major{
+  color:#e2c8ff;
+  background:rgba(168,85,247,.22);
+  border:1px solid rgba(168,85,247,.55);
 }
 .changelog-entry-body{ flex:1 1 auto; min-width:0; }
 .changelog-entry-head{
@@ -3544,4 +4135,113 @@ body.sidebar-collapsed .theme-switch{ flex-direction:column; }
 }
 .sidebar-floating-tooltip.visible{
   opacity:1;
+}
+
+/* ---------- Móvil: bottom sheets (Viewers / Tools / Settings) ----------
+   Reemplazan la navegación de un solo destino que tenían antes los
+   botones "Viewers" y "Tools" de la barra inferior (iban directo al
+   4D/5D Viewer y al Validador respectivamente, sin dejar elegir), y el
+   botón "More" (que antes solo duplicaba el menú hamburguesa completo). */
+.mobile-sheet-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:650;
+  background:rgba(0,0,0,.55);
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .18s ease;
+}
+.mobile-sheet-backdrop.open{
+  opacity:1;
+  pointer-events:auto;
+}
+.mobile-sheet{
+  width:100%;
+  max-width:560px;
+  max-height:75vh;
+  overflow-y:auto;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-bottom:none;
+  border-radius:20px 20px 0 0;
+  padding:10px 20px 24px;
+  box-shadow:0 -8px 30px rgba(0,0,0,.35);
+  transform:translateY(16px);
+  transition:transform .18s ease;
+}
+.mobile-sheet-backdrop.open .mobile-sheet{
+  transform:translateY(0);
+}
+.mobile-sheet-handle{
+  width:36px; height:4px;
+  border-radius:999px;
+  background:var(--border);
+  margin:2px auto 14px;
+}
+.mobile-sheet-title{
+  font-size:15px; font-weight:700; margin-bottom:14px;
+}
+.mobile-sheet-body{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.mobile-sheet-option{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:13px 14px;
+  border-radius:var(--radius-sm);
+  background:var(--panel2);
+  border:1px solid var(--border);
+  color:var(--text);
+  font-size:14px;
+  font-weight:600;
+}
+.mobile-sheet-option:active{ background:var(--elevated); }
+.mso-icon{
+  flex:0 0 auto;
+  width:22px; height:22px;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--primary-hover);
+}
+.mso-icon svg{ width:100%; height:100%; }
+.mso-label{ flex:1 1 auto; }
+
+.mobile-sheet-body-settings{ gap:16px; }
+.mobile-sheet-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:2px 2px;
+}
+.mobile-sheet-row-label{ font-size:14px; font-weight:600; color:var(--text); }
+.mobile-sheet-body-settings .lang-switch,
+.mobile-sheet-body-settings .theme-switch{
+  display:flex;
+  gap:6px;
+}
+.mobile-sheet-body-settings .lang-btn,
+.mobile-sheet-body-settings .theme-btn{
+  min-width:38px;
+  height:34px;
+  padding:0 10px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  color:var(--muted);
+  font-size:12.5px; font-weight:700;
+}
+.mobile-sheet-body-settings .lang-btn svg,
+.mobile-sheet-body-settings .theme-btn svg{ width:17px; height:17px; }
+.mobile-sheet-body-settings .lang-btn.active,
+.mobile-sheet-body-settings .theme-btn.active{
+  color:var(--primary-hover);
+  border-color:var(--primary);
+  background:rgba(124,58,237,.14);
 }

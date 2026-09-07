@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MBSM</title>
+<meta name="robots" content="noindex">
+<script>
+  (function () {
+    // GitHub Pages has no real server-side routing: it serves this file
+    // whenever a URL doesn't match an actual file. Since MBSM is a
+    // single-page app, that includes every one of its "tool" URLs
+    // (e.g. /MBSM/Validator/) whenever they're opened directly or
+    // refreshed. This script works out the real index.html location,
+    // remembers exactly which page was requested, and bounces there so
+    // app.js's own router can restore the right tab/tool from it.
+    //
+    // Keep this segment list in sync with the ROUTES array in app.js.
+    var KNOWN_SEGMENTS = ["4D-5D-Viewer", "Classic-Skins", "Validator", "Maker", "Obj-Skin", "About"];
+
+    var path = window.location.pathname;
+    for (var i = 0; i < KNOWN_SEGMENTS.length; i++) {
+      var re = new RegExp("/" + KNOWN_SEGMENTS[i] + "/?$", "i");
+      if (re.test(path)) {
+        path = path.replace(re, "/");
+        break;
+      }
+    }
+    if (!/\/$/.test(path)) {
+      path = path.replace(/[^/]*$/, "");
+    }
+
+    try {
+      sessionStorage.setItem(
+        "mbsm_redirect_path",
+        window.location.pathname + window.location.search + window.location.hash
+      );
+    } catch (e) {}
+
+    window.location.replace(path + "index.html");
+  })();
+</script>
+</head>
+<body>
+  <p>Redirecting to <a href="index.html">MBSM</a>&hellip;</p>
+</body>
+</html>

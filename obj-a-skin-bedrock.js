@@ -1498,6 +1498,9 @@ async function downloadSkinPackage() {
   const blob = await zip.generateAsync({ type: 'blob' });
   const zipName = exportable.length > 1 ? `${packKey}.zip` : `${slugify(exportable[0].name) || 'skin'}_pack.zip`;
   downloadBlob(blob, zipName);
+
+  if (typeof mbsmBumpStat === 'function') mbsmBumpStat('models', exportable.length);
+  if (typeof mbsmAddRecent === 'function') mbsmAddRecent('model', zipName);
 }
 
 /* Generates a v4 UUID for manifest.json. Uses crypto.randomUUID() when

@@ -80,25 +80,21 @@
 
     <div class="sidebar-group">
       <div class="sidebar-group-label" data-i18n="nav.groupViewers">VIEWERS</div>
-      <a href="#validator" class="sidebar-link tab-link" data-tab="validator" data-subtab="sgTabViewer" data-tooltip="4D / 5D">
+      <a href="#validator" class="sidebar-link tab-link" data-tab="validator" data-subtab="sgTabViewer" data-tooltip="4D/5D Viewer">
         <span class="sidebar-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 7.5 12 12l8-4.5M12 12v9" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
-        <span class="sidebar-link-label" data-i18n="nav.viewers4d5d">4D / 5D</span>
+        <span class="sidebar-link-label" data-i18n="nav.viewers4d5d">4D/5D Viewer</span>
       </a>
-      <a href="#studio" class="sidebar-link tab-link" data-tab="studio" data-subtab="studioViewer" data-tooltip="Classic Skins">
+      <a href="#studio" class="sidebar-link tab-link" data-tab="studio" data-subtab="studioViewer" data-tooltip="Classic Skins Viewer">
         <span class="sidebar-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="4" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/><rect x="4" y="13" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="13" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/></svg></span>
-        <span class="sidebar-link-label" data-i18n="nav.classicSkins">Classic Skins</span>
+        <span class="sidebar-link-label" data-i18n="nav.classicSkins">Classic Skins Viewer</span>
       </a>
     </div>
 
     <div class="sidebar-group">
       <div class="sidebar-group-label" data-i18n="nav.groupTools">TOOLS</div>
-      <a href="#validator" class="sidebar-link tab-link" data-tab="validator" data-subtab="sgTabValidator" data-tooltip="Validator">
+      <a href="#validator" class="sidebar-link tab-link" data-tab="validator" data-subtab="sgTabValidator" data-tooltip="Validator &amp; Fixer">
         <span class="sidebar-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M9 12.5 11 14.5 15.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/></svg></span>
-        <span class="sidebar-link-label" data-i18n="nav.validatorTool">Validator</span>
-      </a>
-      <a href="#validator" class="sidebar-link tab-link" data-tab="validator" data-subtab="sgTabValidator" data-tooltip="Fixer">
-        <span class="sidebar-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M14.5 3.5 20.5 9.5 9.5 20.5 3.5 20.5 3.5 14.5 14.5 3.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12.5 5.5 18.5 11.5" stroke="currentColor" stroke-width="1.8"/></svg></span>
-        <span class="sidebar-link-label" data-i18n="nav.fixer">Fixer</span>
+        <span class="sidebar-link-label" data-i18n="nav.validatorTool">Validator &amp; Fixer</span>
       </a>
       <a href="#studio" class="sidebar-link tab-link" data-tab="studio" data-subtab="studioMaker" data-tooltip="Skinpack Maker">
         <span class="sidebar-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6.5h16M4 12h16M4 17.5h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
@@ -113,11 +109,6 @@
   </nav>
 
   <div class="sidebar-bottom">
-    <button type="button" class="sidebar-link sidebar-cmdk-btn" id="btnOpenCmdk" data-tooltip="Search">
-      <span class="sidebar-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m21 21-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
-      <span class="sidebar-link-label" data-i18n="nav.search">Search</span>
-      <kbd class="sidebar-cmdk-kbd">⌘K</kbd>
-    </button>
     <a href="#about" class="sidebar-link tab-link" data-tab="about" data-tooltip="About">
       <span class="sidebar-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v5.5M12 8v.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
       <span class="sidebar-link-label" data-i18n="nav.about">About</span>
@@ -141,6 +132,29 @@
 
 </aside>
 
+<header class="app-topbar">
+  <div class="app-topbar-crumb-wrap">
+    <span class="app-topbar-crumb-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 11.5 12 4l8 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v9h12v-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span id="topbarCrumb" class="app-topbar-crumb" data-i18n="nav.home">Home</span>
+  </div>
+  <div class="app-topbar-actions">
+    <button type="button" class="topbar-search-pill" data-cmdk-open>
+      <svg viewBox="0 0 24 24" fill="none" class="topbar-search-pill-icon"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m21 21-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span data-i18n="topbar.searchPlaceholder">Search MBSM...</span>
+      <kbd>Ctrl+K</kbd>
+    </button>
+    <a class="topbar-icon-btn" href="https://github.com/Darktubbie/MBSM" target="_blank" rel="noopener" data-tooltip="GitHub">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.2c0 4.49 2.87 8.3 6.84 9.65.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.88-2.78.62-3.37-1.21-3.37-1.21-.46-1.19-1.11-1.51-1.11-1.51-.91-.63.07-.62.07-.62 1 .07 1.53 1.04 1.53 1.04.9 1.55 2.36 1.11 2.93.85.09-.66.35-1.11.64-1.37-2.22-.26-4.56-1.13-4.56-5.03 0-1.11.39-2.02 1.03-2.73-.1-.26-.45-1.31.1-2.72 0 0 .84-.27 2.75 1.04a9.3 9.3 0 0 1 5 0c1.91-1.31 2.75-1.04 2.75-1.04.55 1.41.2 2.46.1 2.72.64.71 1.03 1.62 1.03 2.73 0 3.91-2.34 4.77-4.57 5.02.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.2C22 6.58 17.52 2 12 2Z"/></svg>
+    </a>
+    <button type="button" class="topbar-icon-btn" id="topbarLangToggle" data-tooltip="Language">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18" stroke-linecap="round"/></svg>
+    </button>
+    <button type="button" class="topbar-icon-btn" id="topbarThemeToggle" data-tooltip="Theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+    </button>
+  </div>
+</header>
+
 <header class="topbar-mini">
   <button type="button" class="mobile-nav-toggle" id="btnMobileNav" aria-label="Open menu">
     <svg viewBox="0 0 24 24" fill="none"><path d="M4 6.5h16M4 12h16M4 17.5h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -149,58 +163,168 @@
     <img src="assets/mbsm-icon.png" alt="" width="20" height="20" class="topbar-mini-icon" />
     <span class="topbar-mini-brand-text">MB<span class="brand-accent">SM</span></span>
   </span>
+  <button type="button" class="topbar-mini-search" data-cmdk-open aria-label="Search">
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m21 21-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
 </header>
+
+<nav class="mobile-bottom-nav" id="mobileBottomNav">
+  <a href="#home" class="mobile-bottom-nav-item tab-link" data-tab="home" data-bottom-nav="home">
+    <span class="mbn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 11.5 12 4l8 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v9h12v-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="mbn-label" data-i18n="nav.home">Home</span>
+  </a>
+  <button type="button" class="mobile-bottom-nav-item" id="btnBottomNavViewers" data-bottom-nav="viewers" aria-haspopup="dialog">
+    <span class="mbn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 7.5 12 12l8-4.5M12 12v9" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+    <span class="mbn-label" data-i18n="nav.groupViewers">Viewers</span>
+  </button>
+  <button type="button" class="mobile-bottom-nav-item" id="btnBottomNavTools" data-bottom-nav="tools" aria-haspopup="dialog">
+    <span class="mbn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M9 12.5 11 14.5 15.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/></svg></span>
+    <span class="mbn-label" data-i18n="nav.groupTools">Tools</span>
+  </button>
+  <a href="#about" class="mobile-bottom-nav-item tab-link" data-tab="about" data-bottom-nav="about">
+    <span class="mbn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v5.5M12 8v.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+    <span class="mbn-label" data-i18n="nav.about">About</span>
+  </a>
+  <button type="button" class="mobile-bottom-nav-item" id="btnBottomNavSettings" data-bottom-nav="settings" aria-haspopup="dialog">
+    <span class="mbn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.5v2M12 18.5v2M4.6 6.6l1.4 1.4M18 16l1.4 1.4M3.5 12h2M18.5 12h2M4.6 17.4 6 16M18 8l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+    <span class="mbn-label" data-i18n="nav.settings">Settings</span>
+  </button>
+</nav>
+
+<!-- Móvil: hoja para elegir un visor (VIEWERS de la barra inferior) -->
+<div id="viewersSheetBackdrop" class="mobile-sheet-backdrop">
+  <div class="mobile-sheet" role="dialog" aria-modal="true" aria-labelledby="viewersSheetTitle">
+    <div class="mobile-sheet-handle" aria-hidden="true"></div>
+    <h3 class="mobile-sheet-title" id="viewersSheetTitle" data-i18n="nav.groupViewers">Viewers</h3>
+    <div class="mobile-sheet-body">
+      <a href="#validator" class="mobile-sheet-option tab-link" data-tab="validator" data-subtab="sgTabViewer">
+        <span class="mso-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 7.5 12 12l8-4.5M12 12v9" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+        <span class="mso-label" data-i18n="nav.viewers4d5d">4D/5D Viewer</span>
+      </a>
+      <a href="#studio" class="mobile-sheet-option tab-link" data-tab="studio" data-subtab="studioViewer">
+        <span class="mso-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="4" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/><rect x="4" y="13" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="13" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/></svg></span>
+        <span class="mso-label" data-i18n="nav.classicSkins">Classic Skins Viewer</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Móvil: hoja para elegir una herramienta (TOOLS de la barra inferior) -->
+<div id="toolsSheetBackdrop" class="mobile-sheet-backdrop">
+  <div class="mobile-sheet" role="dialog" aria-modal="true" aria-labelledby="toolsSheetTitle">
+    <div class="mobile-sheet-handle" aria-hidden="true"></div>
+    <h3 class="mobile-sheet-title" id="toolsSheetTitle" data-i18n="nav.groupTools">Tools</h3>
+    <div class="mobile-sheet-body">
+      <a href="#validator" class="mobile-sheet-option tab-link" data-tab="validator" data-subtab="sgTabValidator">
+        <span class="mso-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M9 12.5 11 14.5 15.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/></svg></span>
+        <span class="mso-label" data-i18n="nav.validatorTool">Validator &amp; Fixer</span>
+      </a>
+      <a href="#studio" class="mobile-sheet-option tab-link" data-tab="studio" data-subtab="studioMaker">
+        <span class="mso-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6.5h16M4 12h16M4 17.5h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+        <span class="mso-label" data-i18n="nav.maker">Skinpack Maker</span>
+      </a>
+      <a href="#validator" class="mobile-sheet-option tab-link" data-tab="validator" data-subtab="sgTabObjSkin">
+        <span class="mso-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 20 7.5v9L12 21 4 16.5v-9L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 21v-9M12 12 4 7.5M12 12l8-4.5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+        <span class="mso-label" data-i18n="nav.objSkin">OBJ → Skin 1.8</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Móvil: hoja de ajustes (idioma / tema / repo), lo único que "More"
+     ofrecía de más frente al menú hamburguesa completo -->
+<div id="settingsSheetBackdrop" class="mobile-sheet-backdrop">
+  <div class="mobile-sheet" role="dialog" aria-modal="true" aria-labelledby="settingsSheetTitle">
+    <div class="mobile-sheet-handle" aria-hidden="true"></div>
+    <h3 class="mobile-sheet-title" id="settingsSheetTitle" data-i18n="nav.settings">Settings</h3>
+    <div class="mobile-sheet-body mobile-sheet-body-settings">
+      <div class="mobile-sheet-row">
+        <span class="mobile-sheet-row-label" data-i18n="settings.languageLabel">Language</span>
+        <div class="lang-switch">
+          <button type="button" class="lang-btn" data-lang="es">ES</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
+      <div class="mobile-sheet-row">
+        <span class="mobile-sheet-row-label" data-i18n="settings.themeLabel">Theme</span>
+        <div class="theme-switch">
+          <button type="button" class="theme-btn" data-theme-pref="dark" title="Dark" data-tooltip="Dark">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.7 6.7 0 0 0 21 12.8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="theme-btn" data-theme-pref="light" title="Light" data-tooltip="Light">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.4M12 19v2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M2.5 12h2.4M19 12h2.4M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+          <button type="button" class="theme-btn" data-theme-pref="system" title="System" data-tooltip="System">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4.5" width="18" height="12" rx="1.6" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 20.5h7M12 16.5v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+      <a class="mobile-sheet-option" href="https://github.com/Darktubbie/MBSM" target="_blank" rel="noopener">
+        <span class="mso-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.2c0 4.49 2.87 8.3 6.84 9.65.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.88-2.78.62-3.37-1.21-3.37-1.21-.46-1.19-1.11-1.51-1.11-1.51-.91-.63.07-.62.07-.62 1 .07 1.53 1.04 1.53 1.04.9 1.55 2.36 1.11 2.93.85.09-.66.35-1.11.64-1.37-2.22-.26-4.56-1.13-4.56-5.03 0-1.11.39-2.02 1.03-2.73-.1-.26-.45-1.31.1-2.72 0 0 .84-.27 2.75 1.04a9.3 9.3 0 0 1 5 0c1.91-1.31 2.75-1.04 2.75-1.04.55 1.41.2 2.46.1 2.72.64.71 1.03 1.62 1.03 2.73 0 3.91-2.34 4.77-4.57 5.02.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.2C22 6.58 17.52 2 12 2Z"/></svg></span>
+        <span class="mso-label">GitHub</span>
+      </a>
+    </div>
+  </div>
+</div>
 
 <main>
 
 <!-- ============ HOME ============ -->
 <section id="home" class="section reveal tab-section active-tab">
 
-  <div class="hero-inline">
-    <div class="hero-overlay"></div>
-    <div class="hero-particles" aria-hidden="true"></div>
+  <div class="dash-inline">
+    <div class="container dash-top">
 
-    <div class="container hero-content">
-
-      <div class="hero-text">
-
-        <h1 data-i18n="home.title">EVERYTHING YOU NEED FOR MINECRAFT BEDROCK SKINS</h1>
-
-        <p data-i18n="home.subtitle">
-          MBSM is a free toolbox for Minecraft Bedrock skin packs that
-          runs almost entirely in your browser. Pick what you need below.
-        </p>
-
-        <div class="hero-buttons">
-          <a href="#validator" class="btn btn-primary tab-link" data-tab="validator" data-i18n="home.btnValidator">Check a 4D/5D pack</a>
-          <a href="#studio" class="btn btn-secondary tab-link" data-tab="studio" data-i18n="home.btnStudio">Open Classic Skins</a>
+      <div class="dash-welcome">
+        <div class="dash-avatar" aria-hidden="true">
+          <img src="assets/mbsm-icon.png" alt="">
         </div>
+        <div class="dash-welcome-text">
+          <h1><span data-i18n="home.welcomeGreeting">Welcome back</span> <span class="dash-wave" aria-hidden="true">👋</span></h1>
+          <p data-i18n="home.welcomeSubtitle">Minecraft Bedrock Skin Manager</p>
 
+          <div class="dash-version-row">
+            <span class="dash-version-badge" data-i18n="home.versionBadge">v0.8.0 • Beta</span>
+            <span class="dash-latest-badge" id="changelogLatestBadge"><!-- JS coloca aquí el badge (Minor/Patch/Major) de la última versión --></span>
+          </div>
+
+          <button type="button" class="changelog-teaser-wrap dash-welcome-changelog" id="changelogTeaserWrap" aria-haspopup="dialog">
+            <span class="changelog-teaser-hint">
+              <span data-i18n="changelog.viewAll">View all updates</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+            </span>
+          </button>
+        </div>
       </div>
 
-      <div class="hero-card">
-
-        <div class="pixel-title" data-i18n="hero.statusTitle">System status</div>
-
-        <div class="hero-status">
-
-          <div class="status-item">
-            <span class="dot online"></span>
-            <span data-i18n="hero.statusReady">Everything ready</span>
+      <div class="dash-stats">
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon dash-stat-icon-models" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 20 7.5v9L12 21 4 16.5v-9L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 21v-9M12 12 4 7.5M12 12l8-4.5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
           </div>
-
-          <div class="status-item">
-            <span class="dot online"></span>
-            <span data-i18n="hero.statusInstant">Instant, in your browser</span>
+          <div class="dash-stat-body">
+            <span class="dash-stat-label" data-i18n="home.statModels">Models</span>
+            <span class="dash-stat-value" id="dashStatModels">0</span>
           </div>
-
-          <div class="status-item">
-            <span class="dot online"></span>
-            <span data-i18n="hero.statusPrivate">No files uploaded to any server</span>
-          </div>
-
         </div>
-
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon dash-stat-icon-skins" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M8 9.5h.01M16 9.5h.01M8.5 15c1 1 6 1 7 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="dash-stat-body">
+            <span class="dash-stat-label" data-i18n="home.statSkins">Skins</span>
+            <span class="dash-stat-value" id="dashStatSkins">0</span>
+          </div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon dash-stat-icon-packs" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 8.5 12 4l8 4.5-8 4.5-8-4.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 8.5V16l8 4.5 8-4.5V8.5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="dash-stat-body">
+            <span class="dash-stat-label" data-i18n="home.statPacks">Packs</span>
+            <span class="dash-stat-value" id="dashStatPacks">0</span>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -214,61 +338,67 @@
       <p data-i18n="home.featuresText">Each module does exactly one thing, and does it well.</p>
     </div>
 
+    <h3 class="home-features-mobile-title" data-i18n="home.toolsLabel">Tools</h3>
+
     <div class="feature-grid">
-      <a href="#validator" class="card feature-card fc-validator tab-link" data-tab="validator">
-        <span class="tag" data-i18n="home.fcValidatorTag">VALIDATOR</span>
-        <h3 data-i18n="home.fcValidatorTitle">Catch the error before Minecraft does</h3>
-        <p data-i18n="home.fcValidatorText">Checks geometry.json, render controllers and ambiguous or duplicate model names, and tells you exactly which file to fix.</p>
+      <a href="#validator" class="card feature-card fc-validator has-model tab-link" data-tab="validator">
+        <div class="fc-model-stage">
+          <img class="fc-model-img" src="assets/model-validator.png" alt="" width="560" height="560" loading="lazy">
+        </div>
+        <span class="tag" data-i18n="home.fcValidatorTag">VALIDATOR &amp; FIXER</span>
+        <h3 data-i18n="home.fcValidatorTitle">Catch it, then fix it automatically</h3>
+        <p data-i18n="home.fcValidatorText">Checks geometry.json, render controllers and ambiguous or duplicate model names, then auto-resolves the obvious issues — broken references, ambiguities, small details — and flags the rest for you.</p>
+        <span class="fc-caption"><span data-i18n="home.fcValidatorCaption">Check and fix skin packs</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
       </a>
-      <a href="#validator" class="card feature-card fc-viewer tab-link" data-tab="validator" data-subtab="sgTabViewer">
+      <a href="#validator" class="card feature-card fc-viewer has-model tab-link" data-tab="validator" data-subtab="sgTabViewer">
+        <div class="fc-model-stage">
+          <img class="fc-model-img" src="assets/model-viewer.png" alt="" width="560" height="560" loading="lazy">
+        </div>
         <span class="tag" data-i18n="home.fcViewerTag">4D/5D VIEWER</span>
         <h3 data-i18n="home.fcViewerTitle">See your 4D/5D model before exporting</h3>
         <p data-i18n="home.fcViewerText">Preview bones, cubes and pivots of custom geometries with the skin applied, rotating live — or send 4D models straight to an embedded Blockbench editor.</p>
+        <span class="fc-caption"><span data-i18n="home.fcViewerCaption">View and edit models</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
       </a>
-      <a href="#validator" class="card feature-card fc-fixer tab-link" data-tab="validator">
-        <span class="tag" data-i18n="home.fcFixerTag">AUTO-FIX</span>
-        <h3 data-i18n="home.fcFixerTitle">Fix the obvious stuff automatically</h3>
-        <p data-i18n="home.fcFixerText">Ambiguities, broken references and small details get solved on their own; the rest gets flagged for you.</p>
-      </a>
-      <a href="#studio" class="card feature-card fc-classic-viewer tab-link" data-tab="studio" data-subtab="studioViewer">
+      <a href="#studio" class="card feature-card fc-classic-viewer has-model tab-link" data-tab="studio" data-subtab="studioViewer">
+        <div class="fc-model-stage">
+          <img class="fc-model-img" src="assets/model-classic.png" alt="" width="560" height="560" loading="lazy">
+        </div>
         <span class="tag" data-i18n="home.fcClassicViewerTag">3D VIEWER</span>
         <h3 data-i18n="home.fcClassicViewerTitle">Preview your classic skin in 3D</h3>
         <p data-i18n="home.fcClassicViewerText">See a regular Minecraft Bedrock skin applied to the Steve/Alex model, rotating live, before using it in-game.</p>
+        <span class="fc-caption"><span data-i18n="home.fcClassicViewerCaption">View and edit classic skins</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
       </a>
-      <a href="#studio" class="card feature-card fc-maker tab-link" data-tab="studio" data-subtab="studioMaker">
+      <a href="#studio" class="card feature-card fc-maker has-model tab-link" data-tab="studio" data-subtab="studioMaker">
+        <div class="fc-model-stage">
+          <img class="fc-model-img" src="assets/model-maker.png" alt="" width="560" height="560" loading="lazy">
+        </div>
         <span class="tag" data-i18n="home.fcMakerTag">MAKER</span>
         <h3 data-i18n="home.fcMakerTitle">Build a pack from scratch</h3>
         <p data-i18n="home.fcMakerText">Generates the full skin pack structure — manifest, geometry and textures — without touching a console.</p>
+        <span class="fc-caption"><span data-i18n="home.fcMakerCaption">Create skin packs for Bedrock</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
       </a>
-      <a href="#validator" class="card feature-card fc-objskin tab-link" data-tab="validator" data-subtab="sgTabObjSkin">
+      <a href="#validator" class="card feature-card fc-objskin has-model tab-link" data-tab="validator" data-subtab="sgTabObjSkin">
+        <div class="fc-model-stage">
+          <img class="fc-model-img" src="assets/model-objskin.png" alt="" width="560" height="560" loading="lazy">
+        </div>
         <span class="tag" data-i18n="home.fcObjSkinTag">OBJ → SKIN 1.8</span>
         <h3 data-i18n="home.fcObjSkinTitle">Turn a 3D model into a working 5D skin</h3>
         <p data-i18n="home.fcObjSkinText">Import an .obj + texture, assign parts to bones, adjust pivots visually, and export a real Bedrock 1.8.0 poly_mesh — ready as a full skin pack.</p>
+        <span class="fc-caption"><span data-i18n="home.fcObjSkinCaption">Convert 3D models to skins</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
       </a>
     </div>
 
   </div>
 
-  <div class="container">
-    <div class="section-head">
-      <span class="eyebrow pixel" data-i18n="changelog.eyebrow">CHANGELOG</span>
-      <h2 data-i18n="changelog.title">What's new in MBSM</h2>
-    </div>
+  <div class="container dash-secondary">
 
-    <div class="changelog-list">
-      <div class="changelog-entry">
-        <div class="changelog-entry-icon">
-          <img src="assets/mbsm-icon.png" alt="">
-        </div>
-        <div class="changelog-entry-body">
-          <div class="changelog-entry-head">
-            <span class="changelog-version">v0.7.0 beta</span>
-          </div>
-          <ul class="changelog-changes">
-            <li data-i18n="changelog.v070.item1">Complete visual redesign: new sidebar, dashboard, an Inspector panel for the 4D/5D viewer, Dark/Light/System themes and refreshed tools throughout.</li>
-            <li data-i18n="changelog.v070.item2">Several bug fixes across the app.</li>
-          </ul>
-        </div>
+    <div class="dash-card dash-recent-card">
+      <div class="dash-recent-head">
+        <h3 class="dash-card-title" data-i18n="home.recentTitle">Recent Projects</h3>
+        <button type="button" class="dash-recent-viewall" id="dashRecentViewAll" data-i18n="home.viewAll">View All</button>
+      </div>
+      <div id="dashRecentList" class="dash-recent-list">
+        <p class="dash-recent-empty" data-i18n="home.recentEmpty">No recent projects yet — start by validating a pack or building a skin.</p>
       </div>
     </div>
 
@@ -1149,13 +1279,8 @@
     <div class="checks-grid tools-grid">
 
       <article class="card check-card">
-        <h3 data-i18n="home.fcValidatorTag">VALIDATOR</h3>
-        <p data-i18n="home.fcValidatorText">Checks geometry.json, render controllers and ambiguous or duplicate model names, and tells you exactly which file to fix.</p>
-      </article>
-
-      <article class="card check-card">
-        <h3 data-i18n="home.fcFixerTag">AUTO-FIX</h3>
-        <p data-i18n="home.fcFixerText">Ambiguities, broken references and small details get solved on their own; the rest gets flagged for you.</p>
+        <h3 data-i18n="home.fcValidatorTag">VALIDATOR &amp; FIXER</h3>
+        <p data-i18n="home.fcValidatorText">Checks geometry.json, render controllers and ambiguous or duplicate model names, then auto-resolves the obvious issues — broken references, ambiguities, small details — and flags the rest for you.</p>
       </article>
 
       <article class="card check-card">
@@ -1345,6 +1470,40 @@
     });
   }
 
+  var bottomNav = document.getElementById("mobileBottomNav");
+
+  // ---------- Móvil: hojas (bottom sheets) para Viewers / Tools / Settings ----------
+  // Reemplazan la navegación directa de antes (que solo llevaba a un
+  // destino fijo) y el botón "More" (que antes solo duplicaba el menú
+  // hamburguesa completo).
+  function initSheet(backdropId, triggerBtn) {
+    var backdrop = document.getElementById(backdropId);
+    if (!backdrop) return;
+
+    function openSheet() {
+      backdrop.classList.add("open");
+      body.classList.add("no-scroll");
+    }
+    function closeSheet() {
+      backdrop.classList.remove("open");
+      body.classList.remove("no-scroll");
+    }
+
+    if (triggerBtn) triggerBtn.addEventListener("click", openSheet);
+    backdrop.addEventListener("click", function (e) {
+      if (e.target === backdrop) closeSheet();
+    });
+    // Cualquier opción de la hoja (destino de navegación, botón de
+    // idioma/tema, o el enlace de GitHub) cierra la hoja al tocarla.
+    backdrop.querySelectorAll(".tab-link, .lang-btn, .theme-btn, .mobile-sheet-option").forEach(function (opt) {
+      opt.addEventListener("click", closeSheet);
+    });
+  }
+
+  initSheet("viewersSheetBackdrop", document.getElementById("btnBottomNavViewers"));
+  initSheet("toolsSheetBackdrop", document.getElementById("btnBottomNavTools"));
+  initSheet("settingsSheetBackdrop", document.getElementById("btnBottomNavSettings"));
+
   // Refina qué enlace de la sidebar se marca como activo, ya que
   // varias herramientas (Validator / Fixer / OBJ -> Skin) comparten
   // la misma pestaña principal ("validator") pero distinta sub-pestaña.
@@ -1361,6 +1520,15 @@
       var isMatch = linkTab === tabId && (!linkSub || linkSub === subId);
       link.classList.toggle("active", !!isMatch);
     });
+
+    if (bottomNav) {
+      bottomNav.querySelectorAll(".mobile-bottom-nav-item[data-tab]").forEach(function (link) {
+        var linkTab = link.getAttribute("data-tab");
+        var linkSub = link.getAttribute("data-subtab");
+        var isMatch = linkTab === tabId && (!linkSub || linkSub === subId);
+        link.classList.toggle("active", !!isMatch);
+      });
+    }
   }
 
   document.addEventListener("click", function () {
@@ -1406,6 +1574,77 @@
     });
   }
 
+  // ---------- Icono de tema en el topbar: cicla dark -> light -> system ----------
+  var topbarThemeBtn = document.getElementById("topbarThemeToggle");
+  if (topbarThemeBtn) {
+    topbarThemeBtn.addEventListener("click", function () {
+      var order = ["dark", "light", "system"];
+      var current = "dark";
+      try { current = localStorage.getItem(THEME_KEY) || "dark"; } catch (e) {}
+      var next = order[(order.indexOf(current) + 1) % order.length];
+      try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+      applyTheme(next);
+    });
+  }
+
+  // ---------- Icono de idioma en el topbar: alterna ES / EN ----------
+  var topbarLangBtn = document.getElementById("topbarLangToggle");
+  if (topbarLangBtn) {
+    topbarLangBtn.addEventListener("click", function () {
+      var next = (typeof currentLang !== "undefined" && currentLang === "es") ? "en" : "es";
+      var btn = document.querySelector('.lang-btn[data-lang="' + next + '"]');
+      if (btn) btn.click();
+    });
+  }
+
+  // ---------- Update Log: teaser con la última versión + modal con el historial ----------
+  // Envuelto en DOMContentLoaded porque el modal vive más abajo en el documento
+  // (fuera de la sección "reveal" para no heredar su `transform`), así que al
+  // ejecutarse este <script> el elemento todavía no existe en el DOM.
+  document.addEventListener("DOMContentLoaded", function () {
+    var wrap = document.getElementById("changelogTeaserWrap");
+    var latestBadgeHolder = document.getElementById("changelogLatestBadge");
+    var list = document.getElementById("changelogList");
+    var backdrop = document.getElementById("changelogModalBackdrop");
+    var modal = backdrop ? backdrop.querySelector(".changelog-modal") : null;
+    var closeBtn = document.getElementById("changelogModalClose");
+    if (!wrap || !latestBadgeHolder || !list || !backdrop) return;
+
+    function buildTeaser() {
+      var latest = list.querySelector(".changelog-entry");
+      if (!latest) return;
+      var badge = latest.querySelector(".changelog-entry-head .changelog-badge");
+      latestBadgeHolder.innerHTML = "";
+      if (badge) latestBadgeHolder.appendChild(badge.cloneNode(true));
+    }
+
+    function openModal() {
+      backdrop.classList.add("open");
+      document.body.classList.add("no-scroll");
+      if (closeBtn) closeBtn.focus();
+    }
+    function closeModal() {
+      backdrop.classList.remove("open");
+      document.body.classList.remove("no-scroll");
+      wrap.focus();
+    }
+
+    buildTeaser();
+    wrap.addEventListener("click", openModal);
+    if (closeBtn) closeBtn.addEventListener("click", closeModal);
+    backdrop.addEventListener("click", function (e) {
+      if (e.target === backdrop) closeModal();
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && backdrop.classList.contains("open")) closeModal();
+    });
+
+    // Reconstruye el teaser si cambia el idioma (los textos dentro del clon se re-traducen con el resto de la página)
+    document.querySelectorAll(".lang-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () { setTimeout(buildTeaser, 0); });
+    });
+  });
+
   // ---------- Apariencia del visor 4D/5D (fondo del viewport) ----------
   var BG_KEY = "mbsm.viewerBg";
   var viewerHost = document.getElementById("sgViewerHost");
@@ -1434,6 +1673,66 @@
 
 <!-- Contenedor de notificaciones tipo toast (Fase 3) -->
 <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+<!-- Update Log: historial completo (movido fuera de <section class="reveal">
+     porque esa clase anima con `transform`, y un ancestro con transform
+     rompe `position:fixed` en sus descendientes -- el modal quedaba
+     atrapado dentro de la sección en vez de cubrir la pantalla). -->
+<div class="changelog-modal-backdrop" id="changelogModalBackdrop">
+  <div class="changelog-modal" role="dialog" aria-modal="true" aria-labelledby="changelogModalTitle">
+    <div class="changelog-modal-head">
+      <h3 id="changelogModalTitle" data-i18n="changelog.title">What's new in MBSM</h3>
+      <button type="button" class="changelog-modal-close" id="changelogModalClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="changelog-modal-body">
+      <div class="changelog-list" id="changelogList">
+        <div class="changelog-entry">
+          <div class="changelog-entry-icon type-minor">
+            <img src="assets/mbsm-icon.png" alt="">
+          </div>
+          <div class="changelog-entry-body">
+            <div class="changelog-entry-head">
+              <span class="changelog-version">v0.8.0 beta</span>
+              <span class="changelog-badge badge-minor" data-i18n="changelog.badge.minor">Minor Update</span>
+            </div>
+            <ul class="changelog-changes">
+              <li data-i18n="changelog.v080.item1">Dashboard cards for the Validator, 4D/5D Viewer and Classic Skins now feature a large model as the main visual, instead of just an icon.</li>
+              <li data-i18n="changelog.v080.item2">Improved Hero section with a subtle floating model for extra depth.</li>
+              <li data-i18n="changelog.v080.item3">Redesigned Update Log: obsidian marks Patch/Bugfix releases, amethyst is reserved for future Major Releases, and Minor Updates keep the MBSM icon.</li>
+              <li data-i18n="changelog.v080.item4">General visual polish across the Dashboard.</li>
+              <li data-i18n="changelog.v080.item5">Home: removed the duplicated System status card and moved "View all updates" under the version badge, next to the latest release's badge.</li>
+              <li data-i18n="changelog.v080.item6">Sidebar: 4D/5D and Classic Skins are now labeled as viewers (4D/5D Viewer, Classic Skins Viewer).</li>
+              <li data-i18n="changelog.v080.item7">Each tool now has its own URL (e.g. /Validator/), with support for direct links and browser back/forward navigation.</li>
+              <li data-i18n="changelog.v080.item8">The Fixer's output ZIP name now matches the page's language ("_fixed" in English, "_corregido" in Spanish).</li>
+              <li data-i18n="changelog.v080.item9">The Home greeting now varies and adapts to the device's local time of day.</li>
+              <li data-i18n="changelog.v080.item10">Home: removed the Quick Actions card (it duplicated the Tools cards below); Skinpack Maker and OBJ → Skin now have a model image too, and the Validator card's static "Valid" badge is gone.</li>
+              <li data-i18n="changelog.v080.item11">Mobile: the bottom nav's Viewers and Tools buttons now open a picker instead of jumping straight to a single tool.</li>
+              <li data-i18n="changelog.v080.item12">Mobile: the bottom nav's "Resources" button (which only ever opened About) is now labeled About.</li>
+              <li data-i18n="changelog.v080.item13">Mobile: the bottom nav's "More" button is now a dedicated Settings sheet (language, theme, GitHub) instead of duplicating the full menu; the redundant hamburger button was removed from mobile.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="changelog-entry">
+          <div class="changelog-entry-icon type-minor">
+            <img src="assets/mbsm-icon.png" alt="">
+          </div>
+          <div class="changelog-entry-body">
+            <div class="changelog-entry-head">
+              <span class="changelog-version">v0.7.0 beta</span>
+              <span class="changelog-badge badge-minor" data-i18n="changelog.badge.minor">Minor Update</span>
+            </div>
+            <ul class="changelog-changes">
+              <li data-i18n="changelog.v070.item1">Complete visual redesign: new sidebar, dashboard, an Inspector panel for the 4D/5D viewer, Dark/Light/System themes and refreshed tools throughout.</li>
+              <li data-i18n="changelog.v070.item2">Several bug fixes across the app.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Command Palette (Ctrl/Cmd + K) -->
 <div id="cmdPaletteBackdrop" class="cmdk-backdrop" hidden>
@@ -1501,9 +1800,8 @@
     return [
       { label: "Open Home", hint: "Home", run: clickEl('.sidebar-link[data-tab="home"]') },
       { label: "Open 4D / 5D Viewer", hint: "Viewers", run: clickEl('.sidebar-link[data-tab="validator"][data-subtab="sgTabViewer"]') },
-      { label: "Open Classic Skins", hint: "Viewers", run: clickEl('.sidebar-link[data-tab="studio"][data-subtab="studioViewer"]') },
-      { label: "Open Validator", hint: "Tools", run: clickEl('.sidebar-link[data-tab="validator"][data-subtab="sgTabValidator"]') },
-      { label: "Open Fixer", hint: "Tools", run: clickEl('.sidebar-link[data-tab="validator"][data-subtab="sgTabValidator"]') },
+      { label: "Open Classic Skins Viewer", hint: "Viewers", run: clickEl('.sidebar-link[data-tab="studio"][data-subtab="studioViewer"]') },
+      { label: "Open Validator & Fixer", hint: "Tools", run: clickEl('.sidebar-link[data-tab="validator"][data-subtab="sgTabValidator"]') },
       { label: "Open Skinpack Maker", hint: "Tools", run: clickEl('.sidebar-link[data-tab="studio"][data-subtab="studioMaker"]') },
       { label: "Open OBJ → Skin 1.8", hint: "Tools", run: clickEl('.sidebar-link[data-tab="validator"][data-subtab="sgTabObjSkin"]') },
       { label: "Open About", hint: "Workspace", run: clickEl('.sidebar-link[data-tab="about"]') },
@@ -1563,8 +1861,8 @@
     backdrop.hidden = true;
   }
 
-  var openBtn = document.getElementById("btnOpenCmdk");
-  if (openBtn) openBtn.addEventListener("click", openPalette);
+  var openBtns = document.querySelectorAll("[data-cmdk-open]");
+  openBtns.forEach(function (btn) { btn.addEventListener("click", openPalette); });
 
   document.addEventListener("keydown", function (e) {
     var isK = e.key === "k" || e.key === "K";

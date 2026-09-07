@@ -17,9 +17,16 @@ const I18N = {
     nav: {
       home: "Home", validator: "Skins 4D/5D", studio: "Classic Skins", about: "About",
       groupWorkspace: "WORKSPACE", groupViewers: "VIEWERS", groupTools: "TOOLS",
-      viewers4d5d: "4D / 5D", classicSkins: "Classic Skins", validatorTool: "Validator",
-      fixer: "Fixer", maker: "Skinpack Maker", objSkin: "OBJ → Skin 1.8",
-      search: "Search"
+      viewers4d5d: "4D/5D Viewer", classicSkins: "Classic Skins Viewer", validatorTool: "Validator & Fixer",
+      maker: "Skinpack Maker", objSkin: "OBJ → Skin 1.8",
+      search: "Search", settings: "Settings"
+    },
+    settings: {
+      languageLabel: "Language",
+      themeLabel: "Theme"
+    },
+    topbar: {
+      searchPlaceholder: "Search MBSM..."
     },
     home: {
       title: "EVERYTHING YOU NEED FOR MINECRAFT BEDROCK SKINS",
@@ -34,29 +41,88 @@ const I18N = {
       cardAboutText: "What MBSM checks, how it works, and why it exists.",
       featuresEyebrow: "ALL THE TOOLS, ONE TOOLBOX",
       featuresTitle: "Everything you need for a healthy pack. Nothing that wastes your time.",
+      toolsLabel: "Tools",
       featuresText: "Each module does exactly one thing, and does it well.",
-      fcValidatorTag: "VALIDATOR",
-      fcValidatorTitle: "Catch the error before Minecraft does",
-      fcValidatorText: "Checks geometry.json, render controllers and ambiguous or duplicate model names, and tells you exactly which file to fix.",
+      fcValidatorTag: "VALIDATOR & FIXER",
+      fcValidatorTitle: "Catch it, then fix it automatically",
+      fcValidatorText: "Checks geometry.json, render controllers and ambiguous or duplicate model names, then auto-resolves the obvious issues — broken references, ambiguities, small details — and flags the rest for you.",
+      fcValidatorCaption: "Check and fix skin packs",
       fcViewerTag: "4D/5D VIEWER",
       fcViewerTitle: "See your 4D/5D model before exporting",
       fcViewerText: "Preview bones, cubes and pivots of custom geometries with the skin applied, rotating live — or send 4D models straight to an embedded Blockbench editor.",
-      fcFixerTag: "AUTO-FIX",
-      fcFixerTitle: "Fix the obvious stuff automatically",
-      fcFixerText: "Ambiguities, broken references and small details get solved on their own; the rest gets flagged for you.",
+      fcViewerCaption: "View and edit models",
       fcClassicViewerTag: "3D VIEWER",
       fcClassicViewerTitle: "Preview your classic skin in 3D",
       fcClassicViewerText: "See a regular Minecraft Bedrock skin applied to the Steve/Alex model, rotating live, before using it in-game.",
+      fcClassicViewerCaption: "View and edit classic skins",
       fcMakerTag: "MAKER",
       fcMakerTitle: "Build a pack from scratch",
       fcMakerText: "Generates the full skin pack structure — manifest, geometry and textures — without touching a console.",
+      fcMakerCaption: "Create skin packs for Bedrock",
       fcObjSkinTag: "OBJ → SKIN 1.8",
       fcObjSkinTitle: "Turn a 3D model into a working 5D skin",
-      fcObjSkinText: "Import an .obj + texture, assign parts to bones, adjust pivots visually, and export a real Bedrock 1.8.0 poly_mesh — ready as a full skin pack."
+      fcObjSkinText: "Import an .obj + texture, assign parts to bones, adjust pivots visually, and export a real Bedrock 1.8.0 poly_mesh — ready as a full skin pack.",
+      fcObjSkinCaption: "Convert 3D models to skins",
+      welcomeGreeting: {
+        morning: [
+          "Good morning", "Morning!", "Rise and shine", "Good morning — ready to build?",
+          "Hope you slept well", "Top of the morning"
+        ],
+        afternoon: [
+          "Good afternoon", "Welcome back", "Hope your day's going well", "Good to see you",
+          "Afternoon!", "Great to have you here"
+        ],
+        evening: [
+          "Good evening", "Welcome back", "Evening!", "Hope your day went well",
+          "Good to see you again"
+        ],
+        night: [
+          "Burning the midnight oil?", "Still up?", "Late-night session, huh?",
+          "Working late?", "Good night... or good morning, almost", "Quiet hours, best hours"
+        ]
+      },
+      welcomeSubtitle: "Minecraft Bedrock Skin Manager",
+      versionBadge: "v0.8.0 • Beta",
+      statModels: "Models",
+      statSkins: "Skins",
+      statPacks: "Packs",
+      recentTitle: "Recent Projects",
+      viewAll: "View All",
+      viewLess: "View Less",
+      recentEmpty: "No recent projects yet — start by validating a pack or building a skin.",
+      recentTypeModel: "Model",
+      recentTypeSkin: "Skin",
+      recentTypePack: "Pack",
+      timeJustNow: "Just now",
+      timeMinAgo: (n) => `${n} min ago`,
+      timeHoursAgo: (n) => `${n}h ago`,
+      timeYesterday: "Yesterday",
+      timeDaysAgo: (n) => `${n}d ago`
     },
     changelog: {
       eyebrow: "CHANGELOG",
       title: "What's new in MBSM",
+      viewAll: "View all updates",
+      badge: {
+        patch: "Patch / Bugfix",
+        minor: "Minor Update",
+        major: "Major Release"
+      },
+      v080: {
+        item1: "Dashboard cards for the Validator, 4D/5D Viewer and Classic Skins now feature a large model as the main visual, instead of just an icon.",
+        item2: "Improved Hero section with a subtle floating model for extra depth.",
+        item3: "Redesigned Update Log: obsidian marks Patch/Bugfix releases, amethyst is reserved for future Major Releases, and Minor Updates keep the MBSM icon.",
+        item4: "General visual polish across the Dashboard.",
+        item5: "Home: removed the duplicated System status card and moved \"View all updates\" under the version badge, next to the latest release's badge.",
+        item6: "Sidebar: 4D/5D and Classic Skins are now labeled as viewers (4D/5D Viewer, Classic Skins Viewer).",
+        item7: "Each tool now has its own URL (e.g. /Validator/), with support for direct links and browser back/forward navigation.",
+        item8: "The Fixer's output ZIP name now matches the page's language (\"_fixed\" in English, \"_corregido\" in Spanish).",
+        item9: "The Home greeting now varies and adapts to the device's local time of day.",
+        item10: "Home: removed the Quick Actions card (it duplicated the Tools cards below); Skinpack Maker and OBJ → Skin now have a model image too, and the Validator card's static \"Valid\" badge is gone.",
+        item11: "Mobile: the bottom nav's Viewers and Tools buttons now open a picker instead of jumping straight to a single tool.",
+        item12: "Mobile: the bottom nav's \"Resources\" button (which only ever opened About) is now labeled About.",
+        item13: "Mobile: the bottom nav's \"More\" button is now a dedicated Settings sheet (language, theme, GitHub) instead of duplicating the full menu; the redundant hamburger button was removed from mobile."
+      },
       v070: {
         item1: "Complete visual redesign: new sidebar, dashboard, an Inspector panel for the 4D/5D viewer, Dark/Light/System themes and refreshed tools throughout.",
         item2: "Several bug fixes across the app."
@@ -86,6 +152,7 @@ const I18N = {
     hero: {
       statusTitle: "System status",
       statusReady: "Everything ready",
+      statusUpToDate: "MBSM is up to date",
       statusInstant: "Instant, in your browser",
       statusPrivate: "No files uploaded to any server"
     },
@@ -212,7 +279,8 @@ const I18N = {
       dupDesc: "Removes duplicates and skins whose texture doesn't exist",
       repairBtn: "Create fixed ZIP",
       repairing: "Building fixed package...",
-      repairError: "Something went wrong while building the fixed package. Check the console for details."
+      repairError: "Something went wrong while building the fixed package. Check the console for details.",
+      fixedSuffix: "_fixed"
     },
     about: {
       title: "ABOUT MBSM",
@@ -354,9 +422,16 @@ const I18N = {
     nav: {
       home: "Inicio", validator: "Skins 4D/5D", studio: "Skins Clásicas", about: "Acerca de",
       groupWorkspace: "ESPACIO", groupViewers: "VISORES", groupTools: "HERRAMIENTAS",
-      viewers4d5d: "4D / 5D", classicSkins: "Skins Clásicas", validatorTool: "Validador",
-      fixer: "Reparador", maker: "Creador de Skinpacks", objSkin: "OBJ → Skin 1.8",
-      search: "Buscar"
+      viewers4d5d: "Visor 4D/5D", classicSkins: "Visor de Skins Clásicas", validatorTool: "Validador & Fixer",
+      maker: "Creador de Skinpacks", objSkin: "OBJ → Skin 1.8",
+      search: "Buscar", settings: "Ajustes"
+    },
+    settings: {
+      languageLabel: "Idioma",
+      themeLabel: "Tema"
+    },
+    topbar: {
+      searchPlaceholder: "Buscar en MBSM..."
     },
     home: {
       title: "TODO LO QUE NECESITAS PARA SKINS DE MINECRAFT BEDROCK",
@@ -371,29 +446,88 @@ const I18N = {
       cardAboutText: "Qué revisa MBSM, cómo funciona, y por qué existe.",
       featuresEyebrow: "TODAS LAS HERRAMIENTAS, UNA CAJA",
       featuresTitle: "Todo lo que necesitas para un pack sano. Nada que te haga perder tiempo.",
+      toolsLabel: "Herramientas",
       featuresText: "Cada módulo hace exactamente una cosa, y la hace bien.",
-      fcValidatorTag: "VALIDADOR",
-      fcValidatorTitle: "Encuentra el error antes que Minecraft",
-      fcValidatorText: "Revisa geometry.json, render controllers y nombres de modelo duplicados o ambiguos, y te dice exactamente qué archivo corregir.",
+      fcValidatorTag: "VALIDADOR & FIXER",
+      fcValidatorTitle: "Encuéntralo y corrígelo automáticamente",
+      fcValidatorText: "Revisa geometry.json, render controllers y nombres de modelo duplicados o ambiguos, y luego corrige solo lo evidente — referencias rotas, ambigüedades, detalles menores — señalando el resto para que decidas tú.",
+      fcValidatorCaption: "Valida y corrige skin packs",
       fcViewerTag: "VISOR 4D/5D",
       fcViewerTitle: "Mira tu modelo 4D/5D antes de exportar",
       fcViewerText: "Previsualiza huesos, cubos y pivotes de geometrías personalizadas con la skin aplicada, girando en vivo — o envía modelos 4D directo a un editor Blockbench integrado.",
-      fcFixerTag: "REPARADOR",
-      fcFixerTitle: "Corrige lo evidente automáticamente",
-      fcFixerText: "Ambigüedades, referencias rotas y detalles menores se resuelven solos; el resto te lo señala para que decidas tú.",
+      fcViewerCaption: "Mira y edita modelos",
       fcClassicViewerTag: "VISOR 3D",
       fcClassicViewerTitle: "Previsualiza tu skin clásica en 3D",
       fcClassicViewerText: "Mira una skin normal de Minecraft Bedrock aplicada al modelo Steve/Alex, girando en vivo, antes de usarla en el juego.",
+      fcClassicViewerCaption: "Mira y edita skins clásicas",
       fcMakerTag: "CONSTRUCTOR",
       fcMakerTitle: "Arma un pack desde cero",
       fcMakerText: "Genera la estructura completa de un skin pack — manifest, geometría y texturas — sin tocar una consola.",
+      fcMakerCaption: "Crea skin packs para Bedrock",
       fcObjSkinTag: "OBJ → SKIN 1.8",
       fcObjSkinTitle: "Convierte un modelo 3D en una skin 5D funcional",
-      fcObjSkinText: "Importa un .obj + textura, asigna las partes a los huesos, ajusta los pivotes visualmente, y exporta una geometría real Bedrock 1.8.0 (poly_mesh) — lista como paquete de skin completo."
+      fcObjSkinText: "Importa un .obj + textura, asigna las partes a los huesos, ajusta los pivotes visualmente, y exporta una geometría real Bedrock 1.8.0 (poly_mesh) — lista como paquete de skin completo.",
+      fcObjSkinCaption: "Convierte modelos 3D en skins",
+      welcomeGreeting: {
+        morning: [
+          "Buenos días", "¡Buen día!", "Arriba con energía", "Buenos días, ¿listos para crear?",
+          "Espero que hayas dormido bien", "Buen comienzo de día"
+        ],
+        afternoon: [
+          "Buenas tardes", "Bienvenido de nuevo", "Espero que tu día vaya bien", "Qué gusto verte",
+          "¡Buena tarde!", "Un gusto tenerte por aquí"
+        ],
+        evening: [
+          "Buenas noches", "Bienvenido de nuevo", "¡Buenas!", "Espero que tu día haya ido bien",
+          "Qué bueno verte otra vez"
+        ],
+        night: [
+          "¿Trasnochando?", "¿Sigues despierto?", "Sesión nocturna, ¿eh?",
+          "Trabajando hasta tarde", "Buenas noches... o casi buenos días", "Las horas tranquilas son las mejores"
+        ]
+      },
+      welcomeSubtitle: "Minecraft Bedrock Skin Manager",
+      versionBadge: "v0.8.0 • Beta",
+      statModels: "Modelos",
+      statSkins: "Skins",
+      statPacks: "Packs",
+      recentTitle: "Proyectos recientes",
+      viewAll: "Ver todo",
+      viewLess: "Ver menos",
+      recentEmpty: "Aún no hay proyectos recientes — empieza validando un pack o creando una skin.",
+      recentTypeModel: "Modelo",
+      recentTypeSkin: "Skin",
+      recentTypePack: "Pack",
+      timeJustNow: "Ahora mismo",
+      timeMinAgo: (n) => `hace ${n} min`,
+      timeHoursAgo: (n) => `hace ${n}h`,
+      timeYesterday: "Ayer",
+      timeDaysAgo: (n) => `hace ${n}d`
     },
     changelog: {
       eyebrow: "REGISTRO DE CAMBIOS",
       title: "Novedades de MBSM",
+      viewAll: "Ver todas las actualizaciones",
+      badge: {
+        patch: "Parche / Corrección",
+        minor: "Actualización menor",
+        major: "Lanzamiento mayor"
+      },
+      v080: {
+        item1: "Las cards del Validador, el Visor 4D/5D y Classic Skins ahora muestran un modelo grande como elemento visual principal, en vez de solo un icono.",
+        item2: "Hero Section mejorada con un modelo flotante sutil que le da más profundidad.",
+        item3: "Rediseño del Update Log: la obsidiana marca los lanzamientos de tipo Patch/Bugfix, la amatista queda reservada para futuras Major Releases, y las Minor Updates conservan el icono de MBSM.",
+        item4: "Pulido visual general en el Dashboard.",
+        item5: "Home: se quitó la tarjeta duplicada de \"System status\" y \"Ver todas las actualizaciones\" se movió debajo del badge de versión, junto al badge de la última versión.",
+        item6: "Sidebar: 4D/5D y Classic Skins ahora se etiquetan como visores (Visor 4D/5D, Visor de Skins Clásicas).",
+        item7: "Cada herramienta ahora tiene su propia URL (por ejemplo /Validator/), con soporte para enlaces directos y navegación con atrás/adelante del navegador.",
+        item8: "El nombre del ZIP corregido que genera el Fixer ahora sigue el idioma de la página (\"_fixed\" en inglés, \"_corregido\" en español).",
+        item9: "El saludo de la Home ahora varía y se adapta a la hora local del dispositivo.",
+        item10: "Home: se quitó la tarjeta de Acciones Rápidas (duplicaba las cards de Tools de más abajo); Creador de Skinpacks y OBJ → Skin ahora también tienen imagen, y se quitó el badge fijo \"Válido\" de la card del Validador.",
+        item11: "Móvil: los botones Viewers y Tools de la barra inferior ahora abren un selector en vez de saltar directo a una sola herramienta.",
+        item12: "Móvil: el botón \"Resources\" de la barra inferior (que solo llevaba a About) ahora se llama About.",
+        item13: "Móvil: el botón \"More\" de la barra inferior ahora es una hoja de Ajustes (idioma, tema, GitHub) en vez de duplicar el menú completo; se quitó el botón de hamburguesa, ya redundante en móvil."
+      },
       v070: {
         item1: "Rediseño visual completo: nueva sidebar, dashboard, panel Inspector en el visor 4D/5D, temas Oscuro/Claro/Sistema y herramientas renovadas en toda la app.",
         item2: "Varias correcciones de errores en la app."
@@ -423,6 +557,7 @@ const I18N = {
     hero: {
       statusTitle: "Estado del sistema",
       statusReady: "Todo listo",
+      statusUpToDate: "MBSM está actualizado",
       statusInstant: "Instantáneo, en tu navegador",
       statusPrivate: "Ningún archivo se sube a un servidor"
     },
@@ -549,7 +684,8 @@ const I18N = {
       dupDesc: "Elimina duplicados y skins cuya textura no existe",
       repairBtn: "Crear ZIP corregido",
       repairing: "Generando paquete corregido...",
-      repairError: "Ocurrió un problema al generar el paquete corregido. Revisa la consola para más detalles."
+      repairError: "Ocurrió un problema al generar el paquete corregido. Revisa la consola para más detalles.",
+      fixedSuffix: "_corregido"
     },
     about: {
       title: "ACERCA DE MBSM",
@@ -698,8 +834,32 @@ function t(key, ...args) {
     if (!node) return key;
     node = node[p];
   }
+  // A handful of keys (like the Home greeting) hold an array of variants
+  // instead of a single string, so the text feels a little different
+  // each time the page loads or the language is switched.
+  if (Array.isArray(node)) {
+    node = node[Math.floor(Math.random() * node.length)];
+  }
   if (typeof node === "function") return node(...args);
   return typeof node === "string" ? node : key;
+}
+
+// ---------- Home greeting: varies with the device's local time of day ----------
+// (home.welcomeGreeting is a {morning, afternoon, evening, night} pool per
+// language rather than a plain string/array, so it's handled here instead
+// of through the generic t() lookup above.)
+function greetingBucketForHour(hour) {
+  if (hour >= 5 && hour < 12) return "morning";
+  if (hour >= 12 && hour < 18) return "afternoon";
+  if (hour >= 18 && hour < 22) return "evening";
+  return "night";
+}
+
+function currentGreeting() {
+  const pools = (I18N[currentLang] && I18N[currentLang].home && I18N[currentLang].home.welcomeGreeting) || {};
+  const bucket = greetingBucketForHour(new Date().getHours());
+  const list = (pools[bucket] && pools[bucket].length) ? pools[bucket] : (pools.morning || []);
+  return list.length ? list[Math.floor(Math.random() * list.length)] : "";
 }
 
 async function applyLanguage(lang) {
@@ -711,7 +871,8 @@ async function applyLanguage(lang) {
   document.documentElement.lang = lang;
 
   document.querySelectorAll("[data-i18n]").forEach(el => {
-    el.textContent = t(el.getAttribute("data-i18n"));
+    const key = el.getAttribute("data-i18n");
+    el.textContent = key === "home.welcomeGreeting" ? currentGreeting() : t(key);
   });
 
   document.querySelectorAll("[data-i18n-html]").forEach(el => {
@@ -778,11 +939,148 @@ async function applyLanguage(lang) {
   if (analyzeBtn && analyzeBtn.textContent.trim() !== t("validator.loadingBtn") && analyzeBtn.textContent.trim() !== t("validator.analyzingBtn")) {
     analyzeBtn.textContent = t("validator.analyzeBtn");
   }
+
+  if (typeof mbsmRenderDashboard === "function") mbsmRenderDashboard();
 }
 
 document.querySelectorAll(".lang-btn").forEach(btn => {
   btn.addEventListener("click", () => applyLanguage(btn.getAttribute("data-lang")));
 });
+
+// ==========================================================
+// Dashboard: Models/Skins/Packs stats + Recent Projects
+// Persisted locally (localStorage) so the Home dashboard reflects
+// what the person has actually done in this browser.
+// ==========================================================
+const MBSM_STATS_KEY = "mbsm_dash_stats_v1";
+const MBSM_RECENT_KEY = "mbsm_dash_recent_v1";
+const MBSM_RECENT_MAX = 20;
+const MBSM_RECENT_SHOWN = 5;
+
+function mbsmLoadStats() {
+  try {
+    const raw = localStorage.getItem(MBSM_STATS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        models: Number(parsed.models) || 0,
+        skins: Number(parsed.skins) || 0,
+        packs: Number(parsed.packs) || 0
+      };
+    }
+  } catch (e) {}
+  return { models: 0, skins: 0, packs: 0 };
+}
+
+function mbsmSaveStats(stats) {
+  try { localStorage.setItem(MBSM_STATS_KEY, JSON.stringify(stats)); } catch (e) {}
+}
+
+function mbsmBumpStat(key, amount = 1) {
+  const stats = mbsmLoadStats();
+  stats[key] = (stats[key] || 0) + amount;
+  mbsmSaveStats(stats);
+  mbsmRenderDashboard();
+}
+
+function mbsmLoadRecent() {
+  try {
+    const raw = localStorage.getItem(MBSM_RECENT_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return [];
+}
+
+function mbsmSaveRecent(list) {
+  try { localStorage.setItem(MBSM_RECENT_KEY, JSON.stringify(list.slice(0, MBSM_RECENT_MAX))); } catch (e) {}
+}
+
+// type: "model" | "skin" | "pack"
+function mbsmAddRecent(type, name) {
+  const list = mbsmLoadRecent();
+  list.unshift({ type, name: String(name || "").slice(0, 80), ts: Date.now() });
+  mbsmSaveRecent(list);
+  mbsmRenderDashboard();
+}
+
+function mbsmFormatRelativeTime(ts) {
+  const diffMs = Date.now() - ts;
+  const minutes = Math.floor(diffMs / 60000);
+
+  if (minutes < 1) return t("home.timeJustNow");
+  if (minutes < 60) return t("home.timeMinAgo", minutes);
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return t("home.timeHoursAgo", hours);
+
+  const days = Math.floor(hours / 24);
+  if (days === 1) return t("home.timeYesterday");
+  return t("home.timeDaysAgo", days);
+}
+
+const MBSM_RECENT_ICONS = {
+  model: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 3 20 7.5v9L12 21 4 16.5v-9L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 21v-9M12 12 4 7.5M12 12l8-4.5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+  skin: '<svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M8 9.5h.01M16 9.5h.01M8.5 15c1 1 6 1 7 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  pack: '<svg viewBox="0 0 24 24" fill="none"><path d="M4 8.5 12 4l8 4.5-8 4.5-8-4.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 8.5V16l8 4.5 8-4.5V8.5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>'
+};
+
+let mbsmRecentExpanded = false;
+
+function mbsmRenderDashboard() {
+  const stats = mbsmLoadStats();
+
+  const elModels = document.getElementById("dashStatModels");
+  const elSkins = document.getElementById("dashStatSkins");
+  const elPacks = document.getElementById("dashStatPacks");
+  if (elModels) elModels.textContent = stats.models;
+  if (elSkins) elSkins.textContent = stats.skins;
+  if (elPacks) elPacks.textContent = stats.packs;
+
+  const listEl = document.getElementById("dashRecentList");
+  const viewAllBtn = document.getElementById("dashRecentViewAll");
+  if (!listEl) return;
+
+  const all = mbsmLoadRecent();
+
+  if (viewAllBtn) {
+    viewAllBtn.style.display = all.length > MBSM_RECENT_SHOWN ? "" : "none";
+    viewAllBtn.textContent = mbsmRecentExpanded ? t("home.viewLess") : t("home.viewAll");
+  }
+
+  const recent = mbsmRecentExpanded ? all : all.slice(0, MBSM_RECENT_SHOWN);
+
+  if (!recent.length) {
+    listEl.innerHTML = `<p class="dash-recent-empty">${t("home.recentEmpty")}</p>`;
+    return;
+  }
+
+  const typeLabelKey = { model: "home.recentTypeModel", skin: "home.recentTypeSkin", pack: "home.recentTypePack" };
+  const typeIconClass = { model: "", skin: "dash-recent-icon-skin", pack: "dash-recent-icon-pack" };
+
+  listEl.innerHTML = recent.map(item => {
+    const icon = MBSM_RECENT_ICONS[item.type] || MBSM_RECENT_ICONS.pack;
+    const iconClass = typeIconClass[item.type] || "";
+    const typeLabel = t(typeLabelKey[item.type] || "home.recentTypePack");
+    return `
+      <div class="dash-recent-item">
+        <div class="dash-recent-icon ${iconClass}" aria-hidden="true">${icon}</div>
+        <div class="dash-recent-body">
+          <span class="dash-recent-name" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</span>
+          <span class="dash-recent-time">${typeLabel} · ${mbsmFormatRelativeTime(item.ts)}</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+(function initDashRecentViewAll() {
+  const btn = document.getElementById("dashRecentViewAll");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    mbsmRecentExpanded = !mbsmRecentExpanded;
+    mbsmRenderDashboard();
+  });
+})();
 
 // ---------- Fade-in animations on scroll ----------
 if ("IntersectionObserver" in window) {
@@ -1216,6 +1514,9 @@ analyzeBtn.addEventListener("click", async () => {
     .getElementById("fixPanel")
     .style.display = "block";
 
+    if (typeof mbsmBumpStat === "function") mbsmBumpStat("packs", 1);
+    if (typeof mbsmAddRecent === "function") mbsmAddRecent("pack", currentZipName);
+
   } catch (err) {
     console.error(err);
 
@@ -1290,11 +1591,12 @@ try {
 
     // Output name: keeps the original extension (.zip or .mcpack)
     // instead of always assuming ".zip", which used to leave the name
-    // unchanged for .mcpack files.
+    // unchanged for .mcpack files. The suffix itself follows the page's
+    // current language (e.g. "_fixed" in English, "_corregido" in Spanish).
     const dotIndex = currentZipName.lastIndexOf(".");
     const baseName = dotIndex > -1 ? currentZipName.slice(0, dotIndex) : currentZipName;
     const ext = dotIndex > -1 ? currentZipName.slice(dotIndex) : ".mcpack";
-    const downloadName = `${baseName}_corregido${ext}`;
+    const downloadName = `${baseName}${t("fix.fixedSuffix")}${ext}`;
 
     const blobUrl = URL.createObjectURL(output);
 
@@ -1340,6 +1642,12 @@ function switchTab(tabId) {
     link.classList.toggle("active", link.getAttribute("data-tab") === tabId);
   });
 
+  const crumbEl = document.getElementById("topbarCrumb");
+  const activeSidebarLabel = document.querySelector(".sidebar-link.active .sidebar-link-label");
+  if (crumbEl && activeSidebarLabel) {
+    crumbEl.textContent = activeSidebarLabel.textContent;
+  }
+
   // Switching main tabs disposes of any active 3D scene so it doesn't
   // keep rendering in the background.
   if (typeof dispose3DViewer === "function") {
@@ -1370,6 +1678,11 @@ document.querySelectorAll(".tab-link[data-tab]").forEach(link => {
       const subBtn = target && target.querySelector('.sub-tab-btn[data-subtab="' + subtabId + '"]');
       if (subBtn) subBtn.click();
     }
+
+    // Reflect whichever tab/tool ended up active in the address bar.
+    // (If a sub-tab button was just clicked above, this is a harmless
+    // no-op -- its own click handler already synced the same URL.)
+    if (typeof syncUrlWithState === "function") syncUrlWithState();
   });
 });
 
@@ -1405,8 +1718,138 @@ function switchSubTab(btn) {
 }
 
 document.querySelectorAll(".sub-tab-btn").forEach(btn => {
-  btn.addEventListener("click", () => switchSubTab(btn));
+  btn.addEventListener("click", () => {
+    switchSubTab(btn);
+    if (typeof syncUrlWithState === "function") syncUrlWithState();
+  });
 });
+
+// ==========================================================
+// Page routing: gives each tool its own URL via the History API,
+// so the address bar (e.g. ".../MBSM/Validator/") reflects whichever
+// tab/tool is active, deep links open straight to that tool, and the
+// browser's back/forward buttons move between them.
+// ==========================================================
+
+// If we just bounced back from /404.html (GitHub Pages has no real
+// server-side routing, so a direct link or refresh on a tool URL lands
+// there first), restore the path the user actually asked for before
+// figuring out the route, then clean up the marker.
+(function restoreRedirectedPath() {
+  try {
+    const redirected = sessionStorage.getItem("mbsm_redirect_path");
+    if (redirected) {
+      sessionStorage.removeItem("mbsm_redirect_path");
+      history.replaceState(null, "", redirected);
+    }
+  } catch (e) {}
+})();
+
+// Every "page" the app can land on: which main tab + (optional) sub-tab
+// it corresponds to, and the URL segment used for it. Keep this in sync
+// with the sub-tab groups in index.html (the sgTab* ones inside
+// #validator, and the studio* ones inside #studio) and with 404.html's
+// own copy of the segment list.
+const ROUTES = [
+  { tab: "home",      subtab: null,             path: "" },
+  { tab: "validator", subtab: "sgTabViewer",    path: "4D-5D-Viewer" },
+  { tab: "studio",    subtab: "studioViewer",   path: "Classic-Skins" },
+  { tab: "validator", subtab: "sgTabValidator", path: "Validator" },
+  { tab: "studio",    subtab: "studioMaker",    path: "Maker" },
+  { tab: "validator", subtab: "sgTabObjSkin",   path: "Obj-Skin" },
+  { tab: "about",     subtab: null,             path: "About" }
+];
+
+// The app can be served from a subpath (GitHub Pages project sites live
+// at "/<repo>/", e.g. "/MBSM/"), so instead of hardcoding that we work
+// it out from the current URL: strip a trailing known route segment
+// (and/or "index.html") off the pathname, whatever's left is the base.
+function computeRouteBasePath() {
+  let path = window.location.pathname;
+  const knownSegments = ROUTES.map(r => r.path).filter(Boolean);
+  for (const seg of knownSegments) {
+    const re = new RegExp("/" + seg + "/?$", "i");
+    if (re.test(path)) {
+      path = path.replace(re, "/");
+      break;
+    }
+  }
+  path = path.replace(/index\.html$/i, "");
+  if (!path.endsWith("/")) path += "/";
+  return path;
+}
+
+const ROUTE_BASE_PATH = computeRouteBasePath();
+
+function findRoute(tab, subtab) {
+  return ROUTES.find(r => r.tab === tab && r.subtab === (subtab || null))
+      || ROUTES.find(r => r.tab === tab)
+      || ROUTES[0];
+}
+
+function pathForRoute(tab, subtab) {
+  const route = findRoute(tab, subtab);
+  return ROUTE_BASE_PATH + (route.path ? route.path + "/" : "");
+}
+
+function routeForPath(pathname) {
+  let rel = pathname;
+  if (rel.indexOf(ROUTE_BASE_PATH) === 0) rel = rel.slice(ROUTE_BASE_PATH.length);
+  rel = rel.replace(/^\/+|\/+$/g, "");
+  if (!rel || /^index\.html$/i.test(rel)) return ROUTES[0];
+  const match = ROUTES.find(r => r.path && r.path.toLowerCase() === rel.toLowerCase());
+  return match || ROUTES[0];
+}
+
+// Only the *top-level* sub-tab group defines a "page" (a tool's import
+// method tabs, for instance, are a nested group and don't count).
+function currentTopLevelSubtab(tabId) {
+  const target = document.getElementById(tabId);
+  if (!target) return null;
+  const btn = target.querySelector(":scope > .container > .sub-tabs > .sub-tab-btn.active[data-subtab]");
+  return btn ? btn.getAttribute("data-subtab") : null;
+}
+
+// Set while we're applying a route to the UI (initial load / popstate),
+// so the click handlers above know not to push a *new* history entry
+// on top of the one we're just reacting to.
+let isApplyingRoute = false;
+
+function syncUrlWithState() {
+  if (isApplyingRoute) return;
+  const activeSection = document.querySelector(".tab-section.active-tab");
+  if (!activeSection) return;
+  const tabId = activeSection.id;
+  const subtab = currentTopLevelSubtab(tabId);
+  const path = pathForRoute(tabId, subtab);
+  if (window.location.pathname !== path) {
+    history.pushState({ tab: tabId, subtab: subtab }, "", path);
+  }
+}
+
+function applyRoute(route) {
+  isApplyingRoute = true;
+  try {
+    switchTab(route.tab);
+    if (route.subtab) {
+      const target = document.getElementById(route.tab);
+      const subBtn = target && target.querySelector('.sub-tab-btn[data-subtab="' + route.subtab + '"]');
+      if (subBtn) subBtn.click();
+    }
+  } finally {
+    isApplyingRoute = false;
+  }
+}
+
+// Back/forward browser navigation.
+window.addEventListener("popstate", () => {
+  applyRoute(routeForPath(window.location.pathname));
+});
+
+// The actual "apply whatever URL we were opened with" call happens
+// further below, right after applyLanguage(savedLang) -- switchTab()
+// (called from applyRoute) reads the sidebar's translated label for
+// the topbar breadcrumb, so the language needs to be set first.
 
 // ==========================================================
 // Floating info window (the "?" buttons)
@@ -1576,6 +2019,9 @@ async function handleViewerFile(file) {
 
     renderViewerSkins(skins);
 
+    if (typeof mbsmBumpStat === "function") mbsmBumpStat("skins", skins.length);
+    if (typeof mbsmAddRecent === "function") mbsmAddRecent("skin", file.name);
+
   } catch (err) {
     console.error(err);
     viewerSelectedFile.textContent = t("validator.invalidFileSelected");
@@ -1618,6 +2064,7 @@ if (viewerDropzone && viewerZipInput) {
 
 // ---------- Inicializar ----------
 resetStats();
+mbsmRenderDashboard();
 
 let savedLang = "en";
 try {
@@ -1652,4 +2099,26 @@ applyLanguage(savedLang);
   objSkinTabBtn.addEventListener("click", function () {
     if (typeof ObjSkinStudio !== "undefined") ObjSkinStudio.init();
   });
+})();
+
+// ==========================================================
+// Page routing, part 2: apply whatever URL the page was opened with.
+// This runs last on purpose -- switchTab()/switchSubTab() (triggered
+// from applyRoute()) rely on the sidebar labels already being
+// translated (applyLanguage() above) and, when the route points at the
+// 4D/5D Viewer or OBJ -> Skin 1.8, on their lazy-init click hooks (just
+// above) already being attached so a direct link actually starts them.
+// ==========================================================
+applyRoute(routeForPath(window.location.pathname));
+
+// Normalize the address bar to the canonical route path (covers things
+// like a trailing-slash mismatch or a stray "index.html").
+(function normalizeInitialUrl() {
+  const activeSection = document.querySelector(".tab-section.active-tab");
+  if (!activeSection) return;
+  const subtab = currentTopLevelSubtab(activeSection.id);
+  const canonicalPath = pathForRoute(activeSection.id, subtab);
+  if (window.location.pathname !== canonicalPath) {
+    history.replaceState({ tab: activeSection.id, subtab }, "", canonicalPath);
+  }
 })();
