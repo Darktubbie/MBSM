@@ -284,7 +284,7 @@
           <p data-i18n="home.welcomeSubtitle">Minecraft Bedrock Skin Manager</p>
 
           <div class="dash-version-row">
-            <span class="dash-version-badge" data-i18n="home.versionBadge">v0.8.0 • Beta</span>
+            <span class="dash-version-badge" data-i18n="home.versionBadge">v0.8.1 • Beta</span>
             <span class="dash-latest-badge" id="changelogLatestBadge"><!-- JS coloca aquí el badge (Minor/Patch/Major) de la última versión --></span>
           </div>
 
@@ -1375,6 +1375,23 @@
 
 </section>
 
+<section id="notfound" class="section reveal tab-section">
+
+  <div class="container notfound-layout">
+    <div class="notfound-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M9 9.5 15 14.5M15 9.5 9 14.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </div>
+    <p class="notfound-code">404</p>
+    <h2 class="section-title" data-i18n="notfound.title">Page not found</h2>
+    <p class="notfound-text" data-i18n="notfound.text">There's no tool at this address — it may be mistyped, or the link is outdated.</p>
+    <a href="#home" class="btn btn-primary notfound-home-btn tab-link" data-tab="home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 11.5 12 4l8 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v9h12v-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span data-i18n="notfound.backHome">Back to Home</span>
+    </a>
+  </div>
+
+</section>
+
 </main>
 
 <footer class="footer">
@@ -1688,6 +1705,22 @@
     </div>
     <div class="changelog-modal-body">
       <div class="changelog-list" id="changelogList">
+        <div class="changelog-entry">
+          <div class="changelog-entry-icon type-patch">
+            <img src="assets/obsidian-block.png" alt="">
+          </div>
+          <div class="changelog-entry-body">
+            <div class="changelog-entry-head">
+              <span class="changelog-version">v0.8.1 beta</span>
+              <span class="changelog-badge badge-patch" data-i18n="changelog.badge.patch">Patch / Bugfix</span>
+            </div>
+            <ul class="changelog-changes">
+              <li data-i18n="changelog.v081.item1">Fixed the mobile bottom nav's icons rendering huge on tablet-width screens (a CSS breakpoint gap between the mobile and desktop layouts).</li>
+              <li data-i18n="changelog.v081.item2">Fixed an invalid/mistyped tool URL (e.g. a typo'd /Validator/) looping endlessly, or landing on Home while leaving the wrong address in the bar and passing it on to every link clicked afterwards.</li>
+              <li data-i18n="changelog.v081.item3">Added a proper "Page not found" screen (at /404/) with a Back to Home button for invalid links, instead of always silently assuming Home.</li>
+            </ul>
+          </div>
+        </div>
         <div class="changelog-entry">
           <div class="changelog-entry-icon type-minor">
             <img src="assets/mbsm-icon.png" alt="">

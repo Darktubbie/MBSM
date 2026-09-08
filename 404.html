@@ -15,7 +15,7 @@
     // app.js's own router can restore the right tab/tool from it.
     //
     // Keep this segment list in sync with the ROUTES array in app.js.
-    var KNOWN_SEGMENTS = ["4D-5D-Viewer", "Classic-Skins", "Validator", "Maker", "Obj-Skin", "About"];
+    var KNOWN_SEGMENTS = ["4D-5D-Viewer", "Classic-Skins", "Validator", "Maker", "Obj-Skin", "About", "404"];
 
     // Fallback for when NONE of the segments above match -- i.e. a typo'd
     // or otherwise invalid URL (e.g. "/MBSM/validatos/"). How many leading
@@ -54,18 +54,13 @@
 
     var target = path + "index.html";
 
-    // Belt-and-suspenders loop guard: if we're somehow about to redirect
-    // to the exact target we just tried, stop and go to the domain root
-    // instead of possibly looping forever.
-    try {
-      if (sessionStorage.getItem("mbsm_404_last_target") === target) {
-        sessionStorage.removeItem("mbsm_404_last_target");
-        target = "/";
-      } else {
-        sessionStorage.setItem("mbsm_404_last_target", target);
-      }
-    } catch (e) {}
-
+    // (No "did we just try this same target?" loop guard here anymore --
+    // one used to live here, but since every invalid/typo'd URL under this
+    // site correctly collapses to the SAME target above, such a guard
+    // can't tell "we're genuinely looping" apart from "the user hit a
+    // second, unrelated bad link later in the same tab" -- it was sending
+    // that second case to the wrong place instead of here, which is
+    // already guaranteed to exist.)
     try {
       sessionStorage.setItem(
         "mbsm_redirect_path",

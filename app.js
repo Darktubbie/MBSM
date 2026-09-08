@@ -82,7 +82,7 @@ const I18N = {
         ]
       },
       welcomeSubtitle: "Minecraft Bedrock Skin Manager",
-      versionBadge: "v0.8.0 • Beta",
+      versionBadge: "v0.8.1 • Beta",
       statModels: "Models",
       statSkins: "Skins",
       statPacks: "Packs",
@@ -107,6 +107,11 @@ const I18N = {
         patch: "Patch / Bugfix",
         minor: "Minor Update",
         major: "Major Release"
+      },
+      v081: {
+        item1: "Fixed the mobile bottom nav's icons rendering huge on tablet-width screens (a CSS breakpoint gap between the mobile and desktop layouts).",
+        item2: "Fixed an invalid/mistyped tool URL (e.g. a typo'd /Validator/) looping endlessly, or landing on Home while leaving the wrong address in the bar and passing it on to every link clicked afterwards.",
+        item3: "Added a proper \"Page not found\" screen (at /404/) with a Back to Home button for invalid links, instead of always silently assuming Home."
       },
       v080: {
         item1: "Dashboard cards for the Validator, 4D/5D Viewer and Classic Skins now feature a large model as the main visual, instead of just an icon.",
@@ -281,6 +286,11 @@ const I18N = {
       repairing: "Building fixed package...",
       repairError: "Something went wrong while building the fixed package. Check the console for details.",
       fixedSuffix: "_fixed"
+    },
+    notfound: {
+      title: "Page not found",
+      text: "There's no tool at this address — it may be mistyped, or the link is outdated.",
+      backHome: "Back to Home"
     },
     about: {
       title: "ABOUT MBSM",
@@ -487,7 +497,7 @@ const I18N = {
         ]
       },
       welcomeSubtitle: "Minecraft Bedrock Skin Manager",
-      versionBadge: "v0.8.0 • Beta",
+      versionBadge: "v0.8.1 • Beta",
       statModels: "Modelos",
       statSkins: "Skins",
       statPacks: "Packs",
@@ -512,6 +522,11 @@ const I18N = {
         patch: "Parche / Corrección",
         minor: "Actualización menor",
         major: "Lanzamiento mayor"
+      },
+      v081: {
+        item1: "Se corrigió que los íconos de la barra inferior móvil se vieran gigantes en pantallas de ancho tipo tablet (un hueco entre los breakpoints de móvil y escritorio).",
+        item2: "Se corrigió que una URL de herramienta inválida o mal escrita (por ejemplo, un /Validator/ con typo) hiciera un loop infinito, o mandara a Home dejando la dirección incorrecta en la barra y arrastrándola a cada enlace que se tocara después.",
+        item3: "Se agregó una pantalla propia de \"Página no encontrada\" (en /404/) con un botón para volver al inicio, en vez de asumir siempre Home en silencio."
       },
       v080: {
         item1: "Las cards del Validador, el Visor 4D/5D y Classic Skins ahora muestran un modelo grande como elemento visual principal, en vez de solo un icono.",
@@ -686,6 +701,11 @@ const I18N = {
       repairing: "Generando paquete corregido...",
       repairError: "Ocurrió un problema al generar el paquete corregido. Revisa la consola para más detalles.",
       fixedSuffix: "_corregido"
+    },
+    notfound: {
+      title: "Página no encontrada",
+      text: "No hay ninguna herramienta en esta dirección — puede estar mal escrita, o el enlace ya no existe.",
+      backHome: "Volver al inicio"
     },
     about: {
       title: "ACERCA DE MBSM",
@@ -1644,8 +1664,12 @@ function switchTab(tabId) {
 
   const crumbEl = document.getElementById("topbarCrumb");
   const activeSidebarLabel = document.querySelector(".sidebar-link.active .sidebar-link-label");
-  if (crumbEl && activeSidebarLabel) {
-    crumbEl.textContent = activeSidebarLabel.textContent;
+  if (crumbEl) {
+    if (tabId === "notfound") {
+      crumbEl.textContent = "404";
+    } else if (activeSidebarLabel) {
+      crumbEl.textContent = activeSidebarLabel.textContent;
+    }
   }
 
   // Switching main tabs disposes of any active 3D scene so it doesn't
@@ -1743,8 +1767,18 @@ const ROUTES = [
   { tab: "validator", subtab: "sgTabValidator", path: "Validator" },
   { tab: "studio",    subtab: "studioMaker",    path: "Maker" },
   { tab: "validator", subtab: "sgTabObjSkin",   path: "Obj-Skin" },
-  { tab: "about",     subtab: null,             path: "About" }
+  { tab: "about",     subtab: null,             path: "About" },
+  { tab: "notfound",  subtab: null,             path: "404" }
 ];
+const NOT_FOUND_ROUTE = ROUTES.find(r => r.tab === "notfound");
+
+// How many leading path segments make up the site's own base directory,
+// independent of MBSM's routes -- 1 for a typical GitHub Pages project
+// site ("<user>.github.io/MBSM/..."), 0 if MBSM is hosted at a domain's
+// root. Keep this in sync with the same constant in 404.html. Only used
+// as a fallback below, when the pathname doesn't end in one of the known
+// route segments above.
+const BASE_SEGMENTS_FALLBACK = 1;
 
 // The app can be served from a subpath (GitHub Pages project sites live
 // at "/<repo>/", e.g. "/MBSM/"), so instead of hardcoding that we work
@@ -1757,6 +1791,14 @@ const ROUTES = [
 // redirected/typo'd path restored from sessionStorage below (that path
 // can be anything the user typed, e.g. "/MBSM/validatos/", and trying to
 // strip a base out of THAT is what used to send the router in circles).
+//
+// It's also hardened against a path that doesn't end in a known segment
+// at all (in case 404.html's own redirect got bypassed somehow, e.g. in
+// local testing without it configured): rather than trusting whatever's
+// left over as the base -- which is exactly what let "/MBSM/validatos/"
+// get treated as the base path, breaking every link built from it
+// afterwards -- it falls back to keeping a fixed number of leading path
+// segments, same as 404.html does.
 function computeRouteBasePath() {
   let path = window.location.pathname;
   const knownSegments = ROUTES.map(r => r.path).filter(Boolean);
@@ -1764,12 +1806,14 @@ function computeRouteBasePath() {
     const re = new RegExp("/" + seg + "/?$", "i");
     if (re.test(path)) {
       path = path.replace(re, "/");
-      break;
+      if (!path.endsWith("/")) path += "/";
+      return path;
     }
   }
   path = path.replace(/index\.html$/i, "");
-  if (!path.endsWith("/")) path += "/";
-  return path;
+  const segments = path.split("/").filter(Boolean);
+  const base = "/" + segments.slice(0, BASE_SEGMENTS_FALLBACK).join("/");
+  return base === "/" ? "/" : base + "/";
 }
 
 const ROUTE_BASE_PATH = computeRouteBasePath();
@@ -1791,7 +1835,11 @@ function routeForPath(pathname) {
   rel = rel.replace(/^\/+|\/+$/g, "");
   if (!rel || /^index\.html$/i.test(rel)) return ROUTES[0];
   const match = ROUTES.find(r => r.path && r.path.toLowerCase() === rel.toLowerCase());
-  return match || ROUTES[0];
+  // A non-empty segment that isn't index.html and doesn't match any known
+  // route is an actual bad/mistyped link -- land on the 404 page instead
+  // of silently pretending it was Home all along (and keeping the wrong
+  // URL, which used to happen here).
+  return match || NOT_FOUND_ROUTE;
 }
 
 // If we just bounced back from /404.html (GitHub Pages has no real
@@ -1799,8 +1847,8 @@ function routeForPath(pathname) {
 // there first), figure out which page was actually requested -- using
 // the ROUTE_BASE_PATH computed above from the real page we're on, never
 // by trusting the redirected path as a base itself. An unrecognized/
-// typo'd page (routeForPath() falling back to ROUTES[0]) just lands on
-// Home instead of looping.
+// typo'd page (routeForPath() falling back to NOT_FOUND_ROUTE) shows the
+// 404 page instead of looping or silently landing on Home.
 let initialRoute = routeForPath(window.location.pathname);
 try {
   const redirected = sessionStorage.getItem("mbsm_redirect_path");
