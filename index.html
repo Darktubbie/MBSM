@@ -277,7 +277,7 @@
 
       <div class="dash-welcome">
         <div class="dash-avatar" aria-hidden="true">
-          <img src="assets/mbsm-icon.png" alt="">
+          <img src="assets/mbsm-icon.png" alt="" id="dashAvatarImg">
         </div>
         <div class="dash-welcome-text">
           <h1><span data-i18n="home.welcomeGreeting">Welcome back</span> <span class="dash-wave" aria-hidden="true">👋</span></h1>
@@ -1625,6 +1625,7 @@
     var backdrop = document.getElementById("changelogModalBackdrop");
     var modal = backdrop ? backdrop.querySelector(".changelog-modal") : null;
     var closeBtn = document.getElementById("changelogModalClose");
+    var avatarImg = document.getElementById("dashAvatarImg");
     if (!wrap || !latestBadgeHolder || !list || !backdrop) return;
 
     function buildTeaser() {
@@ -1633,6 +1634,14 @@
       var badge = latest.querySelector(".changelog-entry-head .changelog-badge");
       latestBadgeHolder.innerHTML = "";
       if (badge) latestBadgeHolder.appendChild(badge.cloneNode(true));
+
+      // El avatar del Home siempre refleja el icono de bloque del último
+      // release (obsidiana en Patch/Bugfix, amatista en Major, el icono
+      // de MBSM en Minor Update), en vez de quedarse fijo en el icono de MBSM.
+      if (avatarImg) {
+        var latestIcon = latest.querySelector(".changelog-entry-icon img");
+        if (latestIcon) avatarImg.src = latestIcon.getAttribute("src");
+      }
     }
 
     function openModal() {
