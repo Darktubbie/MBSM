@@ -11,9 +11,9 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=14">
 
   <!-- Aplica el tema guardado antes del primer paint para evitar parpadeo -->
   <script>
@@ -30,7 +30,7 @@
   </script>
 
   <!-- Estilos propios (escopados bajo #objSkinStudio) del módulo OBJ -> Skin 1.8 -->
-  <link rel="stylesheet" href="obj-skin-studio.css?v=1">
+  <link rel="stylesheet" href="obj-skin-studio.css?v=6">
 
   <!-- Librería para leer/crear archivos ZIP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -128,6 +128,20 @@
         <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4.5" width="18" height="12" rx="1.6" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 20.5h7M12 16.5v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       </button>
     </div>
+    <div class="palette-switch" id="paletteSwitch">
+      <button type="button" class="palette-btn" data-palette-pref="default" title="Default" data-tooltip="Default">
+        <span class="palette-swatch palette-swatch-default" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="palette-btn" data-palette-pref="green" title="Green" data-tooltip="Green">
+        <span class="palette-swatch palette-swatch-green" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="palette-btn" data-palette-pref="minecraft" title="Minecraft" data-tooltip="Minecraft">
+        <span class="palette-swatch palette-swatch-minecraft" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="palette-btn palette-btn-custom" id="paletteBtnCustom" data-palette-pref="custom" title="Custom" data-tooltip="Custom">
+        <span class="palette-swatch palette-swatch-custom" id="paletteSwatchCustom" aria-hidden="true">+</span>
+      </button>
+    </div>
   </div>
 
 </aside>
@@ -151,6 +165,9 @@
     </button>
     <button type="button" class="topbar-icon-btn" id="topbarThemeToggle" data-tooltip="Theme">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+    </button>
+    <button type="button" class="topbar-icon-btn" id="topbarBgAudioToggle" data-tooltip="Mute background audio" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" id="topbarBgAudioIcon"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M17.5 8.5a5 5 0 0 1 0 7"/><path d="M20 6a8.5 8.5 0 0 1 0 12"/></svg>
     </button>
   </div>
 </header>
@@ -259,6 +276,29 @@
           </button>
         </div>
       </div>
+      <div class="mobile-sheet-row">
+        <span class="mobile-sheet-row-label" data-i18n="settings.paletteLabel">Color palette</span>
+        <div class="palette-switch">
+          <button type="button" class="palette-btn" data-palette-pref="default" title="Default" data-tooltip="Default">
+            <span class="palette-swatch palette-swatch-default" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="palette-btn" data-palette-pref="green" title="Green" data-tooltip="Green">
+            <span class="palette-swatch palette-swatch-green" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="palette-btn" data-palette-pref="minecraft" title="Minecraft" data-tooltip="Minecraft">
+            <span class="palette-swatch palette-swatch-minecraft" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="palette-btn palette-btn-custom" data-palette-pref="custom" title="Custom" data-tooltip="Custom">
+            <span class="palette-swatch palette-swatch-custom" aria-hidden="true">+</span>
+          </button>
+        </div>
+      </div>
+      <div class="mobile-sheet-row" id="mobileBgAudioRow" hidden>
+        <span class="mobile-sheet-row-label" data-i18n="customTheme.bgAudioLabel">Background audio</span>
+        <button type="button" class="topbar-icon-btn" id="mobileBgAudioToggle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" id="mobileBgAudioIcon"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M17.5 8.5a5 5 0 0 1 0 7"/><path d="M20 6a8.5 8.5 0 0 1 0 12"/></svg>
+        </button>
+      </div>
       <a class="mobile-sheet-option" href="https://github.com/Darktubbie/MBSM" target="_blank" rel="noopener">
         <span class="mso-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.2c0 4.49 2.87 8.3 6.84 9.65.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.88-2.78.62-3.37-1.21-3.37-1.21-.46-1.19-1.11-1.51-1.11-1.51-.91-.63.07-.62.07-.62 1 .07 1.53 1.04 1.53 1.04.9 1.55 2.36 1.11 2.93.85.09-.66.35-1.11.64-1.37-2.22-.26-4.56-1.13-4.56-5.03 0-1.11.39-2.02 1.03-2.73-.1-.26-.45-1.31.1-2.72 0 0 .84-.27 2.75 1.04a9.3 9.3 0 0 1 5 0c1.91-1.31 2.75-1.04 2.75-1.04.55 1.41.2 2.46.1 2.72.64.71 1.03 1.62 1.03 2.73 0 3.91-2.34 4.77-4.57 5.02.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.2C22 6.58 17.52 2 12 2Z"/></svg></span>
         <span class="mso-label">GitHub</span>
@@ -284,7 +324,7 @@
           <p data-i18n="home.welcomeSubtitle">Minecraft Bedrock Skin Manager</p>
 
           <div class="dash-version-row">
-            <span class="dash-version-badge" data-i18n="home.versionBadge">v0.8.1 • Beta</span>
+            <span class="dash-version-badge" data-i18n="home.versionBadge">v0.9.0 • Beta</span>
             <span class="dash-latest-badge" id="changelogLatestBadge"><!-- JS coloca aquí el badge (Minor/Patch/Major) de la última versión --></span>
           </div>
 
@@ -861,15 +901,24 @@
   <div id="app">
 
     <div id="mobileBackdrop"></div>
-    <button class="mobileToggle" id="btnMobileSidebar" title="Modelos" data-oss-i18n-title="mobile.models">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
-    </button>
-    <button class="mobileToggle" id="btnMobileInspector" title="Huesos / Exportar" data-oss-i18n-title="mobile.bonesExport">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.6"/><circle cx="18" cy="18" r="2.6"/><line x1="8" y1="8" x2="16" y2="16"/></svg>
-    </button>
+    <div id="mobileTabBar">
+      <button class="mobileTabBtn" id="btnMobileSidebar" data-oss-i18n-title="mobile.models">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+        <span data-oss-i18n="mobile.models">Modelos</span>
+      </button>
+      <button class="mobileTabBtn active" id="btnMobileViewport" data-oss-i18n-title="mobile.viewport">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>
+        <span data-oss-i18n="mobile.viewport">Vista 3D</span>
+      </button>
+      <button class="mobileTabBtn" id="btnMobileInspector" data-oss-i18n-title="mobile.bonesExport">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.6"/><circle cx="18" cy="18" r="2.6"/><line x1="8" y1="8" x2="16" y2="16"/></svg>
+        <span data-oss-i18n="mobile.bonesTab">Huesos</span>
+      </button>
+    </div>
 
     <!-- ============ Columna izquierda: proyectos + partes ============ -->
     <aside id="sidebar">
+      <div class="mobileSheetHandle" aria-hidden="true"></div>
       <button class="mobileClose" id="btnCloseSidebar" title="Cerrar" data-oss-i18n-title="common.close">×</button>
       <div id="sidebarHeader">
         <div class="sidebarHeaderTop">
@@ -913,6 +962,13 @@
           <button class="btn btnGhost small" id="btnAutoAssign" title="Reasignar huesos según el nombre de cada parte" data-oss-i18n-title="sidebar.autoAssignTitle" data-oss-i18n="sidebar.autoAssign">Autoasignar</button>
         </div>
         <input type="text" id="partsSearch" placeholder="Buscar parte..." data-oss-i18n-placeholder="sidebar.searchPart">
+        <div class="partsBulkAssign" id="partsBulkAssign">
+          <span class="partsBulkAssignCount" id="partsBulkAssignCount" data-oss-i18n="sidebar.bulkAssignNoMatch">Escribe arriba para filtrar partes por nombre</span>
+          <div class="partsBulkAssignRow">
+            <select id="bulkAssignBoneSelect" data-oss-i18n-aria-label="sidebar.bulkAssignBoneSelect"></select>
+            <button class="btn btnGhost small" id="btnBulkAssign" disabled data-oss-i18n="sidebar.bulkAssignBtn">Asignar coincidencias</button>
+          </div>
+        </div>
         <ul id="partsList"></ul>
       </div>
     </aside>
@@ -964,6 +1020,7 @@
 
     <!-- ============ Derecha: huesos + exportar ============ -->
     <aside id="inspector">
+      <div class="mobileSheetHandle" aria-hidden="true"></div>
       <button class="mobileClose" id="btnCloseInspector" title="Cerrar" data-oss-i18n-title="common.close">×</button>
       <div id="inspectorTabs">
         <button class="tabBtn active" data-tab="bones" data-oss-i18n="tabs.bones">Huesos</button>
@@ -1419,6 +1476,74 @@
   </div>
 </div>
 
+<!-- Creador de skin/tema propio: colores por hex + fondo opcional (imagen/gif/video en loop).
+     Todo se guarda localmente en el navegador (localStorage + IndexedDB para el archivo de fondo);
+     no se sube ni se comparte a ningún lado. Colocado ANTES del <script> de más abajo que
+     busca estos elementos por id -- si va después, el script corre antes de que el parser
+     llegue a este HTML y document.getElementById(...) devuelve null (esto causaba el error
+     "Cannot set properties of null" al tocar el +). -->
+<div class="custom-theme-modal-backdrop" id="customThemeBackdrop">
+  <div class="custom-theme-modal" role="dialog" aria-modal="true" aria-labelledby="customThemeModalTitle">
+    <div class="custom-theme-modal-head">
+      <h3 id="customThemeModalTitle" data-i18n="customTheme.title">Create your own skin</h3>
+      <button type="button" class="changelog-modal-close" id="customThemeModalClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="custom-theme-modal-body">
+      <p class="custom-theme-hint" data-i18n="customTheme.hint">Pick your own colors and, if you want, a background. Everything stays on this device — it's never uploaded or shared.</p>
+
+      <div class="custom-theme-color-row">
+        <label data-i18n="customTheme.strongColor">Strong color</label>
+        <span class="custom-theme-color-sub" data-i18n="customTheme.strongColorHint">Buttons, highlights, active state</span>
+        <div class="custom-theme-color-inputs">
+          <input type="color" id="customThemeStrongPicker" value="#7c3aed">
+          <input type="text" id="customThemeStrongHex" class="custom-theme-hex-input" placeholder="#7c3aed" maxlength="7" spellcheck="false">
+        </div>
+      </div>
+
+      <div class="custom-theme-color-row">
+        <label data-i18n="customTheme.softColor">Soft color</label>
+        <span class="custom-theme-color-sub" data-i18n="customTheme.softColorHint">Glows, subtle backgrounds</span>
+        <div class="custom-theme-color-inputs">
+          <input type="color" id="customThemeSoftPicker" value="#a855f7">
+          <input type="text" id="customThemeSoftHex" class="custom-theme-hex-input" placeholder="#a855f7" maxlength="7" spellcheck="false">
+        </div>
+      </div>
+
+      <div class="custom-theme-bg-section">
+        <label data-i18n="customTheme.background">Page background (optional)</label>
+        <div class="custom-theme-bg-type" id="customThemeBgType">
+          <button type="button" class="ctbg-opt active" data-bg-type="none" data-i18n="customTheme.bgNone">None</button>
+          <button type="button" class="ctbg-opt" data-bg-type="image" data-i18n="customTheme.bgImage">Image</button>
+          <button type="button" class="ctbg-opt" data-bg-type="gif" data-i18n="customTheme.bgGif">GIF</button>
+          <button type="button" class="ctbg-opt" data-bg-type="video" data-i18n="customTheme.bgVideo">Video</button>
+        </div>
+        <input type="file" id="customThemeBgFile" accept="image/*" hidden>
+        <button type="button" class="custom-theme-upload-btn" id="customThemeBgUploadBtn" hidden data-i18n="customTheme.chooseFile">Choose file</button>
+        <span class="custom-theme-bg-filename" id="customThemeBgFilename"></span>
+        <p class="custom-theme-bg-note" id="customThemeBgLoopNote" hidden data-i18n="customTheme.bgLoopNote">It will play on loop, without stopping.</p>
+        <label class="custom-theme-audio-toggle" id="customThemeAudioRow" hidden>
+          <input type="checkbox" id="customThemeAudioCheckbox">
+          <span data-i18n="customTheme.playAudio">Also play the video's audio</span>
+        </label>
+      </div>
+
+      <div class="custom-theme-modal-actions">
+        <button type="button" class="btn-ghost-small" id="customThemeReset" data-i18n="customTheme.resetBtn">Delete my skin</button>
+        <button type="button" class="btn btn-primary" id="customThemeSave" data-i18n="customTheme.saveBtn">Save my skin</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Fondo de página del tema personalizado (imagen/gif/video en loop infinito) -->
+<div id="customThemeBgLayer" aria-hidden="true">
+  <img id="customThemeBgImg" alt="" hidden>
+  <video id="customThemeBgVideo" autoplay loop muted playsinline hidden></video>
+  <div id="customThemeBgOverlay"></div>
+</div>
+
 <!-- Shell de la nueva interfaz: sidebar colapsable, drawer móvil y
      sincronización fina del estado "activo" de la sidebar con la
      sub-pestaña realmente visible. No depende de app.js ni modifica
@@ -1591,6 +1716,416 @@
     });
   }
 
+  // ---------- Paleta de color: Default / Green / Minecraft ----------
+  var PALETTE_KEY = "mbsm.palettePref";
+  var paletteButtons = document.querySelectorAll(".palette-btn");
+
+  function applyPalette(pref) {
+    document.documentElement.setAttribute("data-palette", pref);
+    paletteButtons.forEach(function (btn) {
+      btn.classList.toggle("active", btn.getAttribute("data-palette-pref") === pref);
+    });
+    if (pref !== "custom") {
+      document.documentElement.style.removeProperty("--primary");
+      document.documentElement.style.removeProperty("--primary-hover");
+      document.documentElement.style.removeProperty("--purple");
+      document.documentElement.style.removeProperty("--purple-dark");
+      document.documentElement.style.removeProperty("--accent");
+      if (typeof applyCustomBackground === "function") applyCustomBackground(null, null);
+    }
+  }
+
+  var storedPalettePref = "default";
+  try { storedPalettePref = localStorage.getItem(PALETTE_KEY) || "default"; } catch (e) {}
+  applyPalette(storedPalettePref);
+
+  paletteButtons.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var pref = btn.getAttribute("data-palette-pref");
+      if (pref === "custom") { openCustomThemeModal(); return; }
+      try { localStorage.setItem(PALETTE_KEY, pref); } catch (e) {}
+      applyPalette(pref);
+    });
+  });
+
+  // ================== Creador de skin/tema propio ==================
+  // Todo queda local: colores en localStorage, fondo (imagen/gif/video)
+  // en IndexedDB (los archivos pueden pesar más de lo que localStorage
+  // permite). Nada se sube ni se comparte a ningún lado.
+  var CUSTOM_COLORS_KEY = "mbsm.customTheme.colors";
+  var CUSTOM_BG_MAX_MB = 20;
+  var ctDB = null;
+
+  function ctOpenDB() {
+    return new Promise(function (resolve, reject) {
+      if (ctDB) { resolve(ctDB); return; }
+      if (!window.indexedDB) { reject(new Error("no-indexeddb")); return; }
+      var req = indexedDB.open("mbsm-custom-theme", 1);
+      req.onupgradeneeded = function () {
+        req.result.createObjectStore("bg");
+      };
+      req.onsuccess = function () { ctDB = req.result; resolve(ctDB); };
+      req.onerror = function () { reject(req.error); };
+    });
+  }
+  function ctSaveBg(blob, type, audio) {
+    return ctOpenDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction("bg", "readwrite");
+        tx.objectStore("bg").put({ blob: blob, type: type, audio: !!audio }, "current");
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function () { reject(tx.error); };
+      });
+    });
+  }
+  function ctLoadBg() {
+    return ctOpenDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction("bg", "readonly");
+        var req = tx.objectStore("bg").get("current");
+        req.onsuccess = function () { resolve(req.result || null); };
+        req.onerror = function () { reject(req.error); };
+      });
+    });
+  }
+  function ctDeleteBg() {
+    return ctOpenDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction("bg", "readwrite");
+        tx.objectStore("bg").delete("current");
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function () { reject(tx.error); };
+      });
+    });
+  }
+
+  // ---- utilidades de color: hex <-> hsl, para derivar variantes hover/oscuro ----
+  function ctHexValid(hex) { return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test((hex || "").trim()); }
+  function ctNormalizeHex(hex) {
+    hex = hex.trim();
+    if (hex.length === 4) {
+      hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+    }
+    return hex.toLowerCase();
+  }
+  function ctHexToRgb(hex) {
+    hex = ctNormalizeHex(hex);
+    var n = parseInt(hex.slice(1), 16);
+    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+  }
+  function ctRgbToHex(r, g, b) {
+    return "#" + [r, g, b].map(function (v) {
+      return Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0");
+    }).join("");
+  }
+  function ctRgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    var h, s, l = (max + min) / 2;
+    if (max === min) { h = s = 0; }
+    else {
+      var d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+      else if (max === g) h = (b - r) / d + 2;
+      else h = (r - g) / d + 4;
+      h /= 6;
+    }
+    return { h: h, s: s, l: l };
+  }
+  function ctHslToRgb(h, s, l) {
+    var r, g, b;
+    if (s === 0) { r = g = b = l; }
+    else {
+      var hue2rgb = function (p, q, t) {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1 / 6) return p + (q - p) * 6 * t;
+        if (t < 1 / 2) return q;
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+        return p;
+      };
+      var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      var p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1 / 3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1 / 3);
+    }
+    return { r: r * 255, g: g * 255, b: b * 255 };
+  }
+  function ctShade(hex, deltaL) {
+    var rgb = ctHexToRgb(hex);
+    var hsl = ctRgbToHsl(rgb.r, rgb.g, rgb.b);
+    hsl.l = Math.max(0, Math.min(1, hsl.l + deltaL));
+    var out = ctHslToRgb(hsl.h, hsl.s, hsl.l);
+    return ctRgbToHex(out.r, out.g, out.b);
+  }
+
+  function ctSetSwatchPreview(strongHex, softHex) {
+    document.documentElement.style.setProperty(
+      "--custom-theme-preview",
+      "linear-gradient(135deg," + strongHex + "," + softHex + ")"
+    );
+  }
+
+  function applyCustomColors(strongHex, softHex) {
+    var root = document.documentElement.style;
+    root.setProperty("--primary", strongHex);
+    root.setProperty("--primary-hover", ctShade(strongHex, 0.08));
+    root.setProperty("--purple", strongHex);
+    root.setProperty("--purple-dark", ctShade(strongHex, -0.14));
+    root.setProperty("--accent", softHex);
+    ctSetSwatchPreview(strongHex, softHex);
+  }
+
+  var ctCurrentBgUrl = null;
+  function ctSetAudioButtonsVisible(visible) {
+    var desktopBtn = document.getElementById("topbarBgAudioToggle");
+    var mobileRow = document.getElementById("mobileBgAudioRow");
+    if (desktopBtn) desktopBtn.hidden = !visible;
+    if (mobileRow) mobileRow.hidden = !visible;
+  }
+  var CT_AUDIO_ICON_ON = '<path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M17.5 8.5a5 5 0 0 1 0 7"/><path d="M20 6a8.5 8.5 0 0 1 0 12"/>';
+  var CT_AUDIO_ICON_OFF = '<path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m17 9 5 6M22 9l-5 6" stroke-linecap="round"/>';
+  function ctSetAudioIcons(muted) {
+    ["topbarBgAudioIcon", "mobileBgAudioIcon"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.innerHTML = muted ? CT_AUDIO_ICON_OFF : CT_AUDIO_ICON_ON;
+    });
+  }
+  function ctToggleBgAudio() {
+    var video = document.getElementById("customThemeBgVideo");
+    if (!video) return;
+    video.muted = !video.muted;
+    if (!video.muted) { video.play().catch(function () {}); }
+    ctSetAudioIcons(video.muted);
+  }
+  var ctAudioBtnDesktop = document.getElementById("topbarBgAudioToggle");
+  var ctAudioBtnMobile = document.getElementById("mobileBgAudioToggle");
+  if (ctAudioBtnDesktop) ctAudioBtnDesktop.addEventListener("click", ctToggleBgAudio);
+  if (ctAudioBtnMobile) ctAudioBtnMobile.addEventListener("click", ctToggleBgAudio);
+
+  function applyCustomBackground(url, type, audioEnabled) {
+    var layer = document.getElementById("customThemeBgLayer");
+    var img = document.getElementById("customThemeBgImg");
+    var video = document.getElementById("customThemeBgVideo");
+    if (!layer) return;
+    if (!url) {
+      layer.classList.remove("active");
+      img.hidden = true; video.hidden = true;
+      video.pause(); video.removeAttribute("src"); video.load();
+      document.body.classList.remove("has-custom-bg");
+      ctSetAudioButtonsVisible(false);
+      return;
+    }
+    if (type === "video") {
+      img.hidden = true;
+      video.hidden = false;
+      video.src = url;
+      if (audioEnabled) {
+        // Los navegadores suelen bloquear el autoplay con audio sin un
+        // gesto del usuario -- lo intentamos sin silenciar, y si el
+        // navegador lo rechaza, caemos de vuelta a silencioso (el botón
+        // de audio sigue visible para que el usuario lo active con un
+        // toque, lo cual sí cuenta como gesto y desbloquea el audio).
+        video.muted = false;
+        video.play().catch(function () {
+          video.muted = true;
+          ctSetAudioIcons(true);
+          video.play().catch(function () {});
+        });
+        ctSetAudioButtonsVisible(true);
+        ctSetAudioIcons(video.muted);
+      } else {
+        video.muted = true;
+        video.play().catch(function () {});
+        ctSetAudioButtonsVisible(false);
+      }
+    } else {
+      video.hidden = true; video.pause();
+      img.hidden = false;
+      img.src = url;
+      ctSetAudioButtonsVisible(false);
+    }
+    layer.classList.add("active");
+    document.body.classList.add("has-custom-bg");
+  }
+
+  function markCustomSwatchAvailable(has) {
+    document.querySelectorAll(".palette-btn-custom").forEach(function (btn) {
+      btn.classList.toggle("has-custom", has);
+    });
+  }
+
+  // Al cargar la página, si la última paleta elegida fue "custom",
+  // recuperamos colores (localStorage, instantáneo) y fondo (IndexedDB, async).
+  (function ctBootstrap() {
+    var raw = null;
+    try { raw = localStorage.getItem(CUSTOM_COLORS_KEY); } catch (e) {}
+    if (!raw) return;
+    var colors;
+    try { colors = JSON.parse(raw); } catch (e) { return; }
+    if (!colors || !ctHexValid(colors.strong) || !ctHexValid(colors.soft)) return;
+    markCustomSwatchAvailable(true);
+    ctSetSwatchPreview(colors.strong, colors.soft);
+    if (storedPalettePref === "custom") {
+      applyCustomColors(colors.strong, colors.soft);
+      ctLoadBg().then(function (rec) {
+        if (rec && rec.blob) {
+          ctCurrentBgUrl = URL.createObjectURL(rec.blob);
+          applyCustomBackground(ctCurrentBgUrl, rec.type, rec.audio);
+        }
+      }).catch(function () {});
+    }
+  })();
+
+  // ---- Modal ----
+  var ctBackdrop = document.getElementById("customThemeBackdrop");
+  var ctStrongPicker = document.getElementById("customThemeStrongPicker");
+  var ctStrongHexInput = document.getElementById("customThemeStrongHex");
+  var ctSoftPicker = document.getElementById("customThemeSoftPicker");
+  var ctSoftHexInput = document.getElementById("customThemeSoftHex");
+  var ctBgTypeWrap = document.getElementById("customThemeBgType");
+  var ctBgFile = document.getElementById("customThemeBgFile");
+  var ctBgUploadBtn = document.getElementById("customThemeBgUploadBtn");
+  var ctBgFilename = document.getElementById("customThemeBgFilename");
+  var ctBgLoopNote = document.getElementById("customThemeBgLoopNote");
+  var ctSelectedBgType = "none";
+  var ctSelectedBgFile = null;
+  var ctAudioRow = document.getElementById("customThemeAudioRow");
+  var ctAudioCheckbox = document.getElementById("customThemeAudioCheckbox");
+
+  function ctSyncColorInputs(picker, hexInput) {
+    picker.addEventListener("input", function () { hexInput.value = picker.value; hexInput.classList.remove("invalid"); });
+    hexInput.addEventListener("input", function () {
+      var v = hexInput.value.trim();
+      if (ctHexValid(v)) { hexInput.classList.remove("invalid"); picker.value = ctNormalizeHex(v); }
+    });
+  }
+  if (ctStrongPicker) ctSyncColorInputs(ctStrongPicker, ctStrongHexInput);
+  if (ctSoftPicker) ctSyncColorInputs(ctSoftPicker, ctSoftHexInput);
+
+  if (ctBgTypeWrap) {
+    ctBgTypeWrap.querySelectorAll(".ctbg-opt").forEach(function (opt) {
+      opt.addEventListener("click", function () {
+        ctBgTypeWrap.querySelectorAll(".ctbg-opt").forEach(function (o) { o.classList.remove("active"); });
+        opt.classList.add("active");
+        ctSelectedBgType = opt.getAttribute("data-bg-type");
+        ctSelectedBgFile = null;
+        ctBgFilename.textContent = "";
+        if (ctSelectedBgType === "none") {
+          ctBgUploadBtn.hidden = true;
+          ctBgLoopNote.hidden = true;
+          if (ctAudioRow) ctAudioRow.hidden = true;
+        } else {
+          ctBgUploadBtn.hidden = false;
+          ctBgLoopNote.hidden = ctSelectedBgType === "image";
+          ctBgFile.accept = ctSelectedBgType === "video" ? "video/*" : ctSelectedBgType === "gif" ? "image/gif" : "image/*";
+          if (ctAudioRow) ctAudioRow.hidden = ctSelectedBgType !== "video";
+        }
+        if (ctAudioCheckbox && ctSelectedBgType !== "video") ctAudioCheckbox.checked = false;
+      });
+    });
+  }
+  if (ctBgUploadBtn) ctBgUploadBtn.addEventListener("click", function () { ctBgFile.click(); });
+  if (ctBgFile) ctBgFile.addEventListener("change", function () {
+    var f = ctBgFile.files && ctBgFile.files[0];
+    if (!f) return;
+    if (f.size > CUSTOM_BG_MAX_MB * 1024 * 1024) {
+      alert(t("customTheme.fileTooLarge", CUSTOM_BG_MAX_MB));
+      ctBgFile.value = "";
+      return;
+    }
+    ctSelectedBgFile = f;
+    ctBgFilename.textContent = f.name;
+  });
+
+  function openCustomThemeModal() {
+    var raw = null;
+    try { raw = localStorage.getItem(CUSTOM_COLORS_KEY); } catch (e) {}
+    var colors = null;
+    try { colors = raw ? JSON.parse(raw) : null; } catch (e) {}
+    var strong = (colors && ctHexValid(colors.strong)) ? colors.strong : "#7c3aed";
+    var soft = (colors && ctHexValid(colors.soft)) ? colors.soft : "#a855f7";
+    ctStrongPicker.value = strong; ctStrongHexInput.value = strong; ctStrongHexInput.classList.remove("invalid");
+    ctSoftPicker.value = soft; ctSoftHexInput.value = soft; ctSoftHexInput.classList.remove("invalid");
+    ctSelectedBgType = "none"; ctSelectedBgFile = null;
+    ctBgFilename.textContent = ""; ctBgFile.value = "";
+    ctBgUploadBtn.hidden = true; ctBgLoopNote.hidden = true;
+    if (ctAudioRow) ctAudioRow.hidden = true;
+    if (ctAudioCheckbox) ctAudioCheckbox.checked = false;
+    ctBgTypeWrap.querySelectorAll(".ctbg-opt").forEach(function (o) {
+      o.classList.toggle("active", o.getAttribute("data-bg-type") === "none");
+    });
+    ctBackdrop.classList.add("open");
+  }
+  function closeCustomThemeModal() { ctBackdrop.classList.remove("open"); }
+
+  var ctCloseBtn = document.getElementById("customThemeModalClose");
+  if (ctCloseBtn) ctCloseBtn.addEventListener("click", closeCustomThemeModal);
+  if (ctBackdrop) ctBackdrop.addEventListener("click", function (e) { if (e.target === ctBackdrop) closeCustomThemeModal(); });
+
+  var ctSaveBtn = document.getElementById("customThemeSave");
+  if (ctSaveBtn) ctSaveBtn.addEventListener("click", function () {
+    var strong = ctStrongHexInput.value.trim();
+    var soft = ctSoftHexInput.value.trim();
+    var ok = true;
+    if (!ctHexValid(strong)) { ctStrongHexInput.classList.add("invalid"); ok = false; }
+    if (!ctHexValid(soft)) { ctSoftHexInput.classList.add("invalid"); ok = false; }
+    if (!ok) { alert(t("customTheme.invalidHex")); return; }
+    strong = ctNormalizeHex(strong); soft = ctNormalizeHex(soft);
+
+    try { localStorage.setItem(CUSTOM_COLORS_KEY, JSON.stringify({ strong: strong, soft: soft })); } catch (e) {}
+    try { localStorage.setItem(PALETTE_KEY, "custom"); } catch (e) {}
+    markCustomSwatchAvailable(true);
+    applyPalette("custom");
+    applyCustomColors(strong, soft);
+
+    function finishApply() {
+      closeCustomThemeModal();
+      if (typeof window.mbsmToast === "function") { window.mbsmToast("success", t("customTheme.savedToast")); }
+    }
+
+    if (ctSelectedBgType !== "none" && ctSelectedBgFile) {
+      var audioEnabled = ctSelectedBgType === "video" && !!(ctAudioCheckbox && ctAudioCheckbox.checked);
+      ctSaveBg(ctSelectedBgFile, ctSelectedBgType, audioEnabled).then(function () {
+        if (ctCurrentBgUrl) URL.revokeObjectURL(ctCurrentBgUrl);
+        ctCurrentBgUrl = URL.createObjectURL(ctSelectedBgFile);
+        applyCustomBackground(ctCurrentBgUrl, ctSelectedBgType, audioEnabled);
+        finishApply();
+      }).catch(function () { finishApply(); });
+    } else if (ctSelectedBgType === "none") {
+      ctDeleteBg().catch(function () {});
+      if (ctCurrentBgUrl) { URL.revokeObjectURL(ctCurrentBgUrl); ctCurrentBgUrl = null; }
+      applyCustomBackground(null, null);
+      finishApply();
+    } else {
+      finishApply();
+    }
+  });
+
+  var ctResetBtn = document.getElementById("customThemeReset");
+  if (ctResetBtn) ctResetBtn.addEventListener("click", function () {
+    try { localStorage.removeItem(CUSTOM_COLORS_KEY); } catch (e) {}
+    ctDeleteBg().catch(function () {});
+    if (ctCurrentBgUrl) { URL.revokeObjectURL(ctCurrentBgUrl); ctCurrentBgUrl = null; }
+    applyCustomBackground(null, null);
+    markCustomSwatchAvailable(false);
+    var storedPref = "default";
+    try { storedPref = localStorage.getItem(PALETTE_KEY) || "default"; } catch (e) {}
+    if (storedPref === "custom") {
+      try { localStorage.setItem(PALETTE_KEY, "default"); } catch (e) {}
+      document.documentElement.style.removeProperty("--primary");
+      document.documentElement.style.removeProperty("--primary-hover");
+      document.documentElement.style.removeProperty("--purple");
+      document.documentElement.style.removeProperty("--purple-dark");
+      document.documentElement.style.removeProperty("--accent");
+      applyPalette("default");
+    }
+    closeCustomThemeModal();
+    if (typeof window.mbsmToast === "function") { window.mbsmToast("info", t("customTheme.deletedToast")); }
+  });
+
   // ---------- Icono de tema en el topbar: cicla dark -> light -> system ----------
   var topbarThemeBtn = document.getElementById("topbarThemeToggle");
   if (topbarThemeBtn) {
@@ -1714,6 +2249,32 @@
     </div>
     <div class="changelog-modal-body">
       <div class="changelog-list" id="changelogList">
+        <div class="changelog-entry">
+          <div class="changelog-entry-icon type-minor">
+            <img src="assets/mbsm-icon.png" alt="">
+          </div>
+          <div class="changelog-entry-body">
+            <div class="changelog-entry-head">
+              <span class="changelog-version">v0.9.0 beta</span>
+              <span class="changelog-badge badge-minor" data-i18n="changelog.badge.minor">Minor Update</span>
+            </div>
+            <ul class="changelog-changes">
+              <li data-i18n="changelog.v090.item1">OBJ &rarr; Skin 1.8: added a quick bulk-assign tool in the Parts panel &mdash; filter parts by a name pattern (e.g. "bone" matches bone1, bone2, bone3...) and assign every match to a chosen bone in one click, instead of one part at a time.</li>
+              <li data-i18n="changelog.v090.item2">OBJ &rarr; Skin 1.8: fixed the bone tree being stuck in a tiny 230px scroll box on desktop &mdash; it was hard to see a full skeleton without a second, nested scrollbar. It now grows freely inside the already-scrollable panel.</li>
+              <li data-i18n="changelog.v090.item3">OBJ &rarr; Skin 1.8: the mobile layout for the Models and Bones/Export panels was rebuilt as swipeable bottom sheets (Blockbench-style) with a drag handle, instead of side drawers &mdash; desktop is untouched.</li>
+              <li data-i18n="changelog.v090.item4">Validator: multi-skin packs no longer dump one long flat list of checks. Each skin's results now collapse into their own block &mdash; closed by default when everything passes, open automatically when there's an error or warning.</li>
+              <li data-i18n="changelog.v090.item5">Added a color palette switcher (Default, Green, Minecraft) plus a "Create your own skin" option: pick your own accent colors by hex code and, optionally, set the page background to an image, GIF, or looping video (with an off-by-default toggle to also play the video's audio). Everything is saved locally in your browser only.</li>
+              <li data-i18n="changelog.v090.item6">When a custom background is active, the topbar, Home hero section, sidebar, and mobile nav bar turn translucent instead of solid, so the background stays visible across the whole page.</li>
+              <li data-i18n="changelog.v090.item7">Fixed a handful of smaller bugs found along the way: an obsidian icon that didn't match its "crying obsidian" counterpart in size or texture, cached script files falling out of sync with the app version, a JavaScript reference error that broke package analysis, mobile layouts getting clipped at the screen edge, and the collapsed desktop sidebar's theme/skin buttons not sizing correctly.</li>
+              <li data-i18n="changelog.v090.item8">Fixed the afternoon greeting's grammar ("Buenas tardes", not "Buena tarde").</li>
+              <li data-i18n="changelog.v090.item9">Fixed the background-audio button showing both the muted and unmuted icons stacked together instead of just one depending on the state.</li>
+              <li data-i18n="changelog.v090.item10">Fixed the language, theme, and skin buttons at the bottom of the collapsed desktop sidebar sizing unevenly, and fixed OBJ &rarr; Skin 1.8's Bones/Export panel becoming unreachable on narrower desktop windows (it required going fullscreen) &mdash; it now stays reachable via horizontal scroll if the window is too narrow.</li>
+              <li data-i18n="changelog.v090.item11">The sidebar's collapse/expand arrow no longer stacks awkwardly with the logo when collapsed &mdash; it's now a floating button pinned to the sidebar's edge, in the same spot whether expanded or collapsed.</li>
+              <li data-i18n="changelog.v090.item12">OBJ &rarr; Skin 1.8: fixed the Model Parts section (search, the bulk-assign row, and the parts list) getting clipped and partly invisible on desktop when the sidebar's height was tight.</li>
+              <li data-i18n="changelog.v090.item13">OBJ &rarr; Skin 1.8: increased the studio's overall height on desktop (760px/80vh &rarr; 880px/88vh) so the Model Parts and Bones sections have noticeably more room by default.</li>
+            </ul>
+          </div>
+        </div>
         <div class="changelog-entry">
           <div class="changelog-entry-icon type-patch">
             <img src="assets/obsidian-block.png" alt="">
@@ -1936,7 +2497,7 @@
 })();
 </script>
 
-<script src="validator.js?v=7"></script>
+<script src="validator.js?v=8"></script>
 
 <script src="fixer.js?v=7"></script>
 
@@ -1956,9 +2517,9 @@
      integrado en esta misma página, igual que los demás módulos de
      arriba. Se expone como window.ObjSkinStudio (init perezoso +
      refreshLanguage) y no declara nada más en el ámbito global. -->
-<script src="obj-a-skin-bedrock.js?v=1"></script>
+<script src="obj-a-skin-bedrock.js?v=2"></script>
 
-<script src="app.js?v=7"></script>
+<script src="app.js?v=10"></script>
 
 </body>
 </html>

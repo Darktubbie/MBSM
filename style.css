@@ -1346,6 +1346,65 @@ a{
 }
 .result-item.info::before{ content:"i"; background:var(--info); }
 
+/* ---------- Grouped per-skin results (collapsible) ----------
+   One <details> per skin instead of a long flat list of cards --
+   keeps a multi-skin pack's results short on mobile: skins with no
+   issues collapse to a single line, skins with problems open by
+   default so they aren't missed. */
+.result-skin-group{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-left:3px solid var(--muted);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.result-skin-group.has-issue{ border-left-color:var(--warning); }
+.result-skin-group.all-ok{ border-left-color:var(--success); }
+
+.result-skin-group-summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:14px 16px;
+  cursor:pointer;
+  list-style:none;
+  font-size:13.5px;
+  min-height:22px; /* keeps the tap target comfortable on mobile */
+}
+.result-skin-group-summary::-webkit-details-marker{ display:none; }
+.result-skin-group-summary::marker{ content:""; }
+.result-skin-group-summary::after{
+  content:"▾";
+  color:var(--muted);
+  transition:transform .15s ease;
+  flex-shrink:0;
+}
+.result-skin-group[open] > .result-skin-group-summary::after{ transform:rotate(180deg); }
+
+.result-skin-group-name{
+  font-weight:700;
+  color:var(--text);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.result-skin-group-status{
+  font-size:12px;
+  color:var(--muted);
+  flex-shrink:0;
+}
+.result-skin-group.has-issue .result-skin-group-status{ color:var(--warning); }
+.result-skin-group.all-ok .result-skin-group-status{ color:var(--success); }
+
+.result-skin-group-body{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:0 14px 14px;
+}
+.result-skin-group-body .result-item{
+  border-radius:var(--radius-sm);
+}
+
 .result-item h4{
   margin-bottom:4px;
   font-size:13.5px;
@@ -2561,23 +2620,27 @@ body.sidebar-collapsed{ padding-left:var(--sidebar-w-collapsed); }
 .brand-accent{ color:var(--accent); }
 
 .sidebar-collapse-btn{
+  position:absolute;
+  top:20px;
+  right:-13px;
+  z-index:210;
   flex:0 0 auto;
-  width:28px; height:28px;
+  width:26px; height:26px;
   display:flex; align-items:center; justify-content:center;
-  background:transparent; border:1px solid var(--border);
-  border-radius:var(--radius-sm); color:var(--muted);
+  background:var(--panel2); border:1px solid var(--border);
+  border-radius:50%; color:var(--muted);
   cursor:pointer; transition:.15s;
+  box-shadow:0 2px 6px rgba(0,0,0,.35);
 }
 .sidebar-collapse-btn:hover{ color:var(--text); border-color:var(--primary); }
-.sidebar-collapse-btn svg{ width:15px; height:15px; }
+.sidebar-collapse-btn svg{ width:13px; height:13px; }
 body.sidebar-collapsed .sidebar-collapse-btn svg{ transform:rotate(180deg); }
 
-/* Con la sidebar colapsada, el logo y el botón de colapsar ya no caben
-   uno junto al otro: se apilan en vertical, se oculta el texto "MBSM"
-   y el botón queda pequeño debajo del icono en lugar de solaparse. */
+/* Con la sidebar colapsada, el logo ya no cabe junto al texto "MBSM":
+   se oculta el texto y el ícono queda centrado. El botón de colapsar
+   ahora es un control flotante fijo en el borde (arriba), así que no
+   necesita apilarse ni reflowear junto con el logo. */
 body.sidebar-collapsed .sidebar-top{
-  flex-direction:column;
-  gap:8px;
   padding:14px 8px;
 }
 body.sidebar-collapsed .brand-label{ display:none; }
@@ -2632,13 +2695,15 @@ body.sidebar-collapsed .sidebar-group{ display:flex; flex-direction:column; alig
   padding:10px;
   display:flex; flex-direction:column; gap:10px;
 }
+body.sidebar-collapsed .sidebar-bottom{ gap:8px; }
 
 .sidebar .lang-switch{
   background:var(--elevated); border:1px solid var(--border);
   border-radius:var(--radius-sm); padding:3px;
   display:flex; gap:2px;
 }
-body.sidebar-collapsed .sidebar .lang-switch{ flex-direction:column; }
+body.sidebar-collapsed .sidebar .lang-switch{ flex-direction:column; align-items:center; }
+body.sidebar-collapsed .sidebar .lang-btn{ flex:none; width:100%; }
 .sidebar .lang-btn{
   flex:1; border-radius:5px;
 }
@@ -3735,6 +3800,90 @@ body.sidebar-collapsed .sidebar .lang-switch{ flex-direction:column; }
   background:var(--bg2,#eceafb);
 }
 
+/* ---------- Paleta: Verde clásico ----------
+   Solo recolorea los acentos (primary/accent) manteniendo el resto del
+   layout intacto -- pensado para quien extraña el verde que tenía MBSM
+   antes del rediseño morado. Funciona tanto en dark como en light. */
+[data-palette="green"]{
+  --primary:#16a34a;
+  --primary-hover:#22c55e;
+  --accent:#4ade80;
+  --purple:#4ade80;
+  --purple-dark:#16a34a;
+}
+[data-palette="green"] body::before{
+  background-image:
+    linear-gradient(rgba(34,197,94,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,197,94,.06) 1px, transparent 1px);
+}
+[data-palette="green"] body::after{
+  background:radial-gradient(circle, rgba(34,197,94,.10), transparent 45%);
+}
+[data-theme="light"][data-palette="green"]{
+  --primary:#15803d;
+  --primary-hover:#16a34a;
+  --accent:#22c55e;
+}
+
+/* ---------- Paleta: Minecraft ----------
+   Reskin más fuerte: paleta tierra/piedra/césped, esquinas cuadradas
+   (estilo "item slot") y la tipografía pixelada Press Start 2P en
+   títulos y textos que ya usaban --font-mono. Es una estética propia
+   inspirada en Minecraft, no una copia de ningún sitio existente.
+   Se aplica igual en modo claro y oscuro: es su propio "modo". */
+[data-palette="minecraft"]{
+  --bg:#1a160f;
+  --bg2:#1a160f;
+  --panel:#2b2116;
+  --panel2:#332819;
+  --elevated:#382c1b;
+  --border:#5a4a30;
+  --border-soft:#463a24;
+
+  --primary:#5b8f3b;
+  --primary-hover:#6fae46;
+  --accent:#8bc34a;
+  --purple:#8bc34a;
+  --purple-dark:#3f6b2a;
+
+  --success:#5b8f3b;
+  --warning:#d9a521;
+  --red:#b02e26;
+  --info:#3d6aa3;
+
+  --text:#f1ead9;
+  --muted:#b8ab8c;
+
+  --font-mono:'Press Start 2P','JetBrains Mono','SFMono-Regular',Consolas,monospace;
+
+  --radius-sm:2px;
+  --radius:3px;
+  --radius-lg:4px;
+
+  --panel-rgb:43,33,22;
+}
+[data-palette="minecraft"] body::before{
+  background-image:
+    linear-gradient(rgba(139,195,74,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139,195,74,.05) 1px, transparent 1px);
+  background-size:32px 32px;
+}
+[data-palette="minecraft"] body::after{
+  background:radial-gradient(circle, rgba(139,195,74,.08), transparent 45%);
+}
+/* Botones con relieve tipo GUI de Minecraft: borde claro arriba/izquierda,
+   oscuro abajo/derecha, sin sombras difusas. */
+[data-palette="minecraft"] .btn-primary{
+  box-shadow:inset 2px 2px 0 rgba(255,255,255,.25), inset -2px -2px 0 rgba(0,0,0,.35);
+  text-shadow:1px 1px 0 rgba(0,0,0,.4);
+}
+[data-palette="minecraft"] .pixel-title,
+[data-palette="minecraft"] .eyebrow.pixel,
+[data-palette="minecraft"] .brand-mbsm,
+[data-palette="minecraft"] .hero-text h1{
+  letter-spacing:0;
+}
+
 /* ---------- Selector de tema (Dark / Light / System) ---------- */
 .theme-switch{
   display:flex;
@@ -3744,7 +3893,8 @@ body.sidebar-collapsed .sidebar .lang-switch{ flex-direction:column; }
   border-radius:var(--radius-sm);
   padding:3px;
 }
-body.sidebar-collapsed .theme-switch{ flex-direction:column; }
+body.sidebar-collapsed .theme-switch{ flex-direction:column; align-items:center; }
+body.sidebar-collapsed .theme-btn{ flex:none; width:26px; height:26px; }
 .theme-btn{
   flex:1;
   display:flex;
@@ -3764,6 +3914,40 @@ body.sidebar-collapsed .theme-switch{ flex-direction:column; }
   background:var(--primary);
   color:#fff;
 }
+
+/* ---------- Selector de paleta de color (Default / Green / Minecraft) ---------- */
+.palette-switch{
+  display:flex;
+  gap:2px;
+  background:var(--elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:3px;
+  margin-top:6px;
+}
+body.sidebar-collapsed .palette-switch{ flex-direction:column; align-items:center; }
+body.sidebar-collapsed .palette-btn{ flex:none; width:26px; height:26px; }
+.palette-btn{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:26px; height:26px;
+  border:none;
+  background:transparent;
+  border-radius:5px;
+  cursor:pointer;
+  transition:background .12s ease;
+}
+.palette-btn.active{ background:var(--primary); }
+.palette-swatch{
+  width:14px; height:14px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.25);
+}
+.palette-swatch-default{ background:linear-gradient(135deg,#7c3aed,#a855f7); }
+.palette-swatch-green{ background:linear-gradient(135deg,#16a34a,#4ade80); }
+.palette-swatch-minecraft{ background:linear-gradient(135deg,#5b8f3b,#8b5a2b); border-radius:3px; }
 
 /* ---------- Panel de apariencia del visor 4D/5D ---------- */
 .sg-appearance{
@@ -3993,6 +4177,132 @@ body.no-scroll{ overflow:hidden; }
   padding:20px;
   overflow-y:auto;
 }
+
+/* ---------- Creador de skin/tema propio ---------- */
+.palette-swatch-custom{
+  border-style:dashed;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:800; line-height:1;
+  background:transparent; color:var(--muted);
+}
+.palette-btn-custom.has-custom .palette-swatch-custom{
+  border-style:solid;
+  color:transparent;
+  background:var(--custom-theme-preview, linear-gradient(135deg,#7c3aed,#a855f7));
+}
+
+.custom-theme-modal-backdrop{
+  position:fixed; inset:0; z-index:600;
+  background:rgba(6,6,9,.72);
+  backdrop-filter:blur(3px);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+  opacity:0; pointer-events:none;
+  transition:opacity .15s ease;
+}
+.custom-theme-modal-backdrop.open{ opacity:1; pointer-events:auto; }
+.custom-theme-modal{
+  width:100%; max-width:440px; max-height:min(86vh,720px);
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius-lg);
+  box-shadow:0 30px 70px rgba(0,0,0,.5);
+  display:flex; flex-direction:column;
+  transform:translateY(10px) scale(.98);
+  transition:transform .15s ease;
+}
+.custom-theme-modal-backdrop.open .custom-theme-modal{ transform:translateY(0) scale(1); }
+.custom-theme-modal-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 20px; border-bottom:1px solid var(--border); flex:0 0 auto;
+}
+.custom-theme-modal-head h3{ font-size:16px; font-weight:700; margin:0; }
+.custom-theme-modal-body{ padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:20px; }
+.custom-theme-hint{ font-size:12.5px; color:var(--muted); line-height:1.5; margin:0; }
+
+.custom-theme-color-row label{ display:block; font-size:13px; font-weight:700; }
+.custom-theme-color-sub{ display:block; font-size:11.5px; color:var(--muted); margin-top:2px; margin-bottom:8px; }
+.custom-theme-color-inputs{ display:flex; align-items:center; gap:8px; }
+.custom-theme-color-inputs input[type="color"]{
+  width:38px; height:38px; padding:0; border:1px solid var(--border); border-radius:8px;
+  background:none; cursor:pointer; flex:0 0 auto;
+}
+.custom-theme-hex-input{
+  flex:1 1 auto; min-width:0;
+  background:var(--bg); border:1px solid var(--border); color:var(--text);
+  border-radius:8px; padding:9px 12px; font-size:13px; font-family:var(--font-mono);
+}
+.custom-theme-hex-input.invalid{ border-color:var(--red,#ef4444); }
+
+.custom-theme-bg-section label{ display:block; font-size:13px; font-weight:700; margin-bottom:8px; }
+.custom-theme-bg-type{ display:flex; gap:6px; flex-wrap:wrap; }
+.ctbg-opt{
+  padding:8px 14px; border-radius:20px; border:1px solid var(--border);
+  background:var(--panel2); color:var(--muted); font-size:12.5px; font-weight:600; cursor:pointer;
+  transition:.15s ease;
+}
+.ctbg-opt.active{ background:var(--purple); border-color:var(--purple); color:#fff; }
+.custom-theme-upload-btn{
+  margin-top:10px; padding:9px 16px; border-radius:8px; border:1px dashed var(--border);
+  background:var(--panel2); color:var(--text); font-size:12.5px; font-weight:600; cursor:pointer;
+}
+.custom-theme-bg-filename{ display:block; margin-top:8px; font-size:11.5px; color:var(--muted); word-break:break-all; }
+.custom-theme-bg-note{ margin:8px 0 0; font-size:11.5px; color:var(--muted); }
+.custom-theme-audio-toggle{
+  display:flex; align-items:center; gap:8px;
+  margin-top:10px; font-size:12.5px; color:var(--text); cursor:pointer;
+}
+.custom-theme-audio-toggle input[type="checkbox"]{ width:15px; height:15px; accent-color:var(--purple); cursor:pointer; }
+
+.custom-theme-modal-actions{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding-top:4px; border-top:1px solid var(--border); padding-top:16px;
+}
+.btn-ghost-small{
+  background:none; border:1px solid var(--border); color:var(--muted);
+  border-radius:8px; padding:9px 14px; font-size:12.5px; font-weight:600; cursor:pointer;
+}
+.btn-ghost-small:hover{ border-color:var(--red,#ef4444); color:var(--red,#ef4444); }
+.custom-theme-modal-actions .btn-primary{ padding:9px 20px; border-radius:8px; }
+
+/* Capa de fondo del tema personalizado: imagen/gif/video detrás de toda la página */
+#customThemeBgLayer{
+  position:fixed; inset:0; z-index:-1;
+  display:none;
+  overflow:hidden;
+}
+#customThemeBgLayer.active{ display:block; }
+#customThemeBgImg, #customThemeBgVideo{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+}
+#customThemeBgOverlay{
+  position:absolute; inset:0;
+  background:rgba(8,7,12,.62);
+}
+[data-theme="light"] #customThemeBgOverlay{ background:rgba(240,238,252,.72); }
+
+/* Cuando hay un fondo de skin personalizado activo, el "chrome" del
+   sitio (topbar, hero de Home, sidebar, nav inferior móvil) pasa a ser
+   translúcido en vez de sólido, para que la imagen/gif/video se vea
+   consistente en toda la página y no solo en los huecos entre tarjetas. */
+body.has-custom-bg .app-topbar{
+  background:rgba(18,18,23,.35);
+  backdrop-filter:blur(14px);
+}
+body.has-custom-bg .dash-inline{
+  background:rgba(10,9,14,.28);
+}
+body.has-custom-bg .sidebar{
+  background:rgba(var(--panel-rgb,18,18,23),.55);
+  backdrop-filter:blur(14px);
+}
+body.has-custom-bg .mobile-bottom-nav{
+  background:rgba(var(--panel-rgb,18,18,23),.55);
+  backdrop-filter:blur(14px);
+}
+[data-theme="light"] body.has-custom-bg .app-topbar{ background:rgba(255,255,255,.45); }
+[data-theme="light"] body.has-custom-bg .dash-inline{ background:rgba(255,255,255,.35); }
+[data-theme="light"] body.has-custom-bg .sidebar{ background:rgba(255,255,255,.6); }
+[data-theme="light"] body.has-custom-bg .mobile-bottom-nav{ background:rgba(255,255,255,.6); }
+
 
 .changelog-list{
   display:flex;

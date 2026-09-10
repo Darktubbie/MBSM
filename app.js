@@ -23,7 +23,31 @@ const I18N = {
     },
     settings: {
       languageLabel: "Language",
-      themeLabel: "Theme"
+      themeLabel: "Theme",
+      paletteLabel: "Color palette"
+    },
+    customTheme: {
+      title: "Create your own skin",
+      hint: "Pick your own colors and, if you want, a background. Everything stays on this device — it's never uploaded or shared.",
+      strongColor: "Strong color",
+      strongColorHint: "Buttons, highlights, active state",
+      softColor: "Soft color",
+      softColorHint: "Glows, subtle backgrounds",
+      background: "Page background (optional)",
+      bgNone: "None",
+      bgImage: "Image",
+      bgGif: "GIF",
+      bgVideo: "Video",
+      chooseFile: "Choose file",
+      bgLoopNote: "It will play on loop, without stopping.",
+      playAudio: "Also play the video's audio",
+      bgAudioLabel: "Background audio",
+      resetBtn: "Delete my skin",
+      saveBtn: "Save my skin",
+      invalidHex: "That doesn't look like a valid hex color (e.g. #7c3aed).",
+      savedToast: "Your skin was saved.",
+      deletedToast: "Your custom skin was deleted.",
+      fileTooLarge: (mb) => `That file is too big for local storage (max ${mb} MB).`
     },
     topbar: {
       searchPlaceholder: "Search MBSM..."
@@ -82,7 +106,7 @@ const I18N = {
         ]
       },
       welcomeSubtitle: "Minecraft Bedrock Skin Manager",
-      versionBadge: "v0.8.1 • Beta",
+      versionBadge: "v0.9.0 • Beta",
       statModels: "Models",
       statSkins: "Skins",
       statPacks: "Packs",
@@ -107,6 +131,21 @@ const I18N = {
         patch: "Patch / Bugfix",
         minor: "Minor Update",
         major: "Major Release"
+      },
+      v090: {
+        item1: "OBJ \u2192 Skin 1.8: added a quick bulk-assign tool in the Parts panel \u2014 filter parts by a name pattern (e.g. \"bone\" matches bone1, bone2, bone3...) and assign every match to a chosen bone in one click, instead of one part at a time.",
+        item2: "OBJ \u2192 Skin 1.8: fixed the bone tree being stuck in a tiny 230px scroll box on desktop \u2014 it was hard to see a full skeleton without a second, nested scrollbar. It now grows freely inside the already-scrollable panel.",
+        item3: "OBJ \u2192 Skin 1.8: the mobile layout for the Models and Bones/Export panels was rebuilt as swipeable bottom sheets (Blockbench-style) with a drag handle, instead of side drawers \u2014 desktop is untouched.",
+        item4: "Validator: multi-skin packs no longer dump one long flat list of checks. Each skin's results now collapse into their own block \u2014 closed by default when everything passes, open automatically when there's an error or warning \u2014 which makes long reports far shorter to scroll through on mobile.",
+        item5: "Added a color palette switcher (Default, Green, Minecraft) plus a \"Create your own skin\" option: pick your own accent colors by hex code and, optionally, set the page background to an image, GIF, or looping video (with an off-by-default toggle to also play the video's audio). Everything is saved locally in your browser only.",
+        item6: "When a custom background is active, the topbar, Home hero section, sidebar, and mobile nav bar turn translucent instead of solid, so the background stays visible across the whole page.",
+        item7: "Fixed a handful of smaller bugs found along the way: an obsidian icon that didn't match its \"crying obsidian\" counterpart in size or texture, a mismatched app version in cached script files, a JavaScript reference error that broke package analysis, mobile layouts getting clipped at the screen edge, and the collapsed desktop sidebar's theme/skin buttons not sizing correctly.",
+        item8: "Fixed the afternoon greeting's grammar (\"Buenas tardes\", not \"Buena tarde\").",
+        item9: "Fixed the background-audio button showing both the muted and unmuted icons stacked together instead of just one depending on the state.",
+        item10: "Fixed the language, theme, and skin buttons at the bottom of the collapsed desktop sidebar sizing unevenly, and fixed OBJ \u2192 Skin 1.8's Bones/Export panel becoming unreachable on narrower desktop windows (it required going fullscreen) \u2014 the panel now stays reachable via horizontal scroll if the window is too narrow for the full layout.",
+        item11: "The sidebar's collapse/expand arrow no longer stacks awkwardly with the logo when collapsed \u2014 it's now a floating button pinned to the sidebar's edge, in the same spot whether the sidebar is expanded or collapsed.",
+        item12: "OBJ \u2192 Skin 1.8: fixed the Model Parts section (search, the new bulk-assign row, and the parts list) getting clipped and partly invisible on desktop when the sidebar's height was tight \u2014 it had its own overflow:hidden fighting the sidebar's scroll instead of using it.",
+        item13: "OBJ \u2192 Skin 1.8: increased the studio's overall height on desktop (760px/80vh \u2192 880px/88vh) so the Model Parts and Bones sections have noticeably more breathing room by default, instead of relying only on internal scroll fixes."
       },
       v081: {
         item1: "Fixed the mobile bottom nav's icons rendering huge on tablet-width screens (a CSS breakpoint gap between the mobile and desktop layouts).",
@@ -204,7 +243,14 @@ const I18N = {
       internalErrorTitle: "Internal error",
       internalErrorText: "Something went wrong during the package analysis.",
       needPackAlert: "Load a skinpack first.",
-      subValidator: "Validator"
+      subValidator: "Validator",
+      skinGroupAllOk: "All checks passed",
+      skinGroupSummary: (errors, warnings) => {
+        const parts = [];
+        if (errors) parts.push(errors === 1 ? "1 error" : `${errors} errors`);
+        if (warnings) parts.push(warnings === 1 ? "1 warning" : `${warnings} warnings`);
+        return parts.join(", ") || "All checks passed";
+      }
     },
     sg: {
       subViewer: "4D/5D Viewer",
@@ -438,7 +484,31 @@ const I18N = {
     },
     settings: {
       languageLabel: "Idioma",
-      themeLabel: "Tema"
+      themeLabel: "Tema",
+      paletteLabel: "Paleta de color"
+    },
+    customTheme: {
+      title: "Crea tu propia skin",
+      hint: "Elige tus propios colores y, si quieres, un fondo. Todo se queda en este dispositivo — nunca se sube ni se comparte.",
+      strongColor: "Color fuerte",
+      strongColorHint: "Botones, resaltados, estado activo",
+      softColor: "Color suave",
+      softColorHint: "Brillos, fondos sutiles",
+      background: "Fondo de la página (opcional)",
+      bgNone: "Ninguno",
+      bgImage: "Imagen",
+      bgGif: "GIF",
+      bgVideo: "Video",
+      chooseFile: "Elegir archivo",
+      bgLoopNote: "Se reproducirá en bucle, sin detenerse.",
+      playAudio: "Reproducir también el audio del video",
+      bgAudioLabel: "Audio del fondo",
+      resetBtn: "Eliminar mi skin",
+      saveBtn: "Guardar mi skin",
+      invalidHex: "Eso no parece un color hex válido (ej. #7c3aed).",
+      savedToast: "Tu skin fue guardada.",
+      deletedToast: "Tu skin personalizada fue eliminada.",
+      fileTooLarge: (mb) => `Ese archivo es muy pesado para guardarlo localmente (máx ${mb} MB).`
     },
     topbar: {
       searchPlaceholder: "Buscar en MBSM..."
@@ -485,7 +555,7 @@ const I18N = {
         ],
         afternoon: [
           "Buenas tardes", "Bienvenido de nuevo", "Espero que tu día vaya bien", "Qué gusto verte",
-          "¡Buena tarde!", "Un gusto tenerte por aquí"
+          "¡Buenas tardes!", "Un gusto tenerte por aquí"
         ],
         evening: [
           "Buenas noches", "Bienvenido de nuevo", "¡Buenas!", "Espero que tu día haya ido bien",
@@ -497,7 +567,7 @@ const I18N = {
         ]
       },
       welcomeSubtitle: "Minecraft Bedrock Skin Manager",
-      versionBadge: "v0.8.1 • Beta",
+      versionBadge: "v0.9.0 • Beta",
       statModels: "Modelos",
       statSkins: "Skins",
       statPacks: "Packs",
@@ -522,6 +592,21 @@ const I18N = {
         patch: "Parche / Corrección",
         minor: "Actualización menor",
         major: "Lanzamiento mayor"
+      },
+      v090: {
+        item1: "OBJ \u2192 Skin 1.8: se agreg\u00f3 una herramienta de asignaci\u00f3n r\u00e1pida en el panel de Partes \u2014 filtra las partes por un patr\u00f3n de nombre (por ejemplo \"bone\" coincide con bone1, bone2, bone3...) y asigna todas las coincidencias a un hueso elegido con un clic, en vez de una por una.",
+        item2: "OBJ \u2192 Skin 1.8: se corrigi\u00f3 que el \u00e1rbol de huesos quedara atrapado en una cajita de scroll de 230px en PC \u2014 costaba ver un esqueleto completo con ese scroll anidado. Ahora crece libremente dentro del panel que ya hac\u00eda scroll.",
+        item3: "OBJ \u2192 Skin 1.8: el layout m\u00f3vil de los paneles de Modelos y Huesos/Exportar se rehizo como hojas deslizables desde abajo (estilo Blockbench) con tirador, en vez de cajones laterales \u2014 el de escritorio no cambi\u00f3.",
+        item4: "Validador: los packs con varios modelos ya no muestran una lista plana interminable de resultados. Ahora cada skin colapsa en su propio bloque \u2014 cerrado por defecto si todo pas\u00f3, abierto autom\u00e1ticamente si hay un error o advertencia \u2014 lo que acorta mucho el scroll en reportes largos en m\u00f3vil.",
+        item5: "Se agreg\u00f3 un selector de paleta de color (Default, Verde, Minecraft) y la opci\u00f3n \"Crea tu propia skin\": elige tus propios colores por c\u00f3digo hex y, opcionalmente, pon como fondo de la p\u00e1gina una imagen, GIF o video en bucle (con un interruptor, apagado por defecto, para reproducir tambi\u00e9n su audio). Todo se guarda solo de forma local en tu navegador.",
+        item6: "Cuando hay un fondo personalizado activo, la barra superior, el hero del Home, el sidebar y la barra de navegaci\u00f3n m\u00f3vil se vuelven transl\u00facidos en vez de s\u00f3lidos, para que el fondo se vea en toda la p\u00e1gina.",
+        item7: "Se corrigieron varios bugs menores que fueron saliendo en el camino: un \u00edcono de obsidiana que no coincid\u00eda en tama\u00f1o ni textura con el de la \"obsidiana llorosa\", una versi\u00f3n de la app desactualizada en archivos de script cacheados, un error de referencia en JavaScript que rompía el análisis de paquetes, layouts m\u00f3viles que se cortaban en el borde de la pantalla, y los botones de tema/skin del sidebar colapsado de escritorio que no se dimensionaban bien.",
+        item8: "Se corrigi\u00f3 la gram\u00e1tica del saludo de la tarde (\"Buenas tardes\", no \"Buena tarde\").",
+        item9: "Se corrigi\u00f3 que el bot\u00f3n de audio del fondo mostrara los \u00edconos de silenciado y activado juntos en vez de solo uno según el estado.",
+        item10: "Se corrigi\u00f3 que los botones de idioma, tema y skin al fondo del sidebar de escritorio colapsado se vieran de tama\u00f1o desigual, y se corrigi\u00f3 que el panel de Huesos/Exportar de OBJ \u2192 Skin 1.8 quedara inaccesible en ventanas de escritorio angostas (antes solo se pod\u00eda ver en pantalla completa) \u2014 ahora, si la ventana es muy angosta para el layout completo, el panel sigue siendo alcanzable con scroll horizontal.",
+        item11: "La flecha de colapsar/expandir el sidebar ya no se apila de forma rara junto al logo al colapsar \u2014 ahora es un botón flotante fijo en el borde del sidebar, en el mismo lugar tanto expandido como colapsado.",
+        item12: "OBJ \u2192 Skin 1.8: se corrigi\u00f3 que la secci\u00f3n de Partes del Modelo (buscador, la nueva fila de asignaci\u00f3n r\u00e1pida y la lista de partes) quedara recortada e invisible en parte en escritorio cuando el alto del sidebar era ajustado \u2014 ten\u00eda su propio overflow:hidden peleando contra el scroll del sidebar en vez de aprovecharlo.",
+        item13: "OBJ \u2192 Skin 1.8: se aument\u00f3 el alto general del estudio en escritorio (760px/80vh \u2192 880px/88vh) para que las secciones de Partes del Modelo y Huesos tengan bastante m\u00e1s espacio por defecto, en vez de depender solo de arreglos de scroll internos."
       },
       v081: {
         item1: "Se corrigió que los íconos de la barra inferior móvil se vieran gigantes en pantallas de ancho tipo tablet (un hueco entre los breakpoints de móvil y escritorio).",
@@ -619,7 +704,14 @@ const I18N = {
       internalErrorTitle: "Error interno",
       internalErrorText: "Ocurrió un problema durante el análisis del paquete.",
       needPackAlert: "Primero carga un skinpack.",
-      subValidator: "Validador"
+      subValidator: "Validador",
+      skinGroupAllOk: "Todo en orden",
+      skinGroupSummary: (errors, warnings) => {
+        const parts = [];
+        if (errors) parts.push(errors === 1 ? "1 error" : `${errors} errores`);
+        if (warnings) parts.push(warnings === 1 ? "1 advertencia" : `${warnings} advertencias`);
+        return parts.join(", ") || "Todo en orden";
+      }
     },
     sg: {
       subViewer: "Visor 4D/5D",
@@ -1165,6 +1257,48 @@ function addResult(type, title, message) {
 results.appendChild(item);
 }
 
+// A pack with many skins used to render every single check
+// (geometry/texture/cape/localization/animations) as its own full-size
+// card in one long flat list -- on mobile with, say, 15 skins, that's
+// 60+ stacked cards before you even reach the skin preview grid.
+// Here, checks belonging to the same skin (tagged via `skinName` in
+// validator.js) get grouped into one collapsible <details> block per
+// skin: skins with no issues start collapsed to a single summary line,
+// skins with errors/warnings start open so problems stay visible.
+function addSkinResultGroup(skinName, items) {
+  const errors = items.filter(r => r.type === "error").length;
+  const warnings = items.filter(r => r.type === "warning").length;
+  const hasIssue = errors > 0 || warnings > 0;
+
+  const details = document.createElement("details");
+  details.className = `result-skin-group${hasIssue ? " has-issue" : " all-ok"}`;
+  details.open = hasIssue;
+
+  const summary = document.createElement("summary");
+  summary.className = "result-skin-group-summary";
+  summary.innerHTML = `
+    <span class="result-skin-group-name">${skinName}</span>
+    <span class="result-skin-group-status">${
+      hasIssue
+        ? t("validator.skinGroupSummary", errors, warnings)
+        : t("validator.skinGroupAllOk")
+    }</span>
+  `;
+  details.appendChild(summary);
+
+  const body = document.createElement("div");
+  body.className = "result-skin-group-body";
+  items.forEach(r => {
+    const item = document.createElement("div");
+    item.className = `result-item ${r.type}`;
+    item.innerHTML = `<h4>${r.title}</h4><p>${r.message}</p>`;
+    body.appendChild(item);
+  });
+  details.appendChild(body);
+
+  results.appendChild(details);
+}
+
 function beginResults() {
   results.innerHTML = "";
 }
@@ -1498,9 +1632,21 @@ function renderReport(report) {
     results.insertAdjacentHTML("beforeend", renderPackInfo(report.packInfo));
   }
 
-  report.results.forEach(r => {
-    addResult(r.type, r.title, r.message);
-  });
+  const arr = report.results;
+  let i = 0;
+  while (i < arr.length) {
+    const r = arr[i];
+    if (r.skinName) {
+      let j = i;
+      const group = [];
+      while (j < arr.length && arr[j].skinName === r.skinName) { group.push(arr[j]); j++; }
+      addSkinResultGroup(r.skinName, group);
+      i = j;
+    } else {
+      addResult(r.type, r.title, r.message);
+      i++;
+    }
+  }
 
   if (report.skinDetails && report.skinDetails.length) {
     results.insertAdjacentHTML("beforeend", renderSkinsPreview(report.skinDetails));
@@ -1880,7 +2026,13 @@ function syncUrlWithState() {
   const subtab = currentTopLevelSubtab(tabId);
   const path = pathForRoute(tabId, subtab);
   if (window.location.pathname !== path) {
-    history.pushState({ tab: tabId, subtab: subtab }, "", path);
+    // pushState throws under a file:// origin (no real path to build a
+    // URL against) -- that's expected when testing locally by opening
+    // index.html directly instead of through a web server. Fail
+    // silently there instead of throwing and breaking whatever
+    // triggered this navigation.
+    try { history.pushState({ tab: tabId, subtab: subtab }, "", path); }
+    catch (e) { /* file:// origin or unsupported environment; ignore */ }
   }
 }
 
@@ -2176,6 +2328,7 @@ applyRoute(initialRoute);
   const subtab = currentTopLevelSubtab(activeSection.id);
   const canonicalPath = pathForRoute(activeSection.id, subtab);
   if (window.location.pathname !== canonicalPath) {
-    history.replaceState({ tab: activeSection.id, subtab }, "", canonicalPath);
+    try { history.replaceState({ tab: activeSection.id, subtab }, "", canonicalPath); }
+    catch (e) { /* file:// origin or unsupported environment; ignore */ }
   }
 })();

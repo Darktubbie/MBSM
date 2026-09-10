@@ -22,6 +22,8 @@ const I18N = {
   es: {
     'drop.text': 'Suelta tu .obj y tu textura aquí',
     'mobile.models': 'Modelos',
+    'mobile.viewport': 'Vista 3D',
+    'mobile.bonesTab': 'Huesos',
     'mobile.bonesExport': 'Huesos / Exportar',
     'common.close': 'Cerrar',
     'common.delete': 'Eliminar',
@@ -38,6 +40,10 @@ const I18N = {
     'sidebar.partsTitle': 'Partes del modelo',
     'sidebar.autoAssignTitle': 'Reasignar huesos según el nombre de cada parte',
     'sidebar.autoAssign': 'Autoasignar',
+    'sidebar.bulkAssignNoMatch': 'Escribe arriba para filtrar partes por nombre',
+    'sidebar.bulkAssignMatchCount': (n) => n === 1 ? '1 parte coincide' : `${n} partes coinciden`,
+    'sidebar.bulkAssignBtn': 'Asignar coincidencias',
+    'sidebar.bulkAssignBoneSelect': 'Hueso destino para la asignación rápida',
     'sidebar.searchPart': 'Buscar parte...',
     'empty.title': 'Crea un modelo para empezar',
     'empty.text1': 'Sube un archivo <code>.obj</code> exportado desde Blender/otro programa, con sus objetos o grupos nombrados (cabeza, brazo, torso, etc.) y una textura.',
@@ -88,6 +94,7 @@ const I18N = {
     'errors.noValidMeshes': 'No se encontraron mallas válidas en el .obj',
     'errors.unnamedPart': (n) => `parte_${n}`,
     'status.partsReassigned': 'Partes reasignadas por nombre.',
+    'status.bulkAssigned': (n, bone) => n === 1 ? `1 parte asignada a "${bone}".` : `${n} partes asignadas a "${bone}".`,
     'warn.noTexture': 'No hay textura cargada: el geometry.json se puede exportar, pero necesitas una textura para que la skin se vea bien en el juego.',
     'warn.unassignedParts': (n) => `${n} parte(s) sin asignar a ningún hueso no se incluirán en la exportación.`,
     'warn.noBonesWithParts': 'Ningún hueso tiene partes asignadas todavía.',
@@ -123,6 +130,8 @@ const I18N = {
   en: {
     'drop.text': 'Drop your .obj and your texture here',
     'mobile.models': 'Models',
+    'mobile.viewport': '3D View',
+    'mobile.bonesTab': 'Bones',
     'mobile.bonesExport': 'Bones / Export',
     'common.close': 'Close',
     'common.delete': 'Delete',
@@ -139,6 +148,10 @@ const I18N = {
     'sidebar.partsTitle': 'Model parts',
     'sidebar.autoAssignTitle': 'Reassign bones based on each part\'s name',
     'sidebar.autoAssign': 'Auto-assign',
+    'sidebar.bulkAssignNoMatch': 'Type above to filter parts by name',
+    'sidebar.bulkAssignMatchCount': (n) => n === 1 ? '1 part matches' : `${n} parts match`,
+    'sidebar.bulkAssignBtn': 'Assign matches',
+    'sidebar.bulkAssignBoneSelect': 'Target bone for the quick assignment',
     'sidebar.searchPart': 'Search part...',
     'empty.title': 'Create a model to get started',
     'empty.text1': 'Upload an <code>.obj</code> file exported from Blender/another program, with its objects or groups named (head, arm, torso, etc.) and a texture.',
@@ -189,6 +202,7 @@ const I18N = {
     'errors.noValidMeshes': 'No valid meshes were found in the .obj file',
     'errors.unnamedPart': (n) => `part_${n}`,
     'status.partsReassigned': 'Parts reassigned by name.',
+    'status.bulkAssigned': (n, bone) => n === 1 ? `1 part assigned to "${bone}".` : `${n} parts assigned to "${bone}".`,
     'warn.noTexture': 'No texture loaded: the geometry.json can still be exported, but you need a texture for the skin to look right in-game.',
     'warn.unassignedParts': (n) => `${n} part(s) not assigned to any bone won't be included in the export.`,
     'warn.noBonesWithParts': 'No bone has any parts assigned yet.',
@@ -248,6 +262,7 @@ function applyI18n() {
   document.querySelectorAll('[data-oss-i18n-html]').forEach((el) => { el.innerHTML = t(el.getAttribute('data-oss-i18n-html')); });
   document.querySelectorAll('[data-oss-i18n-title]').forEach((el) => { el.title = t(el.getAttribute('data-oss-i18n-title')); });
   document.querySelectorAll('[data-oss-i18n-placeholder]').forEach((el) => { el.placeholder = t(el.getAttribute('data-oss-i18n-placeholder')); });
+  document.querySelectorAll('[data-oss-i18n-aria-label]').forEach((el) => { el.setAttribute('aria-label', t(el.getAttribute('data-oss-i18n-aria-label'))); });
   document.querySelectorAll('.lang-btn').forEach((b) => { b.classList.toggle('active', b.dataset.lang === lang); });
   // refresh text the app builds dynamically and that data-i18n doesn't cover
   if (typeof refreshProjectList === 'function' && document.getElementById('projectList')) refreshProjectList();
@@ -884,6 +899,7 @@ function refreshPartsList() {
   const project = getActiveProject();
   const ul = document.getElementById('partsList');
   ul.innerHTML = '';
+  refreshBulkAssignPanel();
   if (!project) return;
   const query = document.getElementById('partsSearch').value.trim().toLowerCase();
   project.parts.filter((p) => !query || p.name.toLowerCase().includes(query)).forEach((part) => {
@@ -925,6 +941,34 @@ function refreshPartsList() {
   });
 }
 
+/* ==================== UI: bulk-assign by name match ==================== */
+function refreshBulkAssignPanel() {
+  const project = getActiveProject();
+  const boneSelect = document.getElementById('bulkAssignBoneSelect');
+  const countEl = document.getElementById('partsBulkAssignCount');
+  const btn = document.getElementById('btnBulkAssign');
+  if (!boneSelect || !countEl || !btn) return;
+
+  const prevValue = boneSelect.value;
+  boneSelect.innerHTML = '';
+  (project ? project.bones : []).forEach((b) => {
+    const opt = document.createElement('option');
+    opt.value = b.name; opt.textContent = b.name;
+    boneSelect.appendChild(opt);
+  });
+  if (project && prevValue && project.bones.some((b) => b.name === prevValue)) boneSelect.value = prevValue;
+
+  const query = document.getElementById('partsSearch').value.trim().toLowerCase();
+  const matches = project ? project.parts.filter((p) => query && p.name.toLowerCase().includes(query)) : [];
+  if (!project || !query) {
+    countEl.textContent = t('sidebar.bulkAssignNoMatch');
+    btn.disabled = true;
+  } else {
+    countEl.textContent = t('sidebar.bulkAssignMatchCount', matches.length);
+    btn.disabled = matches.length === 0 || !project.bones.length;
+  }
+}
+
 /* ==================== UI: bone tree ==================== */
 function showBonesEmpty() {
   document.getElementById('bonesEmpty').hidden = false;
@@ -933,6 +977,7 @@ function showBonesEmpty() {
 
 function refreshBoneTree() {
   const project = getActiveProject();
+  refreshBulkAssignPanel();
   if (!project) { showBonesEmpty(); return; }
   document.getElementById('bonesEmpty').hidden = true;
   document.getElementById('bonesContent').hidden = false;
@@ -1008,12 +1053,14 @@ function ancestryChain(project, bone) {
 
 function showBoneDetail(bone) {
   const project = getActiveProject();
-  document.getElementById('boneDetail').hidden = false;
+  const detailEl = document.getElementById('boneDetail');
+  detailEl.hidden = false;
   document.getElementById('boneDetailTitle').textContent = bone.name;
   document.getElementById('boneNameInput').value = bone.name;
   document.getElementById('pivotX').value = bone.pivot[0];
   document.getElementById('pivotY').value = bone.pivot[1];
   document.getElementById('pivotZ').value = bone.pivot[2];
+  detailEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 
   // breadcrumb: which "main" bone this sub-folder connects to, showing
   // the full chain up to the root, with every name clickable
@@ -1600,6 +1647,18 @@ function initUI() {
     setStatus(t('status.partsReassigned'));
   });
   document.getElementById('partsSearch').addEventListener('input', refreshPartsList);
+  document.getElementById('btnBulkAssign').addEventListener('click', () => {
+    const project = getActiveProject();
+    if (!project) return;
+    const query = document.getElementById('partsSearch').value.trim().toLowerCase();
+    const boneName = document.getElementById('bulkAssignBoneSelect').value;
+    if (!query || !boneName) return;
+    const matches = project.parts.filter((p) => p.name.toLowerCase().includes(query));
+    matches.forEach((p) => { p.boneName = boneName; p.autoMatched = true; });
+    maybeBuildPreview(project);
+    refreshPartsList(); refreshBoneTree(); refreshExportPanel();
+    setStatus(t('status.bulkAssigned', matches.length, boneName));
+  });
 
   // tabs
   document.querySelectorAll('.tabBtn').forEach((btn) => {
@@ -1739,26 +1798,66 @@ function initUI() {
   const mobileBackdrop = document.getElementById('mobileBackdrop');
   const sidebarEl = document.getElementById('sidebar');
   const inspectorEl = document.getElementById('inspector');
+  const btnMobileSidebar = document.getElementById('btnMobileSidebar');
+  const btnMobileViewport = document.getElementById('btnMobileViewport');
+  const btnMobileInspector = document.getElementById('btnMobileInspector');
 
+  function setMobileTab(activeBtn) {
+    [btnMobileSidebar, btnMobileViewport, btnMobileInspector].forEach((btn) => {
+      btn.classList.toggle('active', btn === activeBtn);
+    });
+  }
   function closeMobilePanels() {
     sidebarEl.classList.remove('open');
     inspectorEl.classList.remove('open');
     mobileBackdrop.classList.remove('active');
+    setMobileTab(btnMobileViewport);
   }
-  function openMobilePanel(el) {
+  function openMobilePanel(el, btn) {
     sidebarEl.classList.remove('open');
     inspectorEl.classList.remove('open');
     el.classList.add('open');
     mobileBackdrop.classList.add('active');
+    setMobileTab(btn);
   }
-  document.getElementById('btnMobileSidebar').addEventListener('click', () => openMobilePanel(sidebarEl));
-  document.getElementById('btnMobileInspector').addEventListener('click', () => openMobilePanel(inspectorEl));
+  btnMobileSidebar.addEventListener('click', () => openMobilePanel(sidebarEl, btnMobileSidebar));
+  btnMobileInspector.addEventListener('click', () => openMobilePanel(inspectorEl, btnMobileInspector));
+  btnMobileViewport.addEventListener('click', closeMobilePanels);
   document.getElementById('btnCloseSidebar').addEventListener('click', closeMobilePanels);
   document.getElementById('btnCloseInspector').addEventListener('click', closeMobilePanels);
   mobileBackdrop.addEventListener('click', closeMobilePanels);
   // on mobile, picking/creating a model closes the panel so you can see the 3D viewport
   document.getElementById('projectList').addEventListener('click', () => { if (window.innerWidth <= 760) closeMobilePanels(); });
   document.getElementById('btnNewProject').addEventListener('click', () => { if (window.innerWidth <= 760) closeMobilePanels(); });
+
+  // ---------- Deslizar hacia abajo para cerrar la hoja (bottom sheet) ----------
+  [sidebarEl, inspectorEl].forEach((sheet) => {
+    const handle = sheet.querySelector('.mobileSheetHandle');
+    if (!handle) return;
+    let startY = 0;
+    let dragging = false;
+
+    handle.addEventListener('touchstart', (e) => {
+      startY = e.touches[0].clientY;
+      dragging = true;
+      sheet.style.transition = 'none';
+    }, { passive: true });
+
+    handle.addEventListener('touchmove', (e) => {
+      if (!dragging) return;
+      const dy = Math.max(0, e.touches[0].clientY - startY);
+      sheet.style.transform = `translateY(${dy}px)`;
+    }, { passive: true });
+
+    handle.addEventListener('touchend', (e) => {
+      if (!dragging) return;
+      dragging = false;
+      sheet.style.transition = '';
+      sheet.style.transform = '';
+      const dy = e.changedTouches[0].clientY - startY;
+      if (dy > 90) closeMobilePanels();
+    });
+  });
 
   // ---------- Language switcher (ES/EN), synced with MBSM ----------
   document.getElementById('objSkinLangSwitch').addEventListener('click', (ev) => {

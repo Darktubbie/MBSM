@@ -170,8 +170,16 @@ async function validateSkinPack(zip, zipName, options = {}) {
     packInfo: null
   };
 
+  // While looping over skins further below, this tags every push() call
+  // made for the current skin so the UI can group its checks together
+  // instead of showing one long flat list (this is what made the
+  // results screen so tall on mobile with multi-skin packs). Declared
+  // here (before push() is defined/called) so it's never read while
+  // still in its temporal dead zone.
+  let currentSkinContext = null;
+
   function push(type, title, message) {
-    report.results.push({ type, title, message });
+    report.results.push({ type, title, message, skinName: currentSkinContext });
 
     if (type === "error") report.stats.errors++;
     if (type === "warning") report.stats.warnings++;
@@ -537,6 +545,7 @@ async function validateSkinPack(zip, zipName, options = {}) {
   for (const skin of skins) {
 
     const name = skin.localization_name || "(sin localization_name)";
+    currentSkinContext = name;
 
     const errorsBefore = report.stats.errors;
     const warningsBefore = report.stats.warnings;
@@ -806,6 +815,7 @@ async function validateSkinPack(zip, zipName, options = {}) {
     });
 
   }
+  currentSkinContext = null;
 
   // ----------------------------
   // Unused textures

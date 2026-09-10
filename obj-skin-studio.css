@@ -24,22 +24,66 @@
   --radius:10px;
   --radius-sm:6px;
 }
+
+/* El estudio tenía su propia paleta fija, sin enterarse del selector de
+   tema del sitio (data-palette en <html>). La conectamos aquí para que
+   Verde/Minecraft también se apliquen dentro de esta herramienta. */
+[data-palette="green"] #objSkinStudio {
+  --accent:#4ade80;
+  --accent-dim:#14532d;
+  --accent-strong:#16a34a;
+}
+[data-palette="minecraft"] #objSkinStudio {
+  --bg:#1a160f;
+  --bg-elevated:#2b2116;
+  --bg-elevated-2:#332819;
+  --border:#5a4a30;
+  --text:#f1ead9;
+  --text-dim:#b8ab8c;
+  --accent:#8bc34a;
+  --accent-dim:#3f6b2a;
+  --accent-strong:#5b8f3b;
+  --warn:#d9a521;
+  --danger:#b02e26;
+  --radius:3px;
+  --radius-sm:2px;
+}
+/* El tema personalizado define --primary/--purple/--accent de forma
+   dinámica (vía JS) en <html>; aquí solo los reenviamos a las variables
+   propias del estudio en vez de fijar literales. */
+[data-palette="custom"] #objSkinStudio {
+  --accent:var(--purple);
+  --accent-dim:var(--purple-dark);
+  --accent-strong:var(--primary);
+}
 #objSkinStudio * {box-sizing:border-box;}
 #objSkinStudio {
   position:relative;
-  height:760px;
-  max-height:80vh;
+  height:880px;
+  max-height:88vh;
   margin:0; padding:0;
   background:var(--bg); color:var(--text);
   font-family:'Inter',-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
-  overflow:hidden; user-select:none;
+  overflow-x:auto; overflow-y:hidden; user-select:none;
   border-radius:12px;
   border:1px solid var(--border);
 }
 #objSkinStudio button,
 #objSkinStudio input,
 #objSkinStudio select { font-family:inherit; }
+/* min-width evita que #app se aplaste por debajo de lo que sidebar+inspector
+   realmente necesitan -- si la ventana es más angosta que eso, en vez de
+   recortar/tapar el panel de Huesos (inaccesible salvo en pantalla completa),
+   ahora aparece scroll horizontal para poder llegar a él igual. */
 #objSkinStudio #app { display:flex; flex-direction:row; height:100%; width:100%; }
+/* Salvavidas solo para el nivel de escritorio "completo" (>950px, donde
+   sidebar+inspector usan su ancho fijo más grande de 270+290px): si la
+   ventana es más angosta que lo que esos paneles + un viewport usable
+   realmente necesitan, en vez de recortar/tapar el panel de Huesos
+   (inaccesible salvo en pantalla completa) aparece scroll horizontal. */
+@media (min-width:951px){
+  #objSkinStudio #app { min-width:780px; }
+}
 
 /* ---------- botones (estilo MBSM: "3D press" con box-shadow) ---------- */
 #objSkinStudio .btn {
@@ -119,7 +163,7 @@
   overflow-y:auto; overflow-x:hidden;
 }
 #objSkinStudio #sidebarHeader { padding:14px 14px 10px; border-bottom:1px solid var(--border); flex-shrink:0; }
-#objSkinStudio .sidebarHeaderTop { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
+#objSkinStudio .sidebarHeaderTop { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
 #objSkinStudio .sidebarHeaderTop h1 { margin:0; }
 #objSkinStudio .lang-switch {
   display:flex; gap:3px; background:#17191d; border:1px solid var(--border);
@@ -169,12 +213,15 @@
 #objSkinStudio .projDelete:hover { color:#ff8a80; background:rgba(239,83,80,.12); }
 
 #objSkinStudio #partsSection {
-  display:flex; flex-direction:column; flex-grow:1; overflow:hidden; padding:10px 0 0;
-  /* This used to be able to get squashed below the height of its own
-     header + search box (cutting "MODEL PARTS" and the search field in
-     half) on short viewports. min-height keeps that header fully visible;
-     the part list below still scrolls internally on its own
-     (#partsList already has overflow-y:auto). */
+  display:flex; flex-direction:column; flex-grow:1; padding:10px 0 0;
+  /* Antes tenía overflow:hidden con un min-height chico: si el contenido
+     de esta sección (encabezado + buscador + asignación rápida + lista)
+     no cabía en el alto que le tocaba dentro del sidebar, se recortaba
+     en vez de dejar hacer scroll -- esto se puso peor al agregar la caja
+     de "Asignación rápida por nombre", que ocupa más espacio. #sidebar
+     ya hace scroll (overflow-y:auto) cuando su contenido no cabe, así
+     que basta con dejar que esta sección crezca a su alto natural en
+     vez de recortarla ella misma. */
   min-height:150px;
 }
 #objSkinStudio .sectionHeader { display:flex; align-items:center; justify-content:space-between; padding:0 14px; }
@@ -185,6 +232,22 @@
   border-radius:var(--radius-sm); padding:6px 8px; font-size:12px; outline:none;
 }
 #objSkinStudio #partsList { list-style:none; margin:0; padding:4px 8px 12px; overflow-y:auto; flex-grow:1; }
+
+/* ---------- Asignación rápida por coincidencia de nombre ---------- */
+#objSkinStudio .partsBulkAssign {
+  margin:0 14px 8px; padding:8px; border:1px dashed var(--border);
+  border-radius:var(--radius-sm); background:var(--bg-elevated-2);
+}
+#objSkinStudio .partsBulkAssignCount {
+  display:block; font-size:10.5px; color:var(--text-dim); margin-bottom:6px; line-height:1.3;
+}
+#objSkinStudio .partsBulkAssignRow { display:flex; flex-wrap:wrap; gap:6px; }
+#objSkinStudio #bulkAssignBoneSelect {
+  flex:1 1 auto; min-width:0; background:var(--bg); border:1px solid var(--border);
+  color:var(--text); border-radius:var(--radius-sm); padding:6px 6px; font-size:11.5px;
+}
+#objSkinStudio #btnBulkAssign { flex:0 0 auto; white-space:nowrap; }
+#objSkinStudio #btnBulkAssign:disabled { opacity:.45; cursor:not-allowed; }
 #objSkinStudio .partItem {
   display:flex; align-items:center; gap:8px; padding:6px 6px; border-radius:var(--radius-sm);
   margin-bottom:3px; cursor:pointer;
@@ -250,14 +313,14 @@
 }
 #objSkinStudio .tabBtn:hover { color:var(--text); }
 #objSkinStudio .tabBtn.active { color:var(--accent); border-bottom-color:var(--accent); }
-#objSkinStudio .tabPanel { display:none; padding:16px 14px; overflow-y:auto; flex-grow:1; }
+#objSkinStudio .tabPanel { display:none; padding:16px 14px; overflow-y:auto; overflow-x:hidden; flex-grow:1; }
 #objSkinStudio .tabPanel.active { display:block; }
 #objSkinStudio #bonesEmpty,
 #objSkinStudio #exportEmpty { color:var(--text-dim); font-size:12.5px; text-align:center; margin-top:30px; }
 
 #objSkinStudio #boneTree,
 #objSkinStudio #boneTree ul { list-style:none; margin:0; padding-left:14px; }
-#objSkinStudio #boneTree { padding-left:0; max-height:230px; overflow-y:auto; }
+#objSkinStudio #boneTree { padding-left:0; }
 #objSkinStudio .boneNode {
   padding:4px 6px; border-radius:5px; font-size:12px; cursor:pointer;
   display:flex; align-items:center; justify-content:space-between; gap:6px; white-space:nowrap;
@@ -301,7 +364,7 @@
 #objSkinStudio #boneAssignedParts li { font-size:11.5px; padding:3px 0; color:var(--text-dim); }
 
 #objSkinStudio .infoGrid { display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--border); padding-top:12px; margin-top:14px; }
-#objSkinStudio .infoGrid > div { display:flex; justify-content:space-between; font-size:12px; }
+#objSkinStudio .infoGrid > div { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 10px; font-size:12px; }
 #objSkinStudio .infoKey { color:var(--text-dim); }
 #objSkinStudio .infoVal { font-weight:600; text-align:right; }
 
@@ -381,40 +444,72 @@
   display:none; position:absolute; inset:0; z-index:60; background:rgba(6,9,13,.6);
 }
 #objSkinStudio #mobileBackdrop.active { display:block; }
-#objSkinStudio .mobileToggle {
-  display:none; position:absolute; top:12px; z-index:45;
-  width:38px; height:38px; align-items:center; justify-content:center;
-  background:rgba(18,24,34,.9); backdrop-filter:blur(6px);
-  border:1px solid var(--border); border-radius:9px; color:var(--text); cursor:pointer;
+
+/* Barra de pestañas inferior en móvil: reemplaza los dos botones flotantes
+   de las esquinas (fáciles de pasar por alto) por una barra fija, con
+   etiqueta de texto, para que sea obvio que "Huesos" es un panel aparte
+   al que se puede entrar sin necesidad de pantalla completa. */
+#objSkinStudio #mobileTabBar {
+  display:none; position:absolute; left:0; right:0; bottom:0; z-index:45;
+  background:rgba(15,12,8,.95); backdrop-filter:blur(8px);
+  border-top:1px solid var(--border);
 }
-#objSkinStudio #btnMobileSidebar { left:12px; }
-#objSkinStudio #btnMobileInspector { right:12px; }
+#objSkinStudio .mobileTabBtn {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:3px; padding:8px 4px 7px; background:none; border:none;
+  color:var(--text-dim); cursor:pointer;
+}
+#objSkinStudio .mobileTabBtn svg { width:19px; height:19px; }
+#objSkinStudio .mobileTabBtn span { font-size:10px; font-weight:600; }
+#objSkinStudio .mobileTabBtn.active { color:var(--accent); }
+
 #objSkinStudio .mobileClose {
   display:none; position:absolute; top:10px; right:10px; z-index:2;
   width:30px; height:30px; align-items:center; justify-content:center;
   background:var(--bg-elevated-2); border:1px solid var(--border); border-radius:8px;
   color:var(--text); cursor:pointer; font-size:16px; line-height:1;
 }
+#objSkinStudio .mobileSheetHandle { display:none; }
 
 @media (max-width: 760px){
-  #objSkinStudio #app { position:relative; overflow:hidden; }
+  #objSkinStudio { height:88vh; max-height:88vh; overflow-x:hidden; }
+  #objSkinStudio #app { position:relative; overflow:hidden; min-width:0; }
+
+  /* Estilo Blockbench-mobile: los paneles laterales de escritorio se
+     convierten en hojas que suben desde abajo (como un bottom sheet),
+     no en cajones desde el costado -- dejan ver el viewport 3D detrás
+     y se sienten como un panel nativo de app en vez de un menú lateral. */
   #objSkinStudio #sidebar,
 #objSkinStudio #inspector {
-    position:absolute; top:0; bottom:0; z-index:65;
-    width:86vw; max-width:320px;
-    transition:transform .25s ease; box-shadow:0 0 40px rgba(0,0,0,.5);
+    position:absolute; left:0; right:0; top:auto; bottom:0; z-index:65;
+    width:100%; max-width:none; min-width:0;
+    height:72vh; max-height:72vh;
+    border-radius:16px 16px 0 0;
+    overflow-x:hidden;
+    transition:transform .28s cubic-bezier(.32,.72,0,1); box-shadow:0 -8px 40px rgba(0,0,0,.55);
+    transform:translateY(100%);
   }
-  #objSkinStudio #sidebar { left:0; transform:translateX(-100%); }
-  #objSkinStudio #sidebar.open { transform:translateX(0); }
-  #objSkinStudio #inspector { right:0; left:auto; transform:translateX(100%); }
-  #objSkinStudio #inspector.open { transform:translateX(0); }
-  #objSkinStudio .mobileToggle { display:flex; }
+  #objSkinStudio #sidebar.open,
+#objSkinStudio #inspector.open { transform:translateY(0); }
+  #objSkinStudio .mobileSheetHandle {
+    display:block; position:absolute; top:0; left:0; right:0; height:22px;
+    cursor:grab; touch-action:none;
+  }
+  #objSkinStudio .mobileSheetHandle::before {
+    content:""; position:absolute; top:8px; left:50%; transform:translateX(-50%);
+    width:36px; height:4px; border-radius:2px; background:var(--border);
+  }
+  #objSkinStudio #sidebarHeader { padding-top:16px; }
+  #objSkinStudio #inspectorTabs { padding-top:10px; }
+
+  #objSkinStudio #mobileTabBar { display:flex; }
   #objSkinStudio .mobileClose { display:flex; }
-  #objSkinStudio #sidebarHeader { padding-right:48px; }
+  #objSkinStudio #sidebarHeader { padding-right:14px; }
   #objSkinStudio #inspectorTabs { padding-right:40px; position:relative; }
+  #objSkinStudio #viewportStatus { bottom:60px; }
 
   #objSkinStudio #toolbar {
-    max-width:calc(100vw - 110px);
+    max-width:calc(100vw - 24px);
     flex-wrap:wrap; justify-content:center;
     top:8px; padding:4px;
   }
@@ -425,10 +520,5 @@
 
   #objSkinStudio .fileRow { padding:8px 7px; }
   #objSkinStudio #partsSection { min-height:120px; }
-}
-
-@media (max-width: 400px){
-  #objSkinStudio #sidebar,
-#objSkinStudio #inspector { width:90vw; }
 }
 
