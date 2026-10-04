@@ -17,7 +17,7 @@
 
 It helps creators **validate, repair, preview, and manage both regular and custom (4D/5D) skin packs** while keeping almost all processing on the user's device.
 
-4D/5D models can be previewed live in 3D right in the browser (5D) or opened in an embedded Blockbench Web editor (4D) — no separate app, no extra tab.
+Both 4D (cubes) and 5D (`poly_mesh`) models can be previewed live in 3D right in the browser with MBSM's own renderer — no separate app, no extra tab, and nothing leaves your device.
 
 No installation, no server-side processing for validation or repair, and no account required.
 
@@ -34,14 +34,15 @@ No installation, no server-side processing for validation or repair, and no acco
 
 </div>
 
-**v0.7.0 beta** brought a complete visual redesign, and **v0.8.0** refined it further:
+**v0.7.0 beta** brought a complete visual redesign, **v0.8.0** refined it further, **v0.9.0** focused on a mobile-friendliness pass plus a new theming system, and **v0.10.0** added the Skin Creator, a built-in 4D renderer (replacing the embedded Blockbench editor) and a rebuilt Model to Skin 1.8:
 
 * **Sidebar navigation** — grouped by Workspace / Viewers / Tools, collapsible, with a command palette (`Ctrl+K`) to jump to any tool instantly.
 * **Home dashboard** — quick-access cards for every tool, a Recent Projects list, and an in-app changelog.
 * **Per-tool URLs** — every tool has its own address (e.g. `/Validator/`), so links can be shared directly and the browser's back/forward buttons work as expected.
 * **Inspector panel** — a dedicated side panel in the 4D/5D viewer for model info, display options and appearance settings.
 * **Mobile navigation** — a bottom nav with quick pickers for Viewers and Tools, plus a dedicated Settings sheet for language, theme and the GitHub link.
-* **Dark / Light / System themes**, switchable from the sidebar (or the mobile Settings sheet).
+* **Color palettes** — Default, Green, and Minecraft-inspired themes, switchable from the sidebar (or the mobile Settings sheet), on top of the existing Dark / Light / System modes.
+* **Create your own skin** — pick your own accent colors by hex code and, optionally, set the page background to an image, GIF, or looping video (with an off-by-default toggle to also play the video's audio). Saved locally in your browser only — nothing is uploaded or shared.
 * **Full Spanish and English interface**, with automatic browser-language detection.
 
 ---
@@ -56,19 +57,19 @@ No installation, no server-side processing for validation or repair, and no acco
 
 ### 4D / 5D Skin Validator
 
-<table><tr><th width='35%'>Feature</th><th>Description</th></tr><tr><td><strong>.zip / .mcpack support</strong></td><td>Open and analyze Minecraft Bedrock skin pack archives directly in the browser.</td></tr><tr><td><strong>JSON validation</strong></td><td>Checks <code>skins.json</code>, <code>geometry.json</code>, <code>manifest.json</code>, and localization files.</td></tr><tr><td><strong>Reference checking</strong></td><td>Detects missing textures, broken geometry references, and invalid identifiers.</td></tr><tr><td><strong>Automatic repair</strong></td><td>Generates a corrected skin pack whenever the issue can be repaired automatically.</td></tr><tr><td><strong>4D / 5D awareness</strong></td><td>Designed specifically for custom geometry skin packs used in Minecraft Bedrock Edition.</td></tr></table>
+<table><tr><th width='35%'>Feature</th><th>Description</th></tr><tr><td><strong>.zip / .mcpack support</strong></td><td>Open and analyze Minecraft Bedrock skin pack archives directly in the browser.</td></tr><tr><td><strong>JSON validation</strong></td><td>Checks <code>skins.json</code>, <code>geometry.json</code>, <code>manifest.json</code>, and localization files.</td></tr><tr><td><strong>Reference checking</strong></td><td>Detects missing textures, broken geometry references, and invalid identifiers.</td></tr><tr><td><strong>Automatic repair</strong></td><td>Generates a corrected skin pack whenever the issue can be repaired automatically.</td></tr><tr><td><strong>Grouped, collapsible results</strong></td><td>On multi-skin packs, each skin's checks collapse into their own block — closed by default when everything passes, open automatically when there's an error or warning — instead of one long flat list.</td></tr><tr><td><strong>4D / 5D awareness</strong></td><td>Designed specifically for custom geometry skin packs used in Minecraft Bedrock Edition.</td></tr></table>
 
 ### 4D / 5D Viewer
 
-<table><tr><th width='35%'>Feature</th><th>Description</th></tr><tr><td><strong>Live 3D preview (5D)</strong></td><td>Renders <code>poly_mesh</code> geometries directly in the browser with Three.js — bones, cubes, pivots, wireframe and grid toggles included.</td></tr><tr><td><strong>Embedded Blockbench editor (4D)</strong></td><td>Legacy cube-based (4D) models open inside an embedded Blockbench Web editor, without leaving the page or opening a new tab.</td></tr><tr><td><strong>Automatic 4D/5D detection</strong></td><td>Detects 4D vs 5D per individual model — by geometry shape (cubes vs. poly_mesh), never by <code>format_version</code> or model name.</td></tr><tr><td><strong>Flexible input</strong></td><td>Accepts a full pack (<code>.zip</code> / <code>.mcpack</code>) or a loose <code>geometry.json</code> + texture.</td></tr><tr><td><strong>Large-model fallback</strong></td><td>4D models are sent to Blockbench by URL when small enough; oversized models automatically fall back to a manual download-and-drag-in flow.</td></tr></table>
+<table><tr><th width='35%'>Feature</th><th>Description</th></tr><tr><td><strong>Live 3D preview (4D and 5D)</strong></td><td>Renders both cube-based (4D) and <code>poly_mesh</code> (5D) geometries in the browser with MBSM's own Three.js renderer — bones, pivots, locators, wireframe, grid and spin toggles included. Box UV, per-face UV, mirror, inflate and per-cube rotation are supported.</td></tr><tr><td><strong>Automatic 4D/5D detection</strong></td><td>Detects 4D vs 5D per individual model — by geometry shape (cubes vs. poly_mesh), never by <code>format_version</code> or model name.</td></tr><tr><td><strong>Flexible input</strong></td><td>Accepts a full pack (<code>.zip</code> / <code>.mcpack</code>) or a loose <code>geometry.json</code> + texture.</td></tr><tr><td><strong>Phone-friendly framing</strong></td><td>The camera fits the whole model whatever the panel's shape, with even lighting, spin around the model's own center, a poly_mesh reader that tolerates any polygon size, and a "Recalculate normals" toggle for models that look oddly lit.</td></tr></table>
 
 ### Classic Skins
 
 <table><tr><th width='35%'>Feature</th><th>Description</th></tr><tr><td><strong>3D skin preview</strong></td><td>View regular Minecraft Bedrock skins directly in the browser.</td></tr><tr><td><strong>Model detection</strong></td><td>Automatically detects <strong>Steve (wide)</strong> and <strong>Alex (slim)</strong> models.</td></tr><tr><td><strong>Skin browser</strong></td><td>Browse skins contained inside a skin pack archive.</td></tr><tr><td><strong>Texture preview</strong></td><td>Inspect PNG textures used by the skin pack.</td></tr></table>
 
-### OBJ → Skin 1.8
+### Model to Skin 1.8 (formerly OBJ → Skin 1.8)
 
-<table><tr><th width='35%'>Feature</th><th>Description</th></tr><tr><td><strong>.obj import</strong></td><td>Loads a 3D model (with its texture) exported from Blender or any other tool that writes named objects/groups.</td></tr><tr><td><strong>Bone assignment</strong></td><td>Assigns each part of the model to a bone of the standard Bedrock humanoid skeleton, with automatic suggestions based on part names.</td></tr><tr><td><strong>Visual pivot editing</strong></td><td>Lets you add bones and position pivots directly in the live 3D view instead of hand-editing JSON.</td></tr><tr><td><strong>Real Bedrock 1.8.0 export</strong></td><td>Outputs an actual <code>poly_mesh</code> geometry, packaged as a complete skin pack (<code>manifest.json</code>, <code>geometry.json</code>, <code>skins.json</code>, language file and textures).</td></tr><tr><td><strong>Fully local</strong></td><td>Runs entirely in the browser, like the rest of MBSM — nothing is uploaded anywhere.</td></tr></table>
+<table><tr><th width='35%'>Feature</th><th>Description</th></tr><tr><td><strong>.obj import</strong></td><td>Loads a 3D model (with its texture) exported from Blender or any other tool that writes named objects/groups.</td></tr><tr><td><strong>Bedrock geometry import (.json)</strong></td><td>Loads an existing geometry (1.8, or 1.12+ <code>minecraft:geometry</code>) with cubes, box UV or per-face UV, mirror, inflate and cube rotation, and bakes it into a mesh you can re-pose. Standard humanoid bones missing from the file (leftItem, rightItem, sleeves, pants, jacket, hat, cape) are added back.</td></tr><tr><td><strong>Bone assignment</strong></td><td>Assigns each part of the model to a bone of the standard Bedrock humanoid skeleton, with automatic suggestions based on part names.</td></tr><tr><td><strong>Bulk assign by name match</strong></td><td>Filter parts by a name pattern (e.g. "bone" matches bone1, bone2, bone3...) and assign every match to a chosen bone in one click, instead of one part at a time.</td></tr><tr><td><strong>Visual pivot editing</strong></td><td>Lets you add bones and position pivots directly in the live 3D view instead of hand-editing JSON. Pivots are mirrored in X on export so limbs rotate around the right side of the body.</td></tr><tr><td><strong>Held items and locators</strong></td><td>leftItem / rightItem default to the official hand grip point (and one click puts them back there). Every bone has a locator editor, and <code>lead_hold</code> on rightItem is automatic: it is exported with every model and follows the item's pivot until you edit it by hand.</td></tr><tr><td><strong>Real Bedrock 1.8.0 export</strong></td><td>Outputs an actual <code>poly_mesh</code> geometry (each position, normal and UV stored once, polys as 4-sized as Minecraft expects), packaged as a complete skin pack (<code>manifest.json</code>, <code>geometry.json</code>, <code>skins.json</code>, language file and textures).</td></tr><tr><td><strong>Mobile-optimized layout</strong></td><td>On phones, the Models and Bones/Export panels open as scrollable, swipeable bottom sheets with a drag handle, instead of side drawers; the desktop layout is unchanged.</td></tr><tr><td><strong>Fully local</strong></td><td>Runs entirely in the browser, like the rest of MBSM — nothing is uploaded anywhere.</td></tr></table>
 
 ---
 
@@ -77,11 +78,12 @@ No installation, no server-side processing for validation or repair, and no acco
 MBSM is designed with privacy in mind.
 
 * **Files stay on your device by default**
-* **Validating, repairing, previewing (5D) and building skin packs never upload anything to a server**
+* **Validating, repairing, previewing (4D and 5D) and building skin packs never upload anything to a server**
 * **No account is required**
 * **Core tools work entirely in the browser**
+* **Custom skin/theme data (colors and optional background image/GIF/video) is saved locally in your browser (localStorage + IndexedDB) and is never uploaded or shared**
 
-> The one exception: sending a 4D model to the embedded Blockbench Web editor briefly sends that model's data to `web.blockbench.net` (a third-party site) so it can open it. Everything else — validation, repair, 5D preview, Classic Skins, Skinpack Maker — stays fully local.
+> The only requests that leave your browser are the skin look-ups you explicitly ask for in the Skinpack Maker. Validation, repair, the 4D/5D preview, Classic Skins, Model to Skin 1.8 and the custom theme creator all stay fully local.
 
 ---
 
@@ -97,9 +99,9 @@ MBSM aims to provide a **single toolkit** that helps creators quickly identify p
 
 * 4D/5D Skin Pack Validator
 * Automatic Skin Pack Repair
-* 4D/5D Viewer — live 3D preview (5D) + embedded Blockbench Web editor (4D)
+* 4D/5D Viewer — live 3D preview of 4D and 5D models with a built-in renderer
 * Classic Skins — 3D skin viewer + Skinpack Maker
-* OBJ → Skin 1.8 — converts a 3D model (.obj) into a real Bedrock 1.8.0 poly_mesh skin pack
+* Model to Skin 1.8 — converts a 3D model (.obj) or an existing Bedrock geometry (1.8 / 1.12+, cubes with box or per-face UV) into a real Bedrock 1.8.0 poly_mesh skin pack, with bulk bone-assignment by name, held-item and locator editing (automatic `lead_hold`) and a scrollable mobile layout
 
 ---
 
@@ -112,6 +114,7 @@ The project is still growing. Planned additions include:
 * Animation and geometry inspection
 * Additional validation rules
 * More creator-focused Bedrock utilities
+* Continued mobile-friendliness pass across the remaining tools
 
 ---
 
@@ -119,11 +122,11 @@ The project is still growing. Planned additions include:
 
 <div align='center'>
 
-|  Frontend  |   Rendering  | File Processing | External Integration |
-| :--------: | :----------: | :-------------: | :-------------------: |
-|    HTML    |   Three.js   |      JSZip      |    Blockbench Web (4D)    |
-|     CSS    |     WebGL    |       JSON      |     opt-in, per model    |
-| JavaScript | Browser APIs |   ZIP / MCPACK  |            —            |
+|  Frontend  |   Rendering  | File Processing |
+| :--------: | :----------: | :-------------: |
+|    HTML    |   Three.js   |      JSZip      |
+|     CSS    |     WebGL    |       JSON      |
+| JavaScript | Browser APIs |   ZIP / MCPACK  |
 
 </div>
 
@@ -137,9 +140,9 @@ Clone the repository:
 git clone https://github.com/Darktubbie/MBSM.git
 ```
 
-Then open **index.html** in a modern browser — it's the single HTML entry point for the whole toolkit (every tool, including OBJ → Skin 1.8, lives inside this one page now).
+Then open **index.html** in a modern browser — it's the single HTML entry point for the whole toolkit (every tool, including Model to Skin 1.8, lives inside this one page now).
 
-No build process or local server is currently required.
+No build process or local server is currently required, though running one (e.g. `npx serve`, or the VS Code "Live Server" extension) gives the most accurate experience, since opening the file directly (`file://`) disables the per-tool URL history feature described below.
 
 > **Deep links:** each tool updates the address bar (e.g. `/Validator/`) via the History API, but there's no real server-side route behind it. On GitHub Pages this is already handled by `404.html`, which bounces a direct link or refresh back to `index.html` so the app can restore the right tool. If you self-host MBSM somewhere else, point your server's 404/error page at `index.html` the same way — otherwise a direct link straight to `/Validator/` (skipping the root page first) will just 404.
 
@@ -159,6 +162,22 @@ Contributions, suggestions, bug reports, and feature requests are welcome.
 6. Open a Pull Request
 
 All changes should be discussed through issues or pull requests before major modifications are merged.
+
+---
+
+## Acknowledgements
+
+**Libraries MBSM is built on**
+
+* [skinview3d](https://github.com/bs-community/skinview3d) (MIT) — powers the 3D preview of classic skins in the Classic Skins viewer. It replaced an earlier from-scratch attempt whose geometry didn't line up correctly.
+* [Three.js](https://github.com/mrdoob/three.js) — the renderer behind the 4D/5D viewer and Model to Skin 1.8.
+* [JSZip](https://github.com/Stuk/jszip) — reads and writes `.zip` / `.mcpack` packs in the browser.
+
+**Projects that inspired improvements** — nothing was copied, only the behaviour was studied and compared:
+
+* [Blockbench](https://github.com/JannisX11/blockbench) — MBSM showed 4D models through its web editor until v0.10.0. Wanting to improve on that 4D rendering is what started the work on MBSM's own renderer.
+* [SkinApex](https://github.com/skinapex/skinapex.github.io) (MIT) — how a 4D skin viewer lays out box UV / per-face UV, mirrors and bone rotations.
+* [obj-skin-studio](https://github.com/MCMrARM/obj-skin-studio) by MCMrARM (MIT) — the original OBJ → Bedrock skin workflow that Model to Skin 1.8 is inspired by.
 
 ---
 
