@@ -20,7 +20,8 @@
    updates that choice for the rest of the site too. */
 const I18N = {
   es: {
-    'drop.text': 'Suelta tu .obj y tu textura aquí',
+    'drop.text': 'Suelta tu modelo (.obj o .json) y tu textura aquí',
+    'sidebar.title': 'Modelo a Skin',
     'mobile.models': 'Modelos',
     'mobile.viewport': 'Vista 3D',
     'mobile.bonesTab': 'Huesos',
@@ -32,8 +33,8 @@ const I18N = {
     'common.noModel': 'sin modelo',
     'common.noTexture': 'sin textura',
     'sidebar.newModel': '+ Nuevo modelo',
-    'sidebar.changeObjTitle': 'Cambiar modelo .obj',
-    'sidebar.objLabel': 'Modelo .obj',
+    'sidebar.changeObjTitle': 'Cambiar modelo (.obj o geometry .json)',
+    'sidebar.objLabel': 'Modelo (.obj / .json)',
     'sidebar.noFile': 'Sin archivo — haz clic para subir',
     'sidebar.changeTexTitle': 'Cambiar textura',
     'sidebar.texLabel': 'Textura',
@@ -65,6 +66,15 @@ const I18N = {
     'bones.name': 'Nombre',
     'bones.parent': 'Hueso padre',
     'bones.pivot': 'Pivote (X, Y, Z)',
+    'bones.locators': 'Locators (puntos de agarre / anclaje)',
+    'bones.locatorsHint': 'Un locator es un punto con nombre dentro del hueso, por ejemplo "lead_hold" en rightItem. Se exporta junto con la geometría.',
+    'bones.addLocator': '+ Agregar locator',
+    'bones.itemStandard': 'Poner en la mano (posición estándar)',
+    'locators.none': 'Este hueso no tiene locators.',
+    'locators.auto': 'Automático (sigue al pivote de rightItem)',
+    'locators.delete': 'Eliminar locator',
+    'locators.advanced': 'avanzado: se conserva tal cual',
+    'locators.itemFixed': (n) => `"${n}" colocado en el punto de agarre estándar de la mano.`,
     'bones.deleteBone': 'Eliminar hueso',
     'bones.assignedParts': 'Partes asignadas a este hueso',
     'bones.assignedPartsHint': 'Marca o desmarca partes en la lista de la izquierda para asignarlas a este hueso.',
@@ -86,6 +96,11 @@ const I18N = {
     'export.downloadBtnSingle': 'Descargar paquete de skin',
     'export.downloadBtnMulti': 'Descargar paquete de skins',
     'status.readingObj': 'Leyendo modelo .obj...',
+    'status.readingGeo': 'Leyendo geometría .json...',
+    'status.geoBonesAdded': (n) => `Se añadieron ${n} hueso(s) estándar que el modelo no traía (leftItem, rightItem, mangas...).`,
+    'status.geoLoaded': (id, n, total) => `Geometría "${id}" importada: ${n} hueso(s) con malla${total > 1 ? ` (el archivo trae ${total} modelos, se usó el primero)` : ''}.`,
+    'errors.badJson': 'El archivo no es un JSON válido',
+    'errors.noGeometry': 'No se encontró ninguna geometría con cubos o poly_mesh en el .json',
     'status.modelLoaded': (n) => `Modelo cargado: ${n} parte(s).`,
     'status.texError': 'No se pudo leer la textura.',
     'status.exportBlocked': (err) => `Exportación bloqueada: ${err}`,
@@ -128,7 +143,8 @@ const I18N = {
     'val.invalidHeader': (n) => `geometry.json inválido para 1.8.0 (${n} problema(s)):`,
   },
   en: {
-    'drop.text': 'Drop your .obj and your texture here',
+    'drop.text': 'Drop your model (.obj or .json) and your texture here',
+    'sidebar.title': 'Model to Skin',
     'mobile.models': 'Models',
     'mobile.viewport': '3D View',
     'mobile.bonesTab': 'Bones',
@@ -140,8 +156,8 @@ const I18N = {
     'common.noModel': 'no model',
     'common.noTexture': 'no texture',
     'sidebar.newModel': '+ New model',
-    'sidebar.changeObjTitle': 'Change .obj model',
-    'sidebar.objLabel': '.obj model',
+    'sidebar.changeObjTitle': 'Change model (.obj or geometry .json)',
+    'sidebar.objLabel': 'Model (.obj / .json)',
     'sidebar.noFile': 'No file — click to upload',
     'sidebar.changeTexTitle': 'Change texture',
     'sidebar.texLabel': 'Texture',
@@ -173,6 +189,15 @@ const I18N = {
     'bones.name': 'Name',
     'bones.parent': 'Parent bone',
     'bones.pivot': 'Pivot (X, Y, Z)',
+    'bones.locators': 'Locators (grip / attach points)',
+    'bones.locatorsHint': 'A locator is a named point inside the bone, e.g. "lead_hold" on rightItem. It is exported with the geometry.',
+    'bones.addLocator': '+ Add locator',
+    'bones.itemStandard': 'Put in the hand (standard position)',
+    'locators.none': 'This bone has no locators.',
+    'locators.auto': 'Automatic (follows the rightItem pivot)',
+    'locators.delete': 'Delete locator',
+    'locators.advanced': 'advanced: kept as is',
+    'locators.itemFixed': (n) => `"${n}" placed on the hand's standard grip point.`,
     'bones.deleteBone': 'Delete bone',
     'bones.assignedParts': 'Parts assigned to this bone',
     'bones.assignedPartsHint': 'Check or uncheck parts in the list on the left to assign them to this bone.',
@@ -194,6 +219,11 @@ const I18N = {
     'export.downloadBtnSingle': 'Download skin package',
     'export.downloadBtnMulti': 'Download skins package',
     'status.readingObj': 'Reading .obj model...',
+    'status.readingGeo': 'Reading geometry .json...',
+    'status.geoBonesAdded': (n) => `Added ${n} standard bone(s) the model did not have (leftItem, rightItem, sleeves...).`,
+    'status.geoLoaded': (id, n, total) => `Geometry "${id}" imported: ${n} bone(s) with mesh${total > 1 ? ` (the file has ${total} models, the first one was used)` : ''}.`,
+    'errors.badJson': 'The file is not valid JSON',
+    'errors.noGeometry': 'No geometry with cubes or poly_mesh was found in the .json',
     'status.modelLoaded': (n) => `Model loaded: ${n} part(s).`,
     'status.texError': 'Could not read the texture.',
     'status.exportBlocked': (err) => `Export blocked: ${err}`,
@@ -291,15 +321,21 @@ function createDefaultSkeleton() {
   // outliner for the humanoid skeleton (root>waist>body>head>hat, then
   // cape/leftArm/rightArm/jacket as head's siblings, each arm with its
   // own sleeve+item, and the legs as waist's siblings under root).
-  // Left/right pivots copied from Bedrock's actual vanilla humanoid
-  // skeleton (confirmed against the reference geometry_1_16_0.json:
-  // leftArm=[-5,22,0], rightArm=[5,22,0], leftLeg=[-1.9,12,0],
-  // rightLeg=[1.9,12,0]).
-  // EXCEPTION: leftItem/rightItem do NOT follow that same sign. These
-  // were tested in-game (custom bones, not vanilla, meant for holding
-  // props in the hand) and with the "vanilla" sign the object showed up
-  // in the wrong hand, so here they're flipped relative to their arm:
-  // leftItem gets a positive X, rightItem a negative X.
+  // ALL pivots here are in the OBJ's coordinate space (the space the
+  // preview draws in). On export, buildGeometryJSON mirrors X for the
+  // vertices AND for the pivots, so e.g. leftArm=[-5,22,0] here becomes
+  // [5,22,0] in the file -- the same value as the vanilla humanoid
+  // (see OFFICIAL_PLAYER_GEOMETRY in viewer.js: leftArm=[5,22,0],
+  // rightArm=[-5,22,0], leftLeg=[1.9,12,0]).
+  // leftItem/rightItem: the grip point of whatever the player holds. The
+  // game attaches the held item at this bone's PIVOT, so it has to sit in
+  // the hand. Values are the official ones (geometry.npc.steve: leftItem
+  // [6,15,1], rightItem [-6,15,1] once exported; Alex/slim: y = 14.5), and
+  // rightItem also carries the vanilla "lead_hold" locator. The old
+  // defaults (5,13,0) were ~2 units too low and 1 off in X/Z, which is why
+  // held items floated away from the hand no matter how the bone was
+  // placed. Locators are stored in the same space as pivots (X is mirrored
+  // on export).
   return [
     { name: 'root', parent: null, pivot: [0, 0, 0] },
     { name: 'waist', parent: 'root', pivot: [0, 12, 0] },
@@ -311,10 +347,10 @@ function createDefaultSkeleton() {
     { name: 'leftSleeve', parent: 'leftArm', pivot: [-5, 22, 0] },
     // extra bones for props held in the hand (not part of the vanilla
     // skeleton, but useful for positioning props via their pivot)
-    { name: 'leftItem', parent: 'leftArm', pivot: [5, 13, 0] },
+    { name: 'leftItem', parent: 'leftArm', pivot: [-6, 15, 1] },
     { name: 'rightArm', parent: 'body', pivot: [5, 22, 0] },
     { name: 'rightSleeve', parent: 'rightArm', pivot: [5, 22, 0] },
-    { name: 'rightItem', parent: 'rightArm', pivot: [-5, 13, 0] },
+    { name: 'rightItem', parent: 'rightArm', pivot: [6, 15, 1], locators: { lead_hold: [6, 15, 1] } },
     { name: 'jacket', parent: 'body', pivot: [0, 24, 0] },
     { name: 'leftLeg', parent: 'root', pivot: [-1.9, 12, 0] },
     { name: 'leftPants', parent: 'leftLeg', pivot: [-1.9, 12, 0] },
@@ -355,6 +391,7 @@ const state = { projects: [], activeId: null, activeBoneName: null, nextId: 1, n
 let scene, camera, renderer, controls, canvas;
 let composer, boneOutlinePass, partOutlinePass, transformControls, pivotDummy;
 let parentLinkGroup;
+let locatorGroup;
 let gridHelper, skeletonGroup;
 let currentPreviewGroup = null;
 
@@ -392,6 +429,8 @@ function initThree() {
 
   parentLinkGroup = new THREE.Group();
   scene.add(parentLinkGroup);
+  locatorGroup = new THREE.Group();
+  scene.add(locatorGroup);
 
   /* ---- post-processing: a silhouette outline (not a bounding cube) for
      the selected bone/part, still visible behind other geometry
@@ -437,6 +476,7 @@ function initThree() {
     const bone = project && state.activeBoneName ? project.bones.find((b) => b.name === state.activeBoneName) : null;
     if (!bone) return;
     bone.pivot = [pivotDummy.position.x, pivotDummy.position.y, pivotDummy.position.z];
+    if (bone.name === 'rightItem') { syncAutoLocators(project); updateLocatorMarkers(bone); renderLocatorEditor(bone); }
     document.getElementById('pivotX').value = bone.pivot[0].toFixed(2);
     document.getElementById('pivotY').value = bone.pivot[1].toFixed(2);
     document.getElementById('pivotZ').value = bone.pivot[2].toFixed(2);
@@ -579,6 +619,23 @@ function updateParentLink(project, bone) {
   parentLinkGroup.add(marker);
 }
 
+/* Cyan diamonds for the selected bone's locators (grip / attach points). */
+function updateLocatorMarkers(bone) {
+  locatorGroup.clear();
+  if (!bone || !bone.locators) return;
+  Object.keys(bone.locators).forEach((k) => {
+    const l = bone.locators[k];
+    if (!Array.isArray(l)) return;
+    const m = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.2),
+      new THREE.MeshBasicMaterial({ color: 0x22d3ee, depthTest: false, transparent: true, opacity: 0.95 })
+    );
+    m.position.set(l[0], l[1], l[2]);
+    m.renderOrder = 999;
+    locatorGroup.add(m);
+  });
+}
+
 /* Recomputes the active bone's outline and repositions the pivot gizmo
    (call this after rebuilding the preview or moving a pivot). */
 function refreshHighlights() {
@@ -587,6 +644,7 @@ function refreshHighlights() {
   if (boneOutlinePass) boneOutlinePass.selectedObjects = bone ? meshesForBone(project, bone.name) : [];
   updatePivotGizmo(bone);
   updateParentLink(project, bone);
+  updateLocatorMarkers(bone);
 }
 
 /* ==================== Utilities ==================== */
@@ -709,6 +767,212 @@ async function setProjectObj(project, file) {
   setStatus(t('status.modelLoaded', parts.length));
 }
 
+
+/* ==================== 1.12 / 1.8 geometry.json import ====================
+   Lets the tool start from an existing Bedrock model instead of an .obj:
+   cubes (box UV, per-face UV, mirror, inflate, per-cube rotation) are baked
+   into triangles with Renderer5D.buildCubeQuads -- the same function the 4D
+   viewer draws with -- and existing poly_mesh data is triangulated. Each
+   bone becomes one "part" already assigned to that bone, and the bones
+   (hierarchy, pivots, rotation, locators) come from the file, so the rest
+   of the tool (preview, pivots, export to 1.8.0) works unchanged.
+   Accepts both the legacy wrapper (identifier as the top-level key,
+   1.8.0/1.10.0) and the modern "minecraft:geometry" array (1.12.0+). */
+
+function listGeometriesInJson(json) {
+  const out = [];
+  if (!json || typeof json !== 'object') return out;
+  if (Array.isArray(json['minecraft:geometry'])) {
+    json['minecraft:geometry'].forEach((g, i) => {
+      if (!g || !Array.isArray(g.bones)) return;
+      const d = g.description || {};
+      out.push({
+        id: d.identifier || `geometry.model_${i + 1}`,
+        texW: d.texture_width || 64,
+        texH: d.texture_height || 64,
+        bones: g.bones,
+      });
+    });
+  }
+  Object.keys(json).forEach((key) => {
+    if (key === 'format_version' || key === 'minecraft:geometry') return;
+    const g = json[key];
+    if (!g || typeof g !== 'object' || !Array.isArray(g.bones)) return;
+    out.push({
+      id: key,
+      texW: g.texturewidth || g.texture_width || 64,
+      texH: g.textureheight || g.texture_height || 64,
+      bones: g.bones,
+    });
+  });
+  return out;
+}
+
+// Bedrock space -> the tool's OBJ space (X mirrored). Vertices, normals,
+// pivots and locators all go through this; buildGeometryJSON mirrors them
+// back on export.
+function bedrockGeoToParts(geo) {
+  const parts = [];
+  const texW = geo.texW, texH = geo.texH;
+  geo.bones.forEach((bone) => {
+    const pos = [], nor = [], uv = [];
+    const pushTri = (a, b, c) => {
+      [a, b, c].forEach((v) => {
+        pos.push(-v.p[0] || 0, v.p[1], v.p[2]);
+        nor.push(-v.n[0] || 0, v.n[1], v.n[2]);
+        uv.push(v.uv[0], v.uv[1]);
+      });
+    };
+
+    (bone.cubes || []).forEach((cube) => {
+      const eff = ('mirror' in cube) ? cube : Object.assign({}, cube, { mirror: !!bone.mirror });
+      Renderer5D.buildCubeQuads(eff).forEach((q) => {
+        const c = q.positions.map((p, i) => ({
+          p, n: q.normal,
+          // pixel (y down) -> normalized, v bottom-up
+          uv: [q.uv[i][0] / texW, 1 - q.uv[i][1] / texH],
+        }));
+        pushTri(c[0], c[1], c[2]);
+        pushTri(c[0], c[2], c[3]);
+      });
+    });
+
+    const pm = bone.poly_mesh;
+    if (pm && Array.isArray(pm.positions) && Array.isArray(pm.polys)) {
+      const normals = Array.isArray(pm.normals) ? pm.normals : [];
+      const uvs = Array.isArray(pm.uvs) ? pm.uvs : [];
+      const corner = (ref) => {
+        const p = pm.positions[ref[0]] || [0, 0, 0];
+        const n = normals[ref[1]] || [0, 1, 0];
+        const u = uvs[ref[2]] || [0, 0];
+        return {
+          p, n,
+          // same reading renderer5d uses: normalized uvs as they are,
+          // pixel uvs divided by the texture size
+          uv: pm.normalized_uvs ? [u[0], u[1]] : [u[0] / texW, u[1] / texH],
+        };
+      };
+      pm.polys.forEach((poly) => {
+        if (!Array.isArray(poly) || poly.length < 3) return;
+        // drop the repeated vertex used to store triangles as 4-sized polys
+        const ref = poly.filter((r, i) => i === 0 || r[0] !== poly[i - 1][0] || r[2] !== poly[i - 1][2]);
+        for (let i = 1; i < ref.length - 1; i++) pushTri(corner(ref[0]), corner(ref[i]), corner(ref[i + 1]));
+      });
+    }
+
+    if (!pos.length) return;
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    geometry.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+    geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    parts.push({
+      id: parts.length,
+      name: bone.name || `bone_${parts.length + 1}`,
+      geometry,
+      triCount: pos.length / 9,
+      color: colorForIndex(parts.length),
+      boneName: bone.name || null,
+      autoMatched: true,
+    });
+  });
+  return parts;
+}
+
+// A model imported from a .json brings only ITS bones. For a humanoid
+// (anything that has at least one of the standard body bones) the standard
+// skeleton's missing bones -- leftItem/rightItem, sleeves, pants, jacket,
+// hat, cape... -- are added back, with their default pivots, exactly as
+// they exist when you start from an .obj. Matching is case-insensitive.
+// Returns the names that were added.
+function mergeDefaultBones(bones) {
+  const HUMANOID = ['head', 'body', 'leftarm', 'rightarm', 'leftleg', 'rightleg'];
+  const have = new Map(bones.map((b) => [String(b.name).toLowerCase(), b]));
+  if (!HUMANOID.some((n) => have.has(n))) return [];
+  const defaults = createDefaultSkeleton();
+  const defByName = new Map(defaults.map((d) => [d.name, d]));
+  const added = [];
+  const resolveParent = (def) => {
+    // nearest ancestor of the default bone that exists in the model
+    let p = def.parent;
+    while (p) {
+      const hit = have.get(p.toLowerCase());
+      if (hit) return hit.name;
+      const d = defByName.get(p);
+      p = d ? d.parent : null;
+    }
+    return null;
+  };
+  defaults.forEach((d) => {
+    if (have.has(d.name.toLowerCase())) return;
+    const nb = { name: d.name, parent: resolveParent(d), pivot: d.pivot.slice() };
+    if (d.locators) nb.locators = JSON.parse(JSON.stringify(d.locators));
+    bones.push(nb);
+    have.set(d.name.toLowerCase(), nb);
+    added.push(d.name);
+  });
+  return added;
+}
+
+function bedrockGeoToBones(geo) {
+  const names = new Set(geo.bones.map((b) => b.name));
+  return geo.bones.map((b) => {
+    const out = {
+      name: b.name,
+      parent: (b.parent && names.has(b.parent)) ? b.parent : null,
+      pivot: [-(b.pivot ? b.pivot[0] : 0) || 0, b.pivot ? b.pivot[1] : 0, b.pivot ? b.pivot[2] : 0],
+    };
+    if (Array.isArray(b.rotation) && b.rotation.some((v) => v)) out.rotation = b.rotation.slice();
+    // locators come in as Bedrock coordinates -> tool space (X mirrored)
+    if (b.locators && typeof b.locators === 'object') {
+      out.locators = {};
+      Object.keys(b.locators).forEach((k) => {
+        const l = b.locators[k];
+        out.locators[k] = Array.isArray(l) ? [-l[0] || 0, l[1], l[2]] : JSON.parse(JSON.stringify(l));
+      });
+    }
+    // A lead_hold that was deliberately placed somewhere other than the
+    // item pivot is respected; one that matches (or is missing) stays automatic.
+    if (out.name === 'rightItem' && out.locators && Array.isArray(out.locators.lead_hold)) {
+      const l = out.locators.lead_hold;
+      if (Math.abs(l[0] - out.pivot[0]) > 1e-6 || Math.abs(l[1] - out.pivot[1]) > 1e-6 || Math.abs(l[2] - out.pivot[2]) > 1e-6) out.autoLeadHold = false;
+    }
+    return out;
+  });
+}
+
+async function setProjectGeometryJson(project, file) {
+  setStatus(t('status.readingGeo'));
+  const text = await readAsText(file);
+  let json = null;
+  if (typeof SkinPack !== 'undefined' && SkinPack.repairAndParseJSON) json = SkinPack.repairAndParseJSON(text);
+  else { try { json = JSON.parse(text); } catch (e) { json = null; } }
+  if (!json) throw new Error(t('errors.badJson'));
+  const geos = listGeometriesInJson(json).filter((g) => g.bones.some((b) => (b.cubes && b.cubes.length) || (b.poly_mesh && b.poly_mesh.polys)));
+  if (!geos.length) throw new Error(t('errors.noGeometry'));
+  const geo = geos[0];
+  const parts = bedrockGeoToParts(geo);
+  if (!parts.length) throw new Error(t('errors.noGeometry'));
+
+  disposePartGeometries(project.parts);
+  project.parts = parts;
+  project.bones = bedrockGeoToBones(geo);
+  const addedBones = mergeDefaultBones(project.bones);
+  syncAutoLocators(project);
+  project.hasObj = true;
+  project.texW = geo.texW;
+  project.texH = geo.texH;
+  project.sourceGeometryId = geo.id;
+  setStatus(t('status.geoLoaded', geo.id, parts.length, geos.length) +
+    (addedBones.length ? ' ' + t('status.geoBonesAdded', addedBones.length) : ''));
+}
+
+function isGeometryFile(f) { return /\.json$/i.test(f.name); }
+function stripModelExt(name) { return name.replace(/\.(obj|json)$/i, ''); }
+async function setProjectModel(project, file) {
+  if (isGeometryFile(file)) return setProjectGeometryJson(project, file);
+  return setProjectObj(project, file);
+}
+
 async function setProjectTexture(project, file) {
   if (project.textureURL) URL.revokeObjectURL(project.textureURL);
   const loaded = await loadImageFile(file);
@@ -732,6 +996,7 @@ async function setProjectTexture(project, file) {
 }
 
 function maybeBuildPreview(project) {
+  syncAutoLocators(project);
   if (currentPreviewGroup) { scene.remove(currentPreviewGroup); currentPreviewGroup = null; }
   // The skeleton lines/dots below are rebuilt from scratch on every call
   // (every pivot drag, bone rename, etc.), and Group.clear() only detaches
@@ -1051,6 +1316,154 @@ function ancestryChain(project, bone) {
   return chain;
 }
 
+
+/* ==================== Locators (grip / attach points) ====================
+   Named points on a bone, e.g. "lead_hold" on rightItem. They are stored in
+   the same space as pivots (X is mirrored on export). The editor below lists
+   the selected bone's locators with X/Y/Z inputs, a delete button, an "add"
+   button and, for leftItem/rightItem, a button that puts the item on the
+   hand's standard grip point. */
+
+/* lead_hold is AUTOMATIC (as in obj-skin-studio, where every model carries
+   it without the user doing anything) and, going one step further, it FOLLOWS
+   the rightItem pivot: move the item's grip point and the locator moves with
+   it. This stays on until the user edits lead_hold by hand, renames or
+   deletes it (bone.autoLeadHold = false); the checkbox in the editor turns it
+   back on. The export always carries it while it is automatic. */
+function syncAutoLocators(project) {
+  if (!project || !project.bones) return;
+  project.bones.forEach((b) => {
+    if (b.name !== 'rightItem' || b.autoLeadHold === false) return;
+    if (!b.locators) b.locators = {};
+    b.locators.lead_hold = [b.pivot[0], b.pivot[1], b.pivot[2]];
+  });
+}
+
+// Standard grip point of the held item, in tool space (X mirrored on export).
+// Slim (Alex) arms have their pivot at y=21.5 and the grip 0.5 lower.
+function standardItemPivot(project, boneName) {
+  const arm = project.bones.find((b) => b.name === (boneName === 'leftItem' ? 'leftArm' : 'rightArm'));
+  const slim = !!arm && Math.abs(arm.pivot[1] - 21.5) < 0.01;
+  return [boneName === 'leftItem' ? -6 : 6, slim ? 14.5 : 15, 1];
+}
+
+function renderLocatorEditor(bone) {
+  const wrap = document.getElementById('locatorList');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const project = getActiveProject();
+  const names = bone.locators ? Object.keys(bone.locators) : [];
+
+  names.forEach((name) => {
+    const val = bone.locators[name];
+    const row = document.createElement('div');
+    row.className = 'locatorRow';
+    if (!Array.isArray(val)) {
+      // object-form locators (offset/rotation/ignore_inherited_scale...) are kept untouched
+      row.textContent = name + ' (' + t('locators.advanced') + ')';
+      wrap.appendChild(row);
+      return;
+    }
+    const isAuto = bone.name === 'rightItem' && name === 'lead_hold' && bone.autoLeadHold !== false;
+    const isLeadHold = bone.name === 'rightItem' && name === 'lead_hold';
+    const nameIn = document.createElement('input');
+    nameIn.type = 'text'; nameIn.value = name; nameIn.className = 'locatorName';
+    nameIn.addEventListener('change', () => {
+      const nn = nameIn.value.trim();
+      if (!nn || nn === name || bone.locators[nn]) { nameIn.value = name; return; }
+      if (isLeadHold) bone.autoLeadHold = false;
+      // rebuild the object keeping the key order
+      const next = {};
+      Object.keys(bone.locators).forEach((k) => { next[k === name ? nn : k] = bone.locators[k]; });
+      bone.locators = next;
+      renderLocatorEditor(bone); maybeBuildPreview(getActiveProject());
+    });
+    row.appendChild(nameIn);
+    const vec = document.createElement('div');
+    vec.className = 'vec3Row';
+    [0, 1, 2].forEach((axis) => {
+      const inp = document.createElement('input');
+      inp.type = 'number'; inp.step = '0.1'; inp.value = val[axis];
+      inp.disabled = isAuto;
+      inp.addEventListener('input', () => {
+        const v = parseFloat(inp.value);
+        if (isLeadHold) bone.autoLeadHold = false;   // edited by hand: stop following the pivot
+        bone.locators[name][axis] = isNaN(v) ? 0 : v;
+        maybeBuildPreview(getActiveProject());
+      });
+      vec.appendChild(inp);
+    });
+    row.appendChild(vec);
+    if (isLeadHold) {
+      const lab = document.createElement('label');
+      lab.className = 'locatorAuto';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox'; cb.checked = bone.autoLeadHold !== false;
+      cb.addEventListener('change', () => {
+        bone.autoLeadHold = cb.checked ? true : false;
+        const pr = getActiveProject();
+        maybeBuildPreview(pr); renderLocatorEditor(bone); refreshExportPanel();
+      });
+      lab.appendChild(cb);
+      lab.appendChild(document.createTextNode(' ' + t('locators.auto')));
+      row.appendChild(lab);
+    }
+    const del = document.createElement('button');
+    del.className = 'btn btnDanger'; del.textContent = '×'; del.title = t('locators.delete');
+    del.addEventListener('click', () => {
+      if (isLeadHold) bone.autoLeadHold = false;
+      delete bone.locators[name];
+      if (!Object.keys(bone.locators).length) delete bone.locators;
+      renderLocatorEditor(bone); maybeBuildPreview(getActiveProject()); refreshExportPanel();
+    });
+    row.appendChild(del);
+    wrap.appendChild(row);
+  });
+
+  if (!names.length) {
+    const empty = document.createElement('p');
+    empty.className = 'hint';
+    empty.textContent = t('locators.none');
+    wrap.appendChild(empty);
+  }
+
+  // leftItem / rightItem: one click to put the grip point back in the hand
+  const fixBtn = document.getElementById('btnItemStandard');
+  if (fixBtn) fixBtn.hidden = !(project && (bone.name === 'leftItem' || bone.name === 'rightItem'));
+}
+
+function bindLocatorEditor() {
+  const add = document.getElementById('btnAddLocator');
+  if (add) add.addEventListener('click', () => {
+    const project = getActiveProject(); if (!project) return;
+    const bone = project.bones.find((b) => b.name === state.activeBoneName);
+    if (!bone) return;
+    if (!bone.locators) bone.locators = {};
+    let base = 'locator', n = 1;
+    while (bone.locators[base + n]) n++;
+    // starts on the bone's own pivot, so it's immediately visible and easy to nudge
+    bone.locators[base + n] = [bone.pivot[0], bone.pivot[1], bone.pivot[2]];
+    renderLocatorEditor(bone); maybeBuildPreview(project); refreshExportPanel();
+  });
+  const fix = document.getElementById('btnItemStandard');
+  if (fix) fix.addEventListener('click', () => {
+    const project = getActiveProject(); if (!project) return;
+    const bone = project.bones.find((b) => b.name === state.activeBoneName);
+    if (!bone || (bone.name !== 'leftItem' && bone.name !== 'rightItem')) return;
+    const pv = standardItemPivot(project, bone.name);
+    bone.pivot = pv.slice();
+    if (bone.name === 'rightItem') {
+      if (!bone.locators) bone.locators = {};
+      bone.locators.lead_hold = pv.slice();
+    }
+    document.getElementById('pivotX').value = bone.pivot[0];
+    document.getElementById('pivotY').value = bone.pivot[1];
+    document.getElementById('pivotZ').value = bone.pivot[2];
+    renderLocatorEditor(bone); maybeBuildPreview(project); refreshExportPanel();
+    setStatus(t('locators.itemFixed', bone.name));
+  });
+}
+
 function showBoneDetail(bone) {
   const project = getActiveProject();
   const detailEl = document.getElementById('boneDetail');
@@ -1060,6 +1473,7 @@ function showBoneDetail(bone) {
   document.getElementById('pivotX').value = bone.pivot[0];
   document.getElementById('pivotY').value = bone.pivot[1];
   document.getElementById('pivotZ').value = bone.pivot[2];
+  renderLocatorEditor(bone);
   detailEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 
   // breadcrumb: which "main" bone this sub-folder connects to, showing
@@ -1169,58 +1583,79 @@ function refreshExportPanel() {
    no underscore) and live directly inside the geometry object, not
    inside "description". The geometry's root key is literally
    "geometry.<identifier>". */
+// Bone pivots live in OBJ space (like the vertices) and have to be mirrored
+// in X on export, as obj-skin-studio does and as the vanilla humanoid
+// geometry expects (leftArm = +5, rightArm = -5). The tool used to write
+// them unflipped, which put every limb's pivot on the opposite side of the
+// body and made in-game poses/animations rotate around the wrong point.
+// Set to false only to reproduce the old output.
+const MIRROR_PIVOTS_ON_EXPORT = true;
+
 function buildGeometryJSON(project) {
+  syncAutoLocators(project);
   const identifier = `geometry.${slugify(project.name)}`;
   const bones = project.bones.map((b) => {
     const out = { name: b.name };
     if (b.parent) out.parent = b.parent;
-    // IMPORTANT: the bone's pivot does NOT get its X flipped. b.pivot's
-    // values are already in Bedrock's real convention (e.g.
-    // leftArm=[5,22,0] / rightArm=[-5,22,0], same as the vanilla humanoid
-    // geometry), exactly as used in the 3D preview. Negating X here (like
-    // an earlier version of this code did) swapped the left/right pivots
-    // with each other -- the "leftArm" bone ended up with the pivot meant
-    // for "rightArm" and vice versa. Negating X IS needed for the
-    // poly_mesh's VERTICES (below), since that data comes from the
-    // imported OBJ and does need that coordinate-system conversion; the
-    // bone's pivot doesn't.
-    out.pivot = [b.pivot[0], b.pivot[1], b.pivot[2]];
+    // The preview (and every pivot the user sees or drags) lives in OBJ
+    // space. The vertices are mirrored in X below to get Bedrock's
+    // coordinate system, so the pivot has to be mirrored too -- otherwise
+    // each limb rotates around the opposite side of the body (leftArm's
+    // pivot would sit on the right arm's side of the mesh). Same rule as
+    // obj-skin-studio's export.
+    out.pivot = MIRROR_PIVOTS_ON_EXPORT ? [-b.pivot[0] || 0, b.pivot[1], b.pivot[2]] : [b.pivot[0], b.pivot[1], b.pivot[2]];
     if (Array.isArray(b.rotation) && b.rotation.some((v) => v)) {
       out.rotation = b.rotation;
     }
-    if (b.locators) out.locators = b.locators;
+    // Locators (grip/attach points such as lead_hold) live in the same
+    // space as the pivot, so they go through the same X mirror.
+    if (b.locators && Object.keys(b.locators).length) {
+      out.locators = {};
+      Object.keys(b.locators).forEach((k) => {
+        const l = b.locators[k];
+        out.locators[k] = Array.isArray(l)
+          ? [MIRROR_PIVOTS_ON_EXPORT ? (-l[0] || 0) : l[0], l[1], l[2]]
+          : l;   // object form (offset/rotation/...) is passed through untouched
+      });
+    }
 
     const parts = project.parts.filter((p) => p.boneName === b.name);
     if (parts.length) {
-      const positions = [], normals = [], uvs = [], polys = [];
-      let offset = 0;
+      // Positions / normals / UVs are stored once and referenced by index
+      // ([posIndex, normalIndex, uvIndex] per poly vertex, as in the 1.8.0
+      // reference). Writing one entry per triangle corner (the old
+      // behaviour) made the file ~3-6x bigger for the same model.
+      const pool = (prec) => {
+        const map = new Map(); const arr = [];
+        return { arr, add(v) {
+          const r = v.map((x) => Math.round(x * prec) / prec);
+          const k = r.join(',');
+          let i = map.get(k);
+          if (i === undefined) { i = arr.length; arr.push(r); map.set(k, i); }
+          return i;
+        } };
+      };
+      const P = pool(1e5), N = pool(1e5), U = pool(1e6);
+      const polys = [];
       parts.forEach((part) => {
         const pos = part.geometry.attributes.position;
         const nrm = part.geometry.attributes.normal;
         const uv = part.geometry.attributes.uv;
-        const vCount = pos.count;
-        for (let i = 0; i < vCount; i++) {
-          positions.push([-pos.getX(i), pos.getY(i), pos.getZ(i)]);
-          normals.push([-nrm.getX(i), nrm.getY(i), nrm.getZ(i)]);
-          uvs.push([uv.getX(i), uv.getY(i)]);
-        }
-        const triCount = vCount / 3;
+        const ref = (i) => [
+          P.add([-pos.getX(i) || 0, pos.getY(i), pos.getZ(i)]),
+          N.add([-nrm.getX(i) || 0, nrm.getY(i), nrm.getZ(i)]),
+          U.add([uv.getX(i), uv.getY(i)]),
+        ];
+        const triCount = pos.count / 3;
         for (let t = 0; t < triCount; t++) {
-          const a = offset + t * 3, b2 = a + 1, c = a + 2;
-          // Every poly vertex is referenced as
-          // [posIndex, normalIndex, uvIndex], same as in the 1.8.0
-          // reference file (geometry.sploot). Since positions/normals/uvs
-          // are generated 1:1 per OBJ vertex here, the three indices end
-          // up numerically identical, but they're stored in the correct
-          // order so the structure matches 1.8.0's real shape (it's not
-          // just a coincidence). Triangles are stored as degenerate
-          // "quads" (4th vertex repeated), which is the safe approach
-          // poly_mesh already uses in Bedrock.
-          polys.push([[a, a, a], [b2, b2, b2], [c, c, c], [c, c, c]]);
+          const a = ref(t * 3), b2 = ref(t * 3 + 1), c = ref(t * 3 + 2);
+          // Minecraft only handles 4-sized polys reliably (obj-skin-studio
+          // documents the same workaround): a triangle repeats its last
+          // vertex.
+          polys.push([a, b2, c, c.slice()]);
         }
-        offset += vCount;
       });
-      out.poly_mesh = { normalized_uvs: true, positions, normals, uvs, polys };
+      out.poly_mesh = { normalized_uvs: true, positions: P.arr, normals: N.arr, uvs: U.arr, polys };
     }
     return out;
   });
@@ -1626,9 +2061,9 @@ function initUI() {
 
   wireDropzone(document.getElementById('fileRowObj'), document.getElementById('objInput'), async (f) => {
     let project = getActiveProject();
-    if (!project) { project = createProject(f.name.replace(/\.obj$/i, '')); state.activeId = project.id; }
-    if (project.name.startsWith('Modelo ')) project.name = f.name.replace(/\.obj$/i, '');
-    try { await setProjectObj(project, f); } catch (err) { setStatus(t('status.objReadError', err.message), true); return; }
+    if (!project) { project = createProject(stripModelExt(f.name)); state.activeId = project.id; }
+    if (project.name.startsWith('Modelo ')) project.name = stripModelExt(f.name);
+    try { await setProjectModel(project, f); } catch (err) { setStatus(t('status.objReadError', err.message), true); return; }
     selectProject(project.id);
   });
   wireDropzone(document.getElementById('fileRowTex'), document.getElementById('texInput'), async (f) => {
@@ -1699,8 +2134,10 @@ function initUI() {
       const v = parseFloat(e.target.value);
       bone.pivot[axis] = isNaN(v) ? 0 : v;
       maybeBuildPreview(project);
+      if (bone.name === 'rightItem') renderLocatorEditor(bone);
     });
   });
+  bindLocatorEditor();
   document.getElementById('btnAddBone').addEventListener('click', () => {
     const project = getActiveProject(); if (!project) return;
     const parentBone = project.bones.find((b) => b.name === state.activeBoneName);
@@ -1782,12 +2219,12 @@ function initUI() {
     overlay.classList.remove('active');
     if (e.target.closest('#fileRowObj') || e.target.closest('#fileRowTex')) return; // already handled by its own zone
     const files = Array.from(e.dataTransfer.files);
-    const objFile = files.find((f) => /\.obj$/i.test(f.name));
+    const objFile = files.find((f) => /\.(obj|json)$/i.test(f.name));
     const texFile = files.find((f) => /\.(png|jpe?g)$/i.test(f.name));
     if (!objFile && !texFile) return;
     let project = getActiveProject();
-    if (!project) { project = createProject(objFile ? objFile.name.replace(/\.obj$/i, '') : 'Modelo ' + (state.projects.length + 1)); state.activeId = project.id; }
-    if (objFile) { try { await setProjectObj(project, objFile); } catch (err) { setStatus(t('status.objReadError', err.message), true); } }
+    if (!project) { project = createProject(objFile ? stripModelExt(objFile.name) : 'Modelo ' + (state.projects.length + 1)); state.activeId = project.id; }
+    if (objFile) { try { await setProjectModel(project, objFile); } catch (err) { setStatus(t('status.objReadError', err.message), true); } }
     if (texFile) await setProjectTexture(project, texFile);
     selectProject(project.id);
   });

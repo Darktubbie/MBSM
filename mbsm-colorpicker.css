@@ -1,0 +1,72 @@
+/* ============================================================
+   mbsm-colorpicker.css
+   Estilos del selector de color propio compartido (mbsm-colorpicker.js).
+   Se usa tanto en el Creador de Skins como en el Creador de Temas, así
+   que vive en su propio archivo en vez de duplicarse en dos CSS.
+   ============================================================ */
+.mbsmcp {
+  display:flex; flex-direction:column; gap:10px;
+  width:100%; max-width:240px;
+}
+.mbsmcp-sv {
+  position:relative; width:100%; aspect-ratio:1.4; border-radius:8px;
+  overflow:hidden; cursor:crosshair; border:1px solid rgba(255,255,255,.15);
+}
+.mbsmcp-sv-white {
+  position:absolute; inset:0;
+  background:linear-gradient(to right, #fff, rgba(255,255,255,0));
+}
+.mbsmcp-sv-black {
+  position:absolute; inset:0;
+  background:linear-gradient(to top, #000, rgba(0,0,0,0));
+}
+.mbsmcp-sv-handle {
+  position:absolute; width:16px; height:16px; border-radius:50%;
+  border:2px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.5), 0 1px 4px rgba(0,0,0,.4);
+  transform:translate(-50%, -50%); pointer-events:none;
+}
+.mbsmcp-hue-row, .mbsmcp-alpha-row { width:100%; }
+.mbsmcp-hue {
+  position:relative; width:100%; height:14px; border-radius:7px; cursor:pointer;
+  background:linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+  border:1px solid rgba(255,255,255,.15);
+}
+.mbsmcp-hue-handle {
+  position:absolute; top:50%; width:16px; height:16px; border-radius:50%;
+  background:#fff; border:2px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.5);
+  transform:translate(-50%, -50%); pointer-events:none;
+}
+.mbsmcp-alpha {
+  position:relative; width:100%; height:14px; border-radius:7px; cursor:pointer;
+  background-image:
+    linear-gradient(45deg, #8884 25%, transparent 25%),
+    linear-gradient(-45deg, #8884 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #8884 75%),
+    linear-gradient(-45deg, transparent 75%, #8884 75%);
+  background-size:8px 8px;
+  background-position:0 0, 0 4px, 4px -4px, -4px 0;
+  border:1px solid rgba(255,255,255,.15);
+}
+.mbsmcp-alpha-fill { position:absolute; inset:0; border-radius:7px; }
+.mbsmcp-alpha-handle {
+  position:absolute; top:50%; width:16px; height:16px; border-radius:50%;
+  background:#fff; border:2px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.5);
+  transform:translate(-50%, -50%); pointer-events:none;
+}
+.mbsmcp-bottom { display:flex; align-items:center; gap:8px; }
+.mbsmcp-swatch {
+  width:30px; height:30px; border-radius:7px; flex-shrink:0;
+  border:1px solid rgba(255,255,255,.2);
+  background-image:
+    linear-gradient(45deg, #8884 25%, transparent 25%),
+    linear-gradient(-45deg, #8884 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #8884 75%),
+    linear-gradient(-45deg, transparent 75%, #8884 75%);
+  background-size:8px 8px;
+  background-position:0 0, 0 4px, 4px -4px, -4px 0;
+}
+.mbsmcp-hex {
+  flex:1; min-width:0; background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.15);
+  color:#fff; border-radius:7px; padding:7px 9px; font-size:12.5px;
+  font-family:'JetBrains Mono',monospace;
+}

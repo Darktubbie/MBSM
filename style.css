@@ -412,6 +412,16 @@ a{
   font-size:18px;
   margin-bottom:28px;
 }
+.section-title + .section-subtitle{
+  margin-top:-20px;
+}
+.section-subtitle{
+  font-size:13.5px;
+  color:var(--muted);
+  line-height:1.55;
+  max-width:640px;
+  margin:0 0 24px;
+}
 
 .validator-layout{
   display:grid;
@@ -1191,6 +1201,9 @@ a{
 
 .fc-objskin .tag{ background:rgba(124,155,255,.15); color:var(--info); }
 .fc-objskin:hover{ border-color:var(--info); }
+
+.fc-skincreator .tag{ background:rgba(74,222,128,.15); color:var(--success); }
+.fc-skincreator:hover{ border-color:var(--success); }
 
 .perks{
   display:grid;
@@ -2255,6 +2268,28 @@ a{
 .sg-model-tag-4d{ background:var(--info); }
 .sg-model-tag-5d{ background:var(--purple); }
 .sg-model-tag-other{ background:var(--muted); color:#1a1b1e; }
+
+/* ---------- Tags de compatibilidad en las tarjetas del Home ----------
+   Igual que el badge que ya muestra cada modelo individual (4D/5D) en
+   el visor, pero a nivel de herramienta: de un vistazo se sabe con qué
+   tipo de modelo trabaja cada una. */
+.fc-compat-tag{
+  display:inline-flex; align-items:center; gap:4px;
+  padding:2px 8px; border-radius:6px;
+  font-size:10px; font-weight:800; letter-spacing:.3px;
+  color:#fff; margin-left:8px; vertical-align:middle;
+}
+.fc-compat-tag.compat-4d5d{ background:linear-gradient(90deg, var(--info), var(--purple)); }
+.fc-compat-tag.compat-4d{ background:var(--info); }
+.fc-compat-tag.compat-5d{ background:var(--purple); }
+.fc-compat-tag.compat-classic{ background:var(--success); color:#0b1a0f; }
+
+.fc-tag-row{
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px;
+  margin-bottom:12px;
+}
+.fc-tag-row .tag{ margin-bottom:0; }
+.fc-compat-tag{ margin-left:0; }
 
 .sg-controls{
   display:flex;
@@ -4578,3 +4613,6 @@ body.has-custom-bg .mobile-bottom-nav{
   gap:8px;
 }
 .notfound-home-btn svg{ width:16px; height:16px; }
+
+/* Tags de compatibilidad dentro de las hojas móviles (Visores / Herramientas) */
+.mobile-sheet-option .mso-tag{ margin-left:auto; flex:0 0 auto; }

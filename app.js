@@ -18,7 +18,7 @@ const I18N = {
       home: "Home", validator: "Skins 4D/5D", studio: "Classic Skins", about: "About",
       groupWorkspace: "WORKSPACE", groupViewers: "VIEWERS", groupTools: "TOOLS",
       viewers4d5d: "4D/5D Viewer", classicSkins: "Classic Skins Viewer", validatorTool: "Validator & Fixer",
-      maker: "Skinpack Maker", objSkin: "OBJ → Skin 1.8",
+      maker: "Skinpack Maker", objSkin: "Model to Skin 1.8", skinCreator: "Skin Creator",
       search: "Search", settings: "Settings"
     },
     settings: {
@@ -73,7 +73,7 @@ const I18N = {
       fcValidatorCaption: "Check and fix skin packs",
       fcViewerTag: "4D/5D VIEWER",
       fcViewerTitle: "See your 4D/5D model before exporting",
-      fcViewerText: "Preview bones, cubes and pivots of custom geometries with the skin applied, rotating live — or send 4D models straight to an embedded Blockbench editor.",
+      fcViewerText: "Preview bones, cubes and pivots of custom geometries with the skin applied, rotating live — 4D (cubes) and 5D (poly_mesh), with a built-in renderer.",
       fcViewerCaption: "View and edit models",
       fcClassicViewerTag: "3D VIEWER",
       fcClassicViewerTitle: "Preview your classic skin in 3D",
@@ -83,10 +83,18 @@ const I18N = {
       fcMakerTitle: "Build a pack from scratch",
       fcMakerText: "Generates the full skin pack structure — manifest, geometry and textures — without touching a console.",
       fcMakerCaption: "Create skin packs for Bedrock",
-      fcObjSkinTag: "OBJ → SKIN 1.8",
+      fcObjSkinTag: "MODEL TO SKIN 1.8",
       fcObjSkinTitle: "Turn a 3D model into a working 5D skin",
-      fcObjSkinText: "Import an .obj + texture, assign parts to bones, adjust pivots visually, and export a real Bedrock 1.8.0 poly_mesh — ready as a full skin pack.",
+      fcObjSkinText: "Import an .obj or a 1.12 geometry .json + texture, assign parts to bones, adjust pivots visually, and export a real Bedrock 1.8.0 poly_mesh — ready as a full skin pack.",
       fcObjSkinCaption: "Convert 3D models to skins",
+      fcSkinCreatorTag: "SKIN CREATOR",
+      fcSkinCreatorTitle: "Paint a skin from scratch, live in 3D",
+      fcSkinCreatorText: "A Blockbench-style skin editor: draw on the 2D texture and see it update on the 3D model instantly. Supports 64x64, 64x32 and 128x128, with base and overlay layers, import, and PNG export.",
+      fcSkinCreatorCaption: "Create classic skins",
+      compat4d5d: "4D/5D",
+      compat4d: "4D",
+      compat5d: "5D",
+      compatClassic: "Classic",
       welcomeGreeting: {
         morning: [
           "Good morning", "Morning!", "Rise and shine", "Good morning — ready to build?",
@@ -106,7 +114,7 @@ const I18N = {
         ]
       },
       welcomeSubtitle: "Minecraft Bedrock Skin Manager",
-      versionBadge: "v0.9.0 • Beta",
+      versionBadge: "v0.10.0 • Beta",
       statModels: "Models",
       statSkins: "Skins",
       statPacks: "Packs",
@@ -131,6 +139,27 @@ const I18N = {
         patch: "Patch / Bugfix",
         minor: "Minor Update",
         major: "Major Release"
+      },
+      v100: {
+        item1: "New tool: Skin Creator — a Blockbench-style editor for classic Minecraft Bedrock skins, supporting 64\u00d764, 64\u00d732, and 128\u00d7128, with a live 3D preview.",
+        item2: "Drawing tools: pencil, eraser (transparent or opaque), fill bucket, and eyedropper, each with a visible label instead of icon-only buttons.",
+        item3: "Base and overlay layers, with a toggle to show or hide the overlay in the 3D preview.",
+        item4: "A new pencil/hand mode switch: pencil mode draws with one finger (two fingers still pan and zoom); hand mode never paints, so one or two fingers (or a mouse drag) just move and zoom the canvas.",
+        item5: "The 3D preview uses skinview3d (open-source, MIT-licensed), replacing an earlier from-scratch attempt whose geometry didn't line up correctly.",
+        item6: "Fixed the Steve/Alex model switch not actually changing the arm width in the 3D preview — it was being silently overridden by the library's own auto-detection.",
+        item7: "A new blank skin now starts with a simple per-face colored template (a different color for each of the 6 cube faces, Blockbench-style) instead of a transparent canvas or a permanent colored outline overlay.",
+        item8: "Zoom can no longer shrink the canvas smaller than fitting the visible area — no more zooming out into empty space — and pinch-to-zoom respects the same limit.",
+        item9: "Import an existing skin PNG (auto-detects 64\u00d764 / 64\u00d732 / 128\u00d7128) or export the current canvas as a PNG.",
+        item10: "Added a custom color picker (saturation/value square + hue bar + hex input) used both in the Skin Creator and the \"Create your own skin\" theme creator, replacing the operating system's native color picker, which looked inconsistent between mobile and desktop.",
+        item11: "Fixed the theme creator's color pickers being completely blank and unusable on the \"None\" background option — a script loading-order bug meant the color picker library hadn't loaded yet when they were created.",
+        item12: "4D/5D Viewer: 4D models (cubes) are now drawn by MBSM's own renderer instead of the embedded Blockbench editor, so 4D and 5D share one viewport and nothing leaves your browser anymore. Box UV, per-face UV, mirror, inflate and per-cube rotation are supported, with the texture orientation and the left/right sides fixed (textures used to come out flipped and the side faces swapped).",
+        item13: "4D/5D Viewer: framing that fits the whole model even on narrow phone screens, even lighting, spin around the model's own center, no more thin lines on cube edges, sturdier poly_mesh reading (any polygon size, bad normals recalculated) and a new \"Recalculate normals\" toggle.",
+        item14: "OBJ → Skin 1.8 is now Model to Skin 1.8: besides an .obj it imports an existing Bedrock geometry .json (1.8 or 1.12+, with cubes, box UV or per-face UV) and bakes it into a mesh you can re-pose and export as 1.8.0. Standard humanoid bones missing from the file (leftItem, rightItem, sleeves, pants, jacket, hat, cape) are added back.",
+        item15: "Model to Skin 1.8: fixed bone pivots being exported without mirroring X, which made every limb pivot around the wrong side of the body (arms out or twisted came out wrong in-game). The exported poly_mesh also stores each position, normal and UV once instead of once per triangle corner, so files are much smaller.",
+        item16: "Model to Skin 1.8: held items fixed. leftItem/rightItem now default to the official hand grip point (6, 15, 1; 14.5 for Alex) instead of (5, 13, 0), which left items floating below the hand, and there is a new \"Put in the hand (standard position)\" button.",
+        item17: "Model to Skin 1.8: new locator editor on every bone (name + X/Y/Z, add, rename, delete) with cyan markers in the preview and in the 4D/5D viewer's \"Show pivots\" mode. lead_hold is now automatic on rightItem: it is exported with every model and follows the item's pivot until you edit it by hand.",
+        item18: "Model to Skin 1.8 (mobile): the Models sheet can now be scrolled. The parts list and each part's bone selector were squashed to zero height and unreachable. Also fixed the close button covering the ES/EN switch and the part search box sticking out of the sheet.",
+        item19: "Home: the tool tags (4D/5D, Classic...) moved out of the home cards and into the mobile Viewers and Tools sheets, next to each tool. The About text no longer mentions the Blockbench editor."
       },
       v090: {
         item1: "OBJ \u2192 Skin 1.8: added a quick bulk-assign tool in the Parts panel \u2014 filter parts by a name pattern (e.g. \"bone\" matches bone1, bone2, bone3...) and assign every match to a chosen bone in one click, instead of one part at a time.",
@@ -176,7 +205,7 @@ const I18N = {
       eyebrow: "DETAILS THAT MATTER",
       title: "Built by and for skin creators",
       p1Title: "Local by default",
-      p1Text: "Validating, fixing, previewing and building skin packs all runs locally in JavaScript — nothing is uploaded anywhere. The one exception: sending a 4D model to the embedded Blockbench Web editor briefly sends that model's data to web.blockbench.net so it can open it.",
+      p1Text: "Validating, fixing, previewing and building skin packs all runs locally in JavaScript — nothing is uploaded anywhere. The only outside requests are the skin look-ups you ask for in the Skinpack Maker.",
       p2Title: "Spanish and English",
       p2Text: "Full interface in both languages, with automatic browser-language detection.",
       p3Title: "Made for 4D and 5D",
@@ -199,6 +228,10 @@ const I18N = {
       statusUpToDate: "MBSM is up to date",
       statusInstant: "Instant, in your browser",
       statusPrivate: "No files uploaded to any server"
+    },
+    skinCreator: {
+      sectionTitle: "Skin Creator",
+      sectionSubtitle: "Draw a Minecraft Bedrock skin from scratch or import one to edit, with a live 3D preview — everything stays in your browser."
     },
     validator: {
       sectionTitle: "SKINS 4D/5D",
@@ -254,8 +287,8 @@ const I18N = {
     },
     sg: {
       subViewer: "4D/5D Viewer",
-      subObjSkin: "OBJ → Skin 1.8",
-      tabIntro: "Live 3D preview for 4D/5D geometries: 5D models (poly_mesh) render directly here, 4D models (cubes) open in an embedded Blockbench Web editor, all without leaving MBSM.",
+      subObjSkin: "Model to Skin 1.8",
+      tabIntro: "Live 3D preview for 4D/5D geometries: both 5D models (poly_mesh) and 4D models (cubes) render right here with MBSM's own renderer.",
       windowTitle: "4D/5D VIEWER",
       fieldPack: "Full pack (optional)",
       dzPackHint: ".zip / .mcpack — reads geometry.json (4D+5D) and pairs textures via skins.json",
@@ -274,11 +307,12 @@ const I18N = {
       toggleWire: "Wireframe",
       toggleGrid: "Floor / grid",
       togglePivots: "Show pivots",
-      btnReset: "Frame model (5D only)",
+      toggleNormals: "Recalculate normals",
+      btnReset: "Frame model",
       fieldLog: "Log",
       logWaiting: "Waiting for files…",
       emptyTitle: "Nothing to render yet",
-      emptyText: "Upload a .zip/.mcpack pack, or a loose geometry + texture, to see the 3D model (5D) or the embedded Blockbench editor (4D).",
+      emptyText: "Upload a .zip/.mcpack pack, or a loose geometry + texture, to see the 3D model (4D or 5D).",
       tagMixed: "MIXED",
       tagEmpty: "EMPTY",
       bbTogglePanel: "Minimize/expand this panel",
@@ -310,8 +344,8 @@ const I18N = {
       bbSafetyNetWarningHtml: `⚠ If the Blockbench panel stays black, blank, or shows an error like <code>"Error: URI Too Long"</code>, this model was actually too large for Blockbench's server to accept by URL — that limit is set by their server and this page can't verify it from here. Use the buttons below to download it yourself and open it inside the panel with <code>Ctrl+O</code> (then drag in the texture afterwards).`
     },
     objskin: {
-      windowTitle: "OBJ → SKIN STUDIO",
-      intro: "Import a 3D model (.obj) exported from Blender or another program, assign its parts to a skeleton's bones, position pivots visually, and export a real Bedrock 1.8.0 geometry (poly_mesh) — ready as a full skin pack (manifest.json, skins.json, lang and textures included)."
+      windowTitle: "MODEL TO SKIN STUDIO",
+      intro: "Import a 3D model (.obj) exported from Blender, or an existing Bedrock model (geometry .json, 1.8 or 1.12+ with cubes, box UV or per-face UV), assign its parts to a skeleton's bones, position pivots visually, and export a real Bedrock 1.8.0 geometry (poly_mesh) — ready as a full skin pack (manifest.json, skins.json, lang and textures included)."
     },
     fix: {
       title: "Available fixes",
@@ -345,11 +379,11 @@ const I18N = {
         <strong>Minecraft Bedrock</strong>
         skin packs that runs almost entirely in your browser: a validator
         for 4D/5D packs with custom geometries, a 3D skin viewer, a 4D/5D
-        viewer with an embedded Blockbench Web editor, an OBJ → Skin 1.8
-        converter that turns a 3D model into a working 5D skin pack, and a
-        skin pack builder. The only thing that ever leaves your browser is a
-        4D model's data when you send it to that embedded Blockbench editor —
-        everything else stays local.`,
+        viewer with its own renderer, a Model to Skin 1.8 converter that
+        turns a 3D model (or a 1.12 geometry) into a working 5D skin pack,
+        and a skin pack builder. Your files are processed locally — the
+        only outside requests are the skin look-ups you ask for in the
+        Skinpack Maker.`,
       p2: "The goal is to catch exactly the mistakes that usually make a skin not show up in-game, a model fail to load, or textures break — and to make building a pack from scratch simple."
     },
     checks: {
@@ -479,7 +513,7 @@ const I18N = {
       home: "Inicio", validator: "Skins 4D/5D", studio: "Skins Clásicas", about: "Acerca de",
       groupWorkspace: "ESPACIO", groupViewers: "VISORES", groupTools: "HERRAMIENTAS",
       viewers4d5d: "Visor 4D/5D", classicSkins: "Visor de Skins Clásicas", validatorTool: "Validador & Fixer",
-      maker: "Creador de Skinpacks", objSkin: "OBJ → Skin 1.8",
+      maker: "Creador de Skinpacks", objSkin: "Modelo a Skin 1.8", skinCreator: "Creador de Skins",
       search: "Buscar", settings: "Ajustes"
     },
     settings: {
@@ -534,7 +568,7 @@ const I18N = {
       fcValidatorCaption: "Valida y corrige skin packs",
       fcViewerTag: "VISOR 4D/5D",
       fcViewerTitle: "Mira tu modelo 4D/5D antes de exportar",
-      fcViewerText: "Previsualiza huesos, cubos y pivotes de geometrías personalizadas con la skin aplicada, girando en vivo — o envía modelos 4D directo a un editor Blockbench integrado.",
+      fcViewerText: "Previsualiza huesos, cubos y pivotes de geometrías personalizadas con la skin aplicada, girando en vivo — 4D (cubos) y 5D (poly_mesh), con renderizador propio.",
       fcViewerCaption: "Mira y edita modelos",
       fcClassicViewerTag: "VISOR 3D",
       fcClassicViewerTitle: "Previsualiza tu skin clásica en 3D",
@@ -544,10 +578,18 @@ const I18N = {
       fcMakerTitle: "Arma un pack desde cero",
       fcMakerText: "Genera la estructura completa de un skin pack — manifest, geometría y texturas — sin tocar una consola.",
       fcMakerCaption: "Crea skin packs para Bedrock",
-      fcObjSkinTag: "OBJ → SKIN 1.8",
+      fcObjSkinTag: "MODELO A SKIN 1.8",
       fcObjSkinTitle: "Convierte un modelo 3D en una skin 5D funcional",
-      fcObjSkinText: "Importa un .obj + textura, asigna las partes a los huesos, ajusta los pivotes visualmente, y exporta una geometría real Bedrock 1.8.0 (poly_mesh) — lista como paquete de skin completo.",
+      fcObjSkinText: "Importa un .obj o una geometría 1.12 (.json) + textura, asigna las partes a los huesos, ajusta los pivotes visualmente, y exporta una geometría real Bedrock 1.8.0 (poly_mesh) — lista como paquete de skin completo.",
       fcObjSkinCaption: "Convierte modelos 3D en skins",
+      fcSkinCreatorTag: "CREADOR DE SKINS",
+      fcSkinCreatorTitle: "Pinta una skin desde cero, en vivo en 3D",
+      fcSkinCreatorText: "Un editor de skins estilo Blockbench: dibuja en la textura 2D y velo actualizarse al instante en el modelo 3D. Soporta 64x64, 64x32 y 128x128, con capas base y overlay, importar, y exportar a PNG.",
+      fcSkinCreatorCaption: "Crea skins clásicas",
+      compat4d5d: "4D/5D",
+      compat4d: "4D",
+      compat5d: "5D",
+      compatClassic: "Clásico",
       welcomeGreeting: {
         morning: [
           "Buenos días", "¡Buen día!", "Arriba con energía", "Buenos días, ¿listos para crear?",
@@ -567,7 +609,7 @@ const I18N = {
         ]
       },
       welcomeSubtitle: "Minecraft Bedrock Skin Manager",
-      versionBadge: "v0.9.0 • Beta",
+      versionBadge: "v0.10.0 • Beta",
       statModels: "Modelos",
       statSkins: "Skins",
       statPacks: "Packs",
@@ -592,6 +634,27 @@ const I18N = {
         patch: "Parche / Corrección",
         minor: "Actualización menor",
         major: "Lanzamiento mayor"
+      },
+      v100: {
+        item1: "Nueva herramienta: Creador de Skins — un editor estilo Blockbench para skins clásicas de Minecraft Bedrock, con soporte para 64\u00d764, 64\u00d732 y 128\u00d7128, y vista previa 3D en vivo.",
+        item2: "Herramientas de dibujo: l\u00e1piz, borrador (transparente u opaco), cubeta de relleno y gotero, cada una con su nombre visible en vez de solo un \u00edcono.",
+        item3: "Capas base y overlay, con un interruptor para mostrar u ocultar el overlay en la vista previa 3D.",
+        item4: "Nuevo interruptor de modo l\u00e1piz/mano: el modo l\u00e1piz dibuja con un dedo (dos dedos siguen moviendo y haciendo zoom); el modo mano nunca pinta, as\u00ed que uno o dos dedos (o arrastrar con el mouse) solo mueven y hacen zoom del lienzo.",
+        item5: "La vista previa 3D usa skinview3d (open-source, licencia MIT), en reemplazo de un primer intento propio cuya geometr\u00eda no quedaba bien alineada.",
+        item6: "Se corrigi\u00f3 que el cambio de modelo Steve/Alex no cambiara realmente el ancho de los brazos en la vista previa 3D \u2014 la propia detecci\u00f3n autom\u00e1tica de la librer\u00eda lo estaba pisando en silencio.",
+        item7: "Una skin nueva ahora arranca con una plantilla simple de colores por cara (un color distinto para cada una de las 6 caras del cubo, al estilo Blockbench) en vez de un lienzo transparente o un lineado de colores permanente encima.",
+        item8: "El zoom ya no puede achicar el lienzo m\u00e1s all\u00e1 de lo que quepa en el \u00e1rea visible \u2014 se acab\u00f3 alejarse hacia espacio vac\u00edo \u2014 y el pellizco para hacer zoom respeta el mismo l\u00edmite.",
+        item9: "Importar una skin PNG existente (detecta autom\u00e1ticamente 64\u00d764 / 64\u00d732 / 128\u00d7128) o exportar el lienzo actual como PNG.",
+        item10: "Se agreg\u00f3 un selector de color propio (cuadro de saturaci\u00f3n/valor + barra de tono + hex) usado tanto en el Creador de Skins como en el creador de temas \"Crea tu propia skin\", en vez del selector nativo del sistema operativo, que se ve\u00eda distinto entre m\u00f3vil y escritorio.",
+        item11: "Se corrigi\u00f3 que los selectores de color del creador de temas quedaran completamente vac\u00edos e inutilizables con el fondo en \"Ninguno\" \u2014 un bug de orden de carga de scripts hac\u00eda que la librer\u00eda del selector de color todav\u00eda no estuviera cargada cuando se creaban.",
+        item12: "Visor 4D/5D: los modelos 4D (cubos) ahora los dibuja el renderizador propio de MBSM en vez del editor Blockbench integrado, así 4D y 5D comparten visor y ya no sale nada de tu navegador. Se admiten box UV, per-face UV, mirror, inflate y rotación por cubo, con la orientación de la textura y los lados izquierdo/derecho corregidos (antes las texturas salían volteadas y las caras laterales intercambiadas).",
+        item13: "Visor 4D/5D: encuadre que muestra el modelo completo incluso en pantallas de móvil angostas, luz pareja, giro sobre el centro del propio modelo, sin líneas finas en los bordes de los cubos, lectura más robusta de poly_mesh (polígonos de cualquier tamaño, normales malas recalculadas) y un nuevo interruptor \"Recalcular normales\".",
+        item14: "OBJ → Skin 1.8 ahora es Modelo a Skin 1.8: además de un .obj importa una geometría Bedrock .json existente (1.8 o 1.12+, con cubos, box UV o per-face UV) y la hornea en una malla que puedes reposar y exportar como 1.8.0. Los huesos humanoides estándar que falten en el archivo (leftItem, rightItem, mangas, pantalones, jacket, hat, cape) se añaden de nuevo.",
+        item15: "Modelo a Skin 1.8: corregido que los pivotes de los huesos se exportaban sin reflejar X, lo que hacía girar cada extremidad alrededor del lado equivocado del cuerpo (brazos abiertos o girados salían mal en el juego). Además el poly_mesh exportado guarda cada posición, normal y UV una sola vez en vez de una por esquina de triángulo, así los archivos pesan mucho menos.",
+        item16: "Modelo a Skin 1.8: items en la mano corregidos. leftItem/rightItem ahora usan por defecto el punto de agarre oficial de la mano (6, 15, 1; 14.5 en Alex) en vez de (5, 13, 0), que dejaba los items flotando bajo la mano, y hay un nuevo botón \"Poner en la mano (posición estándar)\".",
+        item17: "Modelo a Skin 1.8: nuevo editor de locators en cada hueso (nombre + X/Y/Z, agregar, renombrar, eliminar) con marcadores cian en la vista previa y en el modo \"Mostrar pivotes\" del visor 4D/5D. lead_hold ahora es automático en rightItem: se exporta con cada modelo y sigue al pivote del item hasta que lo edites a mano.",
+        item18: "Modelo a Skin 1.8 (móvil): la hoja de Modelos ahora se puede desplazar. La lista de partes y el selector de hueso de cada parte quedaban aplastados a alto cero e inalcanzables. También se arregló que el botón de cerrar tapaba el selector ES/EN y que el buscador de partes se salía de la hoja.",
+        item19: "Inicio: los tags de las herramientas (4D/5D, Clásico...) pasaron de las tarjetas de inicio a las hojas móviles de Visores y Herramientas, junto a cada herramienta. El texto de Acerca de ya no menciona el editor Blockbench."
       },
       v090: {
         item1: "OBJ \u2192 Skin 1.8: se agreg\u00f3 una herramienta de asignaci\u00f3n r\u00e1pida en el panel de Partes \u2014 filtra las partes por un patr\u00f3n de nombre (por ejemplo \"bone\" coincide con bone1, bone2, bone3...) y asigna todas las coincidencias a un hueso elegido con un clic, en vez de una por una.",
@@ -637,7 +700,7 @@ const I18N = {
       eyebrow: "DETALLES QUE IMPORTAN",
       title: "Pensado por y para creadores de skins",
       p1Title: "Local por defecto",
-      p1Text: "Validar, reparar, previsualizar y crear skin packs corre todo localmente en JavaScript — no se sube nada a ningún lado. La única excepción: al enviar un modelo 4D al editor Blockbench Web integrado, los datos de ese modelo se envían brevemente a web.blockbench.net para que pueda abrirlo.",
+      p1Text: "Validar, reparar, previsualizar y crear skin packs corre todo localmente en JavaScript — no se sube nada a ningún lado. Lo único que sale del navegador son las búsquedas de skins que pides en el Creador de Skinpacks.",
       p2Title: "Español e inglés",
       p2Text: "Interfaz completa en ambos idiomas, con detección automática del idioma del navegador.",
       p3Title: "Pensado para 4D y 5D",
@@ -660,6 +723,10 @@ const I18N = {
       statusUpToDate: "MBSM está actualizado",
       statusInstant: "Instantáneo, en tu navegador",
       statusPrivate: "Ningún archivo se sube a un servidor"
+    },
+    skinCreator: {
+      sectionTitle: "Creador de Skins",
+      sectionSubtitle: "Dibuja una skin de Minecraft Bedrock desde cero o importa una para editarla, con vista previa 3D en vivo — todo se queda en tu navegador."
     },
     validator: {
       sectionTitle: "SKINS 4D/5D",
@@ -715,8 +782,8 @@ const I18N = {
     },
     sg: {
       subViewer: "Visor 4D/5D",
-      subObjSkin: "OBJ → Skin 1.8",
-      tabIntro: "Vista previa 3D en vivo para geometrías 4D/5D: los modelos 5D (poly_mesh) se renderizan aquí mismo, los modelos 4D (cubes) se abren en un editor Blockbench Web integrado, todo sin salir de MBSM.",
+      subObjSkin: "Modelo a Skin 1.8",
+      tabIntro: "Vista previa 3D en vivo para geometrías 4D/5D: tanto los modelos 5D (poly_mesh) como los 4D (cubes) se renderizan aquí mismo con el renderizador propio de MBSM.",
       windowTitle: "VISOR 4D/5D",
       fieldPack: "Pack completo (opcional)",
       dzPackHint: ".zip / .mcpack — lee geometry.json (4D+5D) y empareja texturas vía skins.json",
@@ -735,11 +802,12 @@ const I18N = {
       toggleWire: "Wireframe",
       toggleGrid: "Piso / cuadrícula",
       togglePivots: "Mostrar pivotes",
-      btnReset: "Encuadrar modelo (solo 5D)",
+      toggleNormals: "Recalcular normales",
+      btnReset: "Encuadrar modelo",
       fieldLog: "Registro",
       logWaiting: "Esperando archivos…",
       emptyTitle: "Todavía no hay nada que renderizar",
-      emptyText: "Sube un pack .zip/.mcpack, o una geometría + textura por separado, para ver el modelo en 3D (5D) o en el editor Blockbench integrado (4D).",
+      emptyText: "Sube un pack .zip/.mcpack, o una geometría + textura por separado, para ver el modelo en 3D (4D o 5D).",
       tagMixed: "MIXTO",
       tagEmpty: "VACÍO",
       bbTogglePanel: "Minimizar/expandir este panel",
@@ -771,8 +839,8 @@ const I18N = {
       bbSafetyNetWarningHtml: `⚠ Si el panel de Blockbench se queda en negro, en blanco, o muestra un texto de error como <code>"Error: URI Too Long"</code>, es que este modelo era, en realidad, demasiado grande para que el servidor de Blockbench lo aceptara por URL — ese límite lo impone su servidor y esta página no puede comprobarlo desde aquí. Usa los botones de abajo para descargarlo tú mismo y ábrelo dentro del panel con <code>Ctrl+O</code> (y arrastra la textura después).`
     },
     objskin: {
-      windowTitle: "OBJ → SKIN STUDIO",
-      intro: "Importa un modelo 3D (.obj) exportado desde Blender u otro programa, asigna sus partes a los huesos de un esqueleto, posiciona los pivotes visualmente, y exporta una geometría real Bedrock 1.8.0 (poly_mesh) — lista como paquete de skin completo (manifest.json, skins.json, lang y texturas incluidos)."
+      windowTitle: "MODELO A SKIN STUDIO",
+      intro: "Importa un modelo 3D (.obj) exportado desde Blender, o un modelo Bedrock existente (geometry .json, 1.8 o 1.12+ con cubos, box UV o per-face UV), asigna sus partes a los huesos de un esqueleto, posiciona los pivotes visualmente, y exporta una geometría real Bedrock 1.8.0 (poly_mesh) — lista como paquete de skin completo (manifest.json, skins.json, lang y texturas incluidos)."
     },
     fix: {
       title: "Correcciones disponibles",
@@ -805,12 +873,12 @@ const I18N = {
       p1: `MBSM es una caja de herramientas gratuita para paquetes de
         <strong>Minecraft Bedrock</strong> que funciona casi por completo en
         tu navegador: un validador para packs 4D/5D con geometrías
-        personalizadas, un visor de skins en 3D, un visor 4D/5D con un
-        editor Blockbench Web integrado, un conversor OBJ → Skin 1.8 que
-        convierte un modelo 3D en un paquete de skin 5D funcional, y un
-        creador de skinpacks. Lo único que sale de tu navegador son los
-        datos de un modelo 4D cuando lo envías a ese editor Blockbench
-        integrado — todo lo demás se queda local.`,
+        personalizadas, un visor de skins en 3D, un visor 4D/5D con
+        renderizador propio, un conversor Modelo a Skin 1.8 que convierte
+        un modelo 3D (o una geometría 1.12) en un paquete de skin 5D
+        funcional, y un creador de skinpacks. Tus archivos se procesan en
+        local — lo único que sale del navegador son las búsquedas de
+        skins que pides en el Creador de Skinpacks.`,
       p2: "El objetivo es detectar exactamente los errores que suelen provocar que una skin no aparezca en el juego, que el modelo no cargue o que las texturas se rompan — y hacer sencillo crear un pack desde cero."
     },
     checks: {
@@ -1913,6 +1981,7 @@ const ROUTES = [
   { tab: "validator", subtab: "sgTabValidator", path: "Validator" },
   { tab: "studio",    subtab: "studioMaker",    path: "Maker" },
   { tab: "validator", subtab: "sgTabObjSkin",   path: "Obj-Skin" },
+  { tab: "skinCreator", subtab: null,           path: "Skin-Creator" },
   { tab: "about",     subtab: null,             path: "About" },
   { tab: "notfound",  subtab: null,             path: "404" }
 ];

@@ -5,11 +5,9 @@
    Responsible for:
      - dropzones (pack / standalone geometry / standalone texture)
      - the model selector
-     - switching the visible panel (Renderer5D for 5D, BlockbenchPanel
-       for 4D) within the same host, without reloading the page
-     - toggling controls (auto-rotate, wireframe, grid, pivots) — these
-       only apply to the 5D panel; in 4D those controls live inside
-       Blockbench itself
+     - drawing 4D (cubes) and 5D (poly_mesh) models with the same Renderer5D
+       (the Blockbench embed was removed)
+     - toggling controls (auto-rotate, wireframe, grid, pivots)
      - logging
 
    ISOLATION: everything lives inside the SkinGeoViewer namespace (an
@@ -54,39 +52,14 @@ const SkinGeoViewer = (function () {
      Switching the panel (5D <-> 4D) within the host
      --------------------------------------------------------------------- */
 
-  function showPanelFor(type) {
-    const is4D = type === "4D";
-    $("sgThreeViewer").style.display = is4D ? "none" : "block";
-    // Heads up: this has to be "flex", not "block" -- .sg-blockbench-viewer
-    // is defined in CSS with flex-direction:column so the iframe
-    // (.bb-frame-wrap, flex:1 1 auto) can grow to fill the remaining space
-    // and keep the status bar pinned to the bottom. With "block" that
-    // layout never kicks in: the children just stack in normal flow, and
-    // any extra min-height ends up as empty space at the end that the
-    // iframe never claims.
-    $("sgBlockbenchViewer").style.display = is4D ? "flex" : "none";
-    $("sgViewportToolbar").style.display = is4D ? "none" : "flex";
-    // The floating badge with the model's name/size only makes sense over
-    // Renderer5D's fixed 3D canvas. In 4D, Blockbench already shows that
-    // same info in its own status/instructions panel, and since that
-    // panel's text height varies, the badge (absolutely positioned) ended
-    // up overlapping it on narrow screens. selectModelOption() already
-    // brings the badge back for 5D models.
-    if (is4D) $("sgModelBadge").style.display = "none";
-    // The sidebar controls (auto-rotate, wireframe, grid, pivots, fit)
-    // only apply to Renderer5D — they have no effect in 4D since that
-    // model lives inside Blockbench, so they're greyed out and
-    // non-interactive for as long as a 4D model is selected, and become
-    // active again once a 5D model is picked.
-    $("sgRenderer5dControls").classList.toggle("controls-disabled", is4D);
-
-    if (is4D) {
-      Renderer5D.hide();
-      BlockbenchPanel.show();
-    } else {
-      BlockbenchPanel.hide();
-      Renderer5D.show();
-    }
+  function showPanelFor(/* type */) {
+    // 4D and 5D now share the same canvas, so the panel is always the 3D one.
+    $("sgThreeViewer").style.display = "block";
+    const bb = $("sgBlockbenchViewer");
+    if (bb) bb.style.display = "none";
+    $("sgViewportToolbar").style.display = "flex";
+    $("sgRenderer5dControls").classList.remove("controls-disabled");
+    Renderer5D.show();
   }
 
   /* ---------------------------------------------------------------------
@@ -154,12 +127,7 @@ const SkinGeoViewer = (function () {
       log(`Textura lista (${img.width}×${img.height}).`, "ok");
       if (state.geoData && state.selectedGeo !== null) {
         const geoDef = state.geoData[state.selectedGeo];
-        if (geoDef && geoDef.type === "4D") {
-          log(`Textura emparejada con "${geoDef.id}" [4D] para Blockbench.`, "ok");
-          BlockbenchPanel.loadModel(geoDef, { blob: file, filename: file.name });
-        } else {
-          rebuildCurrentModel();
-        }
+        if (geoDef) rebuildCurrentModel();
       }
     };
     img.onerror = () => log("La textura no se pudo decodificar.", "err");
@@ -260,23 +228,7 @@ const SkinGeoViewer = (function () {
     $("sgModelBadge").style.display = "block";
     $("sgModelBadgeName").textContent = `${geoDef.id || "modelo"} [${geoDef.type}]`;
 
-    if (geoDef.type === "4D") {
-      showPanelFor("4D");
-      $("sgModelBadgeMeta").textContent = `${geoDef.texture_width}×${geoDef.texture_height} · ${geoDef.bones.length} huesos · editor Blockbench`;
-      $("sgBtnReset").disabled = true;
-
-      let textureInfo = null;
-      if (opt.textureFile && state.zip) {
-        const tex = await SkinPack.getTextureFromZip(state.zip, opt.textureFile, log);
-        if (tex) textureInfo = { blob: tex.blob, filename: opt.textureFile.split("/").pop() };
-      } else if (state.textureBlob) {
-        textureInfo = { blob: state.textureBlob, filename: state.textureFilename };
-      }
-      BlockbenchPanel.loadModel(geoDef, textureInfo);
-      return;
-    }
-
-    showPanelFor("5D");
+    showPanelFor(geoDef.type);
     $("sgBtnReset").disabled = false;
 
     if (opt.textureFile && state.zip) {
@@ -319,7 +271,7 @@ const SkinGeoViewer = (function () {
   }
 
   /* ---------------------------------------------------------------------
-     UI controls (only apply to the 5D panel)
+     UI controls
      --------------------------------------------------------------------- */
 
   function bindSwitch(id, vtId, initial, onChange) {
@@ -351,7 +303,6 @@ const SkinGeoViewer = (function () {
     logBox = $("sgLog");
 
     Renderer5D.init($("sgThreeViewer"));
-    BlockbenchPanel.init($("sgBlockbenchViewer"));
 
     setupDropzone("sgDzGeo", "sgInputGeo", "sgDzGeoName", handleGeoFile);
     setupDropzone("sgDzTex", "sgInputTex", "sgDzTexName", handleTexFile);
@@ -362,9 +313,12 @@ const SkinGeoViewer = (function () {
     bindSwitch("sgToggleGrid", "sgVtGrid", true, (v) => Renderer5D.setGrid(v));
     bindSwitch("sgTogglePivots", null, false, (v) => {
       Renderer5D.setShowPivots(v);
-      if (state.geoData && state.selectedGeo !== null && state.geoData[state.selectedGeo].type !== "4D") {
-        rebuildCurrentModel();
-      }
+      if (state.geoData && state.selectedGeo !== null) rebuildCurrentModel();
+    });
+
+    bindSwitch("sgToggleNormals", null, false, (v) => {
+      Renderer5D.setNormalMode(v ? "recalculate" : "auto");
+      if (state.geoData && state.selectedGeo !== null) rebuildCurrentModel();
     });
 
     $("sgBtnReset").addEventListener("click", () => Renderer5D.frameCamera());
@@ -377,7 +331,6 @@ const SkinGeoViewer = (function () {
       if (!$("sgModelSelect").contains(e.target)) closeModelSelect();
     });
 
-    // Show the 5D panel by default until something gets loaded.
     showPanelFor("5D");
   }
 

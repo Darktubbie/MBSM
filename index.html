@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="stylesheet" href="style.css?v=18">
 
   <!-- Aplica el tema guardado antes del primer paint para evitar parpadeo -->
   <script>
@@ -30,7 +30,17 @@
   </script>
 
   <!-- Estilos propios (escopados bajo #objSkinStudio) del módulo OBJ -> Skin 1.8 -->
-  <link rel="stylesheet" href="obj-skin-studio.css?v=6">
+  <link rel="stylesheet" href="obj-skin-studio.css?v=10">
+  <link rel="stylesheet" href="skin-creator.css?v=5">
+  <link rel="stylesheet" href="mbsm-colorpicker.css?v=1">
+
+  <!-- Selector de color propio compartido -- va temprano en el documento
+       porque el script del creador de temas (mucho más abajo, pero
+       todavía antes que otros scripts de herramientas) lo necesita ya
+       cargado apenas se ejecuta. Cargarlo al final del body (como al
+       principio) hacía que MBSMColorPicker todavía no existiera cuando
+       se creaban los pickers del modal de tema, dejándolos vacíos. -->
+  <script src="mbsm-colorpicker.js?v=1"></script>
 
   <!-- Librería para leer/crear archivos ZIP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -100,9 +110,13 @@
         <span class="sidebar-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6.5h16M4 12h16M4 17.5h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
         <span class="sidebar-link-label" data-i18n="nav.maker">Skinpack Maker</span>
       </a>
-      <a href="#validator" class="sidebar-link tab-link" data-tab="validator" data-subtab="sgTabObjSkin" data-tooltip="OBJ → Skin 1.8">
+      <a href="#validator" class="sidebar-link tab-link" data-tab="validator" data-subtab="sgTabObjSkin" data-tooltip="Modelo a Skin 1.8">
         <span class="sidebar-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 20 7.5v9L12 21 4 16.5v-9L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 21v-9M12 12 4 7.5M12 12l8-4.5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
-        <span class="sidebar-link-label" data-i18n="nav.objSkin">OBJ → Skin 1.8</span>
+        <span class="sidebar-link-label" data-i18n="nav.objSkin">Model to Skin 1.8</span>
+      </a>
+      <a href="#skinCreator" class="sidebar-link tab-link" data-tab="skinCreator" data-tooltip="Skin Creator">
+        <span class="sidebar-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 15.5 15 4.5l4.5 4.5L8.5 20H4v-4.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m13 6.5 4.5 4.5" stroke="currentColor" stroke-width="1.8"/></svg></span>
+        <span class="sidebar-link-label" data-i18n="nav.skinCreator">Skin Creator</span>
       </a>
     </div>
 
@@ -217,10 +231,12 @@
       <a href="#validator" class="mobile-sheet-option tab-link" data-tab="validator" data-subtab="sgTabViewer">
         <span class="mso-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 7.5 12 12l8-4.5M12 12v9" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
         <span class="mso-label" data-i18n="nav.viewers4d5d">4D/5D Viewer</span>
+        <span class="fc-compat-tag compat-4d5d mso-tag" data-i18n="home.compat4d5d">4D/5D</span>
       </a>
       <a href="#studio" class="mobile-sheet-option tab-link" data-tab="studio" data-subtab="studioViewer">
         <span class="mso-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="4" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/><rect x="4" y="13" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="13" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/></svg></span>
         <span class="mso-label" data-i18n="nav.classicSkins">Classic Skins Viewer</span>
+        <span class="fc-compat-tag compat-classic mso-tag" data-i18n="home.compatClassic">Classic</span>
       </a>
     </div>
   </div>
@@ -235,14 +251,22 @@
       <a href="#validator" class="mobile-sheet-option tab-link" data-tab="validator" data-subtab="sgTabValidator">
         <span class="mso-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M9 12.5 11 14.5 15.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/></svg></span>
         <span class="mso-label" data-i18n="nav.validatorTool">Validator &amp; Fixer</span>
+        <span class="fc-compat-tag compat-4d5d mso-tag" data-i18n="home.compat4d5d">4D/5D</span>
       </a>
       <a href="#studio" class="mobile-sheet-option tab-link" data-tab="studio" data-subtab="studioMaker">
         <span class="mso-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6.5h16M4 12h16M4 17.5h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
         <span class="mso-label" data-i18n="nav.maker">Skinpack Maker</span>
+        <span class="fc-compat-tag compat-classic mso-tag" data-i18n="home.compatClassic">Classic</span>
       </a>
       <a href="#validator" class="mobile-sheet-option tab-link" data-tab="validator" data-subtab="sgTabObjSkin">
         <span class="mso-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 20 7.5v9L12 21 4 16.5v-9L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 21v-9M12 12 4 7.5M12 12l8-4.5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
-        <span class="mso-label" data-i18n="nav.objSkin">OBJ → Skin 1.8</span>
+        <span class="mso-label" data-i18n="nav.objSkin">Model to Skin 1.8</span>
+        <span class="fc-compat-tag compat-5d mso-tag" data-i18n="home.compat5d">5D</span>
+      </a>
+      <a href="#skinCreator" class="mobile-sheet-option tab-link" data-tab="skinCreator">
+        <span class="mso-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 15.5 15 4.5l4.5 4.5L8.5 20H4v-4.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m13 6.5 4.5 4.5" stroke="currentColor" stroke-width="1.8"/></svg></span>
+        <span class="mso-label" data-i18n="nav.skinCreator">Skin Creator</span>
+        <span class="fc-compat-tag compat-classic mso-tag" data-i18n="home.compatClassic">Classic</span>
       </a>
     </div>
   </div>
@@ -324,7 +348,7 @@
           <p data-i18n="home.welcomeSubtitle">Minecraft Bedrock Skin Manager</p>
 
           <div class="dash-version-row">
-            <span class="dash-version-badge" data-i18n="home.versionBadge">v0.9.0 • Beta</span>
+            <span class="dash-version-badge" data-i18n="home.versionBadge">v0.10.0 • Beta</span>
             <span class="dash-latest-badge" id="changelogLatestBadge"><!-- JS coloca aquí el badge (Minor/Patch/Major) de la última versión --></span>
           </div>
 
@@ -385,7 +409,6 @@
         <div class="fc-model-stage">
           <img class="fc-model-img" src="assets/model-validator.png" alt="" width="560" height="560" loading="lazy">
         </div>
-        <span class="tag" data-i18n="home.fcValidatorTag">VALIDATOR &amp; FIXER</span>
         <h3 data-i18n="home.fcValidatorTitle">Catch it, then fix it automatically</h3>
         <p data-i18n="home.fcValidatorText">Checks geometry.json, render controllers and ambiguous or duplicate model names, then auto-resolves the obvious issues — broken references, ambiguities, small details — and flags the rest for you.</p>
         <span class="fc-caption"><span data-i18n="home.fcValidatorCaption">Check and fix skin packs</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
@@ -394,16 +417,14 @@
         <div class="fc-model-stage">
           <img class="fc-model-img" src="assets/model-viewer.png" alt="" width="560" height="560" loading="lazy">
         </div>
-        <span class="tag" data-i18n="home.fcViewerTag">4D/5D VIEWER</span>
         <h3 data-i18n="home.fcViewerTitle">See your 4D/5D model before exporting</h3>
-        <p data-i18n="home.fcViewerText">Preview bones, cubes and pivots of custom geometries with the skin applied, rotating live — or send 4D models straight to an embedded Blockbench editor.</p>
+        <p data-i18n="home.fcViewerText">Preview bones, cubes and pivots of custom geometries with the skin applied, rotating live — 4D (cubes) and 5D (poly_mesh), with a built-in renderer.</p>
         <span class="fc-caption"><span data-i18n="home.fcViewerCaption">View and edit models</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
       </a>
       <a href="#studio" class="card feature-card fc-classic-viewer has-model tab-link" data-tab="studio" data-subtab="studioViewer">
         <div class="fc-model-stage">
           <img class="fc-model-img" src="assets/model-classic.png" alt="" width="560" height="560" loading="lazy">
         </div>
-        <span class="tag" data-i18n="home.fcClassicViewerTag">3D VIEWER</span>
         <h3 data-i18n="home.fcClassicViewerTitle">Preview your classic skin in 3D</h3>
         <p data-i18n="home.fcClassicViewerText">See a regular Minecraft Bedrock skin applied to the Steve/Alex model, rotating live, before using it in-game.</p>
         <span class="fc-caption"><span data-i18n="home.fcClassicViewerCaption">View and edit classic skins</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
@@ -412,7 +433,6 @@
         <div class="fc-model-stage">
           <img class="fc-model-img" src="assets/model-maker.png" alt="" width="560" height="560" loading="lazy">
         </div>
-        <span class="tag" data-i18n="home.fcMakerTag">MAKER</span>
         <h3 data-i18n="home.fcMakerTitle">Build a pack from scratch</h3>
         <p data-i18n="home.fcMakerText">Generates the full skin pack structure — manifest, geometry and textures — without touching a console.</p>
         <span class="fc-caption"><span data-i18n="home.fcMakerCaption">Create skin packs for Bedrock</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
@@ -421,10 +441,17 @@
         <div class="fc-model-stage">
           <img class="fc-model-img" src="assets/model-objskin.png" alt="" width="560" height="560" loading="lazy">
         </div>
-        <span class="tag" data-i18n="home.fcObjSkinTag">OBJ → SKIN 1.8</span>
         <h3 data-i18n="home.fcObjSkinTitle">Turn a 3D model into a working 5D skin</h3>
-        <p data-i18n="home.fcObjSkinText">Import an .obj + texture, assign parts to bones, adjust pivots visually, and export a real Bedrock 1.8.0 poly_mesh — ready as a full skin pack.</p>
+        <p data-i18n="home.fcObjSkinText">Import an .obj or a 1.12 geometry .json + texture, assign parts to bones, adjust pivots visually, and export a real Bedrock 1.8.0 poly_mesh — ready as a full skin pack.</p>
         <span class="fc-caption"><span data-i18n="home.fcObjSkinCaption">Convert 3D models to skins</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </a>
+      <a href="#skinCreator" class="card feature-card fc-skincreator has-model tab-link" data-tab="skinCreator">
+        <div class="fc-model-stage">
+          <img class="fc-model-img" src="assets/model-skincreator.png" alt="" width="560" height="560" loading="lazy">
+        </div>
+        <h3 data-i18n="home.fcSkinCreatorTitle">Paint a skin from scratch, live in 3D</h3>
+        <p data-i18n="home.fcSkinCreatorText">A Blockbench-style skin editor: draw on the 2D texture and see it update on the 3D model instantly. Supports 64x64, 64x32 and 128x128, with base and overlay layers, import, and PNG export.</p>
+        <span class="fc-caption"><span data-i18n="home.fcSkinCreatorCaption">Create classic skins</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
       </a>
     </div>
 
@@ -453,7 +480,7 @@
       <div class="perk">
         <div class="ico ico-purple">🔒</div>
         <h4 data-i18n="perks.p1Title">Local by default</h4>
-        <p data-i18n="perks.p1Text">Validating, fixing, previewing and building skin packs all runs locally in JavaScript — nothing is uploaded anywhere. The one exception: sending a 4D model to the embedded Blockbench Web editor briefly sends that model's data to web.blockbench.net so it can open it.</p>
+        <p data-i18n="perks.p1Text">Validating, fixing, previewing and building skin packs all runs locally in JavaScript — nothing is uploaded anywhere. The only outside requests are the skin look-ups you ask for in the Skinpack Maker.</p>
       </div>
       <div class="perk">
         <div class="ico ico-info">🌐</div>
@@ -503,7 +530,7 @@
     <div class="sub-tabs sub-tabs-legacy-nav">
       <button type="button" class="sub-tab-btn active" data-subtab="sgTabValidator" data-i18n="validator.subValidator">Validator</button>
       <button type="button" class="sub-tab-btn" data-subtab="sgTabViewer" data-i18n="sg.subViewer">4D/5D Viewer</button>
-      <button type="button" class="sub-tab-btn" data-subtab="sgTabObjSkin" data-i18n="sg.subObjSkin">OBJ → Skin 1.8</button>
+      <button type="button" class="sub-tab-btn" data-subtab="sgTabObjSkin" data-i18n="sg.subObjSkin">Model to Skin 1.8</button>
     </div>
 
     <!-- ---- Sub-pestaña: Validator (contenido original, sin cambios) ---- -->
@@ -716,9 +743,8 @@
     <div id="sgTabViewer" class="sub-tab-panel">
 
       <p class="viewer-intro" data-i18n="sg.tabIntro">
-        Live 3D preview for 4D/5D geometries: 5D models (poly_mesh) render
-        directly here, 4D models (cubes) open in an embedded Blockbench Web
-        editor, all without leaving MBSM.
+        Live 3D preview for 4D/5D geometries: both 5D models (poly_mesh) and
+        4D models (cubes) render right here with MBSM's own renderer.
       </p>
 
       <div class="module-window">
@@ -802,7 +828,7 @@
                     <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 20 7.5v9L12 21 4 16.5v-9L12 3Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 21v-9M12 12 4 7.5M12 12l8-4.5" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
                   </div>
                   <h2 data-i18n="sg.emptyTitle">Nothing to render yet</h2>
-                  <p data-i18n="sg.emptyText">Upload a .zip/.mcpack pack, or a loose geometry + texture, to see the 3D model (5D) or the embedded Blockbench editor (4D).</p>
+                  <p data-i18n="sg.emptyText">Upload a .zip/.mcpack pack, or a loose geometry + texture, to see the 3D model (4D or 5D).</p>
                 </div>
 
                 <div class="sg-viewport-toolbar" id="sgViewportToolbar">
@@ -850,9 +876,13 @@
                     <span data-i18n="sg.togglePivots">Show pivots</span>
                     <div class="sg-switch" id="sgTogglePivots"></div>
                   </div>
+                  <div class="sg-toggle-row">
+                    <span data-i18n="sg.toggleNormals">Recalculate normals</span>
+                    <div class="sg-switch" id="sgToggleNormals"></div>
+                  </div>
                 </div>
 
-                <button class="btn btn-primary" id="sgBtnReset" disabled data-i18n="sg.btnReset">Frame model (5D only)</button>
+                <button class="btn btn-primary" id="sgBtnReset" disabled data-i18n="sg.btnReset">Frame model</button>
               </div>
 
               <div class="sg-inspector-subhead" data-i18n="sg.appearanceTitle">APPEARANCE</div>
@@ -885,16 +915,16 @@
           <span class="module-window-dot"></span>
           <span class="module-window-dot"></span>
           <span class="module-window-dot"></span>
-          <span class="module-window-title" data-i18n="objskin.windowTitle">OBJ → Skin Studio</span>
+          <span class="module-window-title" data-i18n="objskin.windowTitle">Model to Skin Studio</span>
         </div>
         <div class="module-window-body" style="padding:0;">
-          <p style="padding:16px 20px 0;" data-i18n="objskin.intro">Import a 3D model (.obj) exported from Blender or another program, assign its parts to a skeleton's bones, position pivots visually, and export a real Bedrock 1.8.0 geometry (poly_mesh) — ready as a full skin pack (manifest.json, skins.json, lang and textures included).</p>
+          <p style="padding:16px 20px 0;" data-i18n="objskin.intro">Import a 3D model (.obj) exported from Blender, or an existing Bedrock model (geometry .json, 1.8 or 1.12+ with cubes, box UV or per-face UV), assign its parts to a skeleton's bones, position pivots visually, and export a real Bedrock 1.8.0 geometry (poly_mesh) — ready as a full skin pack (manifest.json, skins.json, lang and textures included).</p>
           <div style="margin:16px 20px 20px;">
 <div id="objSkinStudio">
   <div id="dropOverlay">
     <div id="dropOverlayInner">
       <svg class="dropIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>
-      <p data-oss-i18n="drop.text">Suelta tu .obj y tu textura aquí</p>
+      <p data-oss-i18n="drop.text">Suelta tu modelo (.obj o .json) y tu textura aquí</p>
     </div>
   </div>
 
@@ -922,7 +952,7 @@
       <button class="mobileClose" id="btnCloseSidebar" title="Cerrar" data-oss-i18n-title="common.close">×</button>
       <div id="sidebarHeader">
         <div class="sidebarHeaderTop">
-          <h1>OBJ → Skin <span class="badgeVer">1.8</span></h1>
+          <h1><span data-oss-i18n="sidebar.title">Modelo a Skin</span> <span class="badgeVer">1.8</span></h1>
           <div class="lang-switch" id="objSkinLangSwitch">
             <button type="button" class="lang-btn" data-lang="es">ES</button>
             <button type="button" class="lang-btn" data-lang="en">EN</button>
@@ -942,7 +972,7 @@
             <div class="fileRowLabel" data-oss-i18n="sidebar.objLabel">Modelo .obj</div>
             <div class="fileRowValue" id="objFileName" data-oss-i18n="sidebar.noFile">Sin archivo — haz clic para subir</div>
           </div>
-          <input type="file" id="objInput" accept=".obj" hidden>
+          <input type="file" id="objInput" accept=".obj,.json,application/json" hidden>
         </div>
         <div class="fileRow" id="fileRowTex" title="Cambiar textura" data-oss-i18n-title="sidebar.changeTexTitle">
           <span class="fileRowIcon fileRowThumb" id="texThumb">
@@ -1047,6 +1077,13 @@
               <input type="number" step="0.1" id="pivotY">
               <input type="number" step="0.1" id="pivotZ">
             </div>
+            <button class="btn btnGhost wide" id="btnItemStandard" hidden data-oss-i18n="bones.itemStandard">Poner en la mano (posición estándar)</button>
+
+            <label class="infoLabel" data-oss-i18n="bones.locators">Locators (puntos de agarre / anclaje)</label>
+            <div id="locatorList"></div>
+            <button class="btn btnGhost wide" id="btnAddLocator" data-oss-i18n="bones.addLocator">+ Agregar locator</button>
+            <p class="hint" data-oss-i18n="bones.locatorsHint">Un locator es un punto con nombre dentro del hueso, por ejemplo "lead_hold" en rightItem. Se exporta junto con la geometría.</p>
+
             <button class="btn btnDanger" id="btnDeleteBone" data-oss-i18n="bones.deleteBone">Eliminar hueso</button>
 
             <h4 class="panelTitle small" data-oss-i18n="bones.assignedParts">Partes asignadas a este hueso</h4>
@@ -1298,6 +1335,154 @@
 
 </section>
 
+<!-- ============ SKIN CREATOR ============ -->
+<section id="skinCreator" class="section reveal tab-section">
+
+  <div class="container">
+    <h2 class="section-title" data-i18n="skinCreator.sectionTitle">Skin Creator</h2>
+    <p class="section-subtitle" data-i18n="skinCreator.sectionSubtitle">Draw a Minecraft Bedrock skin from scratch or import one to edit, with a live 3D preview — everything stays in your browser.</p>
+
+<div id="skinCreatorStudio">
+  <div id="scMobileBackdrop"></div>
+  <div id="scMobileTabBar">
+    <button class="scMobileTabBtn" id="scBtnMobileTools" data-sc-i18n-title="mobile.tools">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 1 0 5.6l-7 7-3.6.7.7-3.6 7-7a4 4 0 0 1 5.6 0Z"/></svg>
+      <span data-sc-i18n="mobile.tools">Tools</span>
+    </button>
+    <button class="scMobileTabBtn active" id="scBtnMobileCanvas" data-sc-i18n-title="mobile.canvas">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 15l5-5 4 4 5-6 4 5"/></svg>
+      <span data-sc-i18n="mobile.canvas">Canvas</span>
+    </button>
+    <button class="scMobileTabBtn" id="scBtnMobile3d" data-sc-i18n-title="mobile.preview3d">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 20 7.5v9L12 21 4 16.5v-9L12 3Z"/><path d="M12 21v-9M12 12 4 7.5M12 12l8-4.5"/></svg>
+      <span data-sc-i18n="mobile.preview3d">3D</span>
+    </button>
+  </div>
+
+  <aside id="scTools">
+    <div class="scMobileSheetHandle" aria-hidden="true"></div>
+    <button class="scMobileClose" id="scBtnCloseTools" aria-label="Close">×</button>
+
+    <div class="scPanelHeader">
+      <h1 data-sc-i18n="sc.title">Skin Creator</h1>
+    </div>
+
+    <div class="scSection">
+      <label class="scLabel" data-sc-i18n="sc.resolution">Resolution</label>
+      <div class="scSegRow" id="scResolutionRow">
+        <button type="button" class="scSegBtn active" data-res="64x64">64×64</button>
+        <button type="button" class="scSegBtn" data-res="64x32">64×32</button>
+        <button type="button" class="scSegBtn" data-res="128x128">128×128</button>
+      </div>
+      <p class="scHint" id="scResolutionHint" data-sc-i18n="sc.resolutionHintNew">64×64 supports a base and an overlay layer.</p>
+
+      <label class="scLabel" data-sc-i18n="sc.model">Model</label>
+      <div class="scSegRow">
+        <button type="button" class="scSegBtn active" data-model="wide" data-sc-i18n="sc.modelWide">Steve (wide)</button>
+        <button type="button" class="scSegBtn" data-model="slim" data-sc-i18n="sc.modelSlim">Alex (slim)</button>
+      </div>
+    </div>
+
+    <div class="scSection">
+      <label class="scLabel" data-sc-i18n="sc.layer">Layer</label>
+      <div class="scSegRow">
+        <button type="button" class="scSegBtn active" id="scLayerBase" data-layer="base" data-sc-i18n="sc.layerBase">Base</button>
+        <button type="button" class="scSegBtn" id="scLayerOverlay" data-layer="overlay" data-sc-i18n="sc.layerOverlay">Overlay</button>
+      </div>
+      <label class="scCheckRow">
+        <input type="checkbox" id="scShowOverlayIn3d" checked>
+        <span data-sc-i18n="sc.showOverlayIn3d">Show overlay in the 3D preview</span>
+      </label>
+    </div>
+
+    <div class="scSection">
+      <label class="scLabel" data-sc-i18n="sc.tools">Tools</label>
+      <div class="scToolGrid" id="scToolGrid">
+        <button type="button" class="scToolBtn active" data-tool="pencil" data-sc-i18n-title="sc.toolPencil">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 1 0 5.6l-7 7-3.6.7.7-3.6 7-7a4 4 0 0 1 5.6 0Z"/></svg>
+          <span data-sc-i18n="sc.toolPencil">Pencil</span>
+        </button>
+        <button type="button" class="scToolBtn" data-tool="eraser" data-sc-i18n-title="sc.toolEraser">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13 9 22H5l-2-2 9-9Z"/><path d="m13 4 7 7-5 5-7-7Z"/></svg>
+          <span data-sc-i18n="sc.toolEraser">Eraser</span>
+        </button>
+        <button type="button" class="scToolBtn" data-tool="bucket" data-sc-i18n-title="sc.toolBucket">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 3 10 10-6 6a4 4 0 0 1-6-6l6-6Z"/><path d="M4 15h13"/><circle cx="19" cy="17.5" r="2.5"/></svg>
+          <span data-sc-i18n="sc.toolBucket">Fill bucket</span>
+        </button>
+        <button type="button" class="scToolBtn" data-tool="eyedropper" data-sc-i18n-title="sc.toolEyedropper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m11 9-6.5 6.5v3h3L14 12"/><path d="M13 7l4-4 4 4-4 4Z"/></svg>
+          <span data-sc-i18n="sc.toolEyedropper">Eyedropper</span>
+        </button>
+      </div>
+      <label class="scCheckRow">
+        <input type="checkbox" id="scEraseToTransparent" checked>
+        <span data-sc-i18n="sc.eraseToTransparent">Eraser leaves pixels transparent</span>
+      </label>
+    </div>
+
+    <div class="scSection">
+      <label class="scLabel" data-sc-i18n="sc.color">Color</label>
+      <div id="scColorPickerMount"></div>
+      <div class="scSwatchRow" id="scSwatchRow"></div>
+    </div>
+
+    <div class="scSection">
+      <label class="scLabel" data-sc-i18n="sc.fileSection">File</label>
+      <button type="button" class="scFileBtn" id="scNewSkinBtn" data-sc-i18n="sc.newSkin">New blank skin</button>
+      <label class="scFileBtn">
+        <span data-sc-i18n="sc.importPng">Import PNG to edit</span>
+        <input type="file" id="scImportInput" accept="image/png" hidden>
+      </label>
+      <button type="button" class="scFileBtn scFileBtnPrimary" id="scExportBtn" data-sc-i18n="sc.exportPng">Export as PNG</button>
+      <p class="scHint" id="scImportHint"></p>
+    </div>
+  </aside>
+
+  <div id="scCanvasWrap">
+    <div id="scCanvasToolbar">
+      <button type="button" class="scViewBtn" id="scZoomOut" aria-label="Zoom out">−</button>
+      <span id="scZoomLabel">800%</span>
+      <button type="button" class="scViewBtn" id="scZoomIn" aria-label="Zoom in">+</button>
+      <span class="scToolbarSep"></span>
+      <label class="scCheckRow scCheckRowInline">
+        <input type="checkbox" id="scShowGrid" checked>
+        <span data-sc-i18n="sc.showGrid">Grid</span>
+      </label>
+      <span class="scToolbarSep"></span>
+      <div class="scModeRow">
+        <button type="button" class="scModeBtn active" id="scModePencil" data-mode="pencil" data-sc-i18n-title="sc.modePencil">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 1 0 5.6l-7 7-3.6.7.7-3.6 7-7a4 4 0 0 1 5.6 0Z"/></svg>
+        </button>
+        <button type="button" class="scModeBtn" id="scModeHand" data-mode="hand" data-sc-i18n-title="sc.modeHand">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12V6a1.5 1.5 0 0 1 3 0v5M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11.5V6a1.5 1.5 0 0 1 3 0v7M17 12v-1a1.5 1.5 0 0 1 3 0v6a6 6 0 0 1-6 6h-2a6 6 0 0 1-5-2.7L4 15.5c-.6-.9-.3-1.9.5-2.3.7-.4 1.6-.2 2.1.4L8 15"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="scCanvasScroll">
+      <div id="scCanvasStage">
+        <canvas id="scPixelCanvas"></canvas>
+        <canvas id="scGridCanvas"></canvas>
+      </div>
+    </div>
+    <p id="scCanvasStatus"></p>
+  </div>
+
+  <aside id="scPreview3d">
+    <div class="scMobileSheetHandle" aria-hidden="true"></div>
+    <button class="scMobileClose" id="scBtnClose3d" aria-label="Close">×</button>
+    <div class="scPanelHeader">
+      <h1 data-sc-i18n="sc.preview3dTitle">3D Preview</h1>
+    </div>
+    <div id="scViewport3d"></div>
+    <p class="scHint scHintCenter" data-sc-i18n="sc.dragToRotate">Drag to rotate · scroll to zoom</p>
+  </aside>
+</div>
+
+  </div>
+
+</section>
+
 <!-- ============ ABOUT ============ -->
 <section id="about" class="section reveal tab-section">
 
@@ -1312,11 +1497,11 @@
         <strong>Minecraft Bedrock</strong>
         skin packs that runs almost entirely in your browser: a validator
         for 4D/5D packs with custom geometries, a 3D skin viewer, a 4D/5D
-        viewer with an embedded Blockbench Web editor, an OBJ → Skin 1.8
-        converter that turns a 3D model into a working 5D skin pack, and a
-        skin pack builder. The only thing that ever leaves your browser is a
-        4D model's data when you send it to that embedded Blockbench editor —
-        everything else stays local.
+        viewer with its own renderer, a Model to Skin 1.8 converter that
+        turns a 3D model (or a 1.12 geometry) into a working 5D skin pack,
+        and a skin pack builder. Your files are processed locally — the
+        only outside requests are the skin look-ups you ask for in the
+        Skinpack Maker.
       </p>
 
       <p data-i18n="about.p2">
@@ -1342,7 +1527,7 @@
 
       <article class="card check-card">
         <h3 data-i18n="home.fcViewerTag">4D/5D VIEWER</h3>
-        <p data-i18n="home.fcViewerText">Preview bones, cubes and pivots of custom geometries with the skin applied, rotating live — or send 4D models straight to an embedded Blockbench editor.</p>
+        <p data-i18n="home.fcViewerText">Preview bones, cubes and pivots of custom geometries with the skin applied, rotating live — 4D (cubes) and 5D (poly_mesh), with a built-in renderer.</p>
       </article>
 
       <article class="card check-card">
@@ -1356,8 +1541,8 @@
       </article>
 
       <article class="card check-card">
-        <h3 data-i18n="home.fcObjSkinTag">OBJ → SKIN 1.8</h3>
-        <p data-i18n="home.fcObjSkinText">Import an .obj + texture, assign parts to bones, adjust pivots visually, and export a real Bedrock 1.8.0 poly_mesh — ready as a full skin pack.</p>
+        <h3 data-i18n="home.fcObjSkinTag">MODEL TO SKIN 1.8</h3>
+        <p data-i18n="home.fcObjSkinText">Import an .obj or a 1.12 geometry .json + texture, assign parts to bones, adjust pivots visually, and export a real Bedrock 1.8.0 poly_mesh — ready as a full skin pack.</p>
       </article>
 
     </div>
@@ -1496,19 +1681,13 @@
       <div class="custom-theme-color-row">
         <label data-i18n="customTheme.strongColor">Strong color</label>
         <span class="custom-theme-color-sub" data-i18n="customTheme.strongColorHint">Buttons, highlights, active state</span>
-        <div class="custom-theme-color-inputs">
-          <input type="color" id="customThemeStrongPicker" value="#7c3aed">
-          <input type="text" id="customThemeStrongHex" class="custom-theme-hex-input" placeholder="#7c3aed" maxlength="7" spellcheck="false">
-        </div>
+        <div id="customThemeStrongPickerMount"></div>
       </div>
 
       <div class="custom-theme-color-row">
         <label data-i18n="customTheme.softColor">Soft color</label>
         <span class="custom-theme-color-sub" data-i18n="customTheme.softColorHint">Glows, subtle backgrounds</span>
-        <div class="custom-theme-color-inputs">
-          <input type="color" id="customThemeSoftPicker" value="#a855f7">
-          <input type="text" id="customThemeSoftHex" class="custom-theme-hex-input" placeholder="#a855f7" maxlength="7" spellcheck="false">
-        </div>
+        <div id="customThemeSoftPickerMount"></div>
       </div>
 
       <div class="custom-theme-bg-section">
@@ -1981,10 +2160,12 @@
 
   // ---- Modal ----
   var ctBackdrop = document.getElementById("customThemeBackdrop");
-  var ctStrongPicker = document.getElementById("customThemeStrongPicker");
-  var ctStrongHexInput = document.getElementById("customThemeStrongHex");
-  var ctSoftPicker = document.getElementById("customThemeSoftPicker");
-  var ctSoftHexInput = document.getElementById("customThemeSoftHex");
+  var ctStrongPickerWidget = (typeof MBSMColorPicker !== "undefined" && document.getElementById("customThemeStrongPickerMount"))
+    ? MBSMColorPicker.create(document.getElementById("customThemeStrongPickerMount"), { initial: "#7c3aedff" })
+    : null;
+  var ctSoftPickerWidget = (typeof MBSMColorPicker !== "undefined" && document.getElementById("customThemeSoftPickerMount"))
+    ? MBSMColorPicker.create(document.getElementById("customThemeSoftPickerMount"), { initial: "#a855f7ff" })
+    : null;
   var ctBgTypeWrap = document.getElementById("customThemeBgType");
   var ctBgFile = document.getElementById("customThemeBgFile");
   var ctBgUploadBtn = document.getElementById("customThemeBgUploadBtn");
@@ -1994,16 +2175,6 @@
   var ctSelectedBgFile = null;
   var ctAudioRow = document.getElementById("customThemeAudioRow");
   var ctAudioCheckbox = document.getElementById("customThemeAudioCheckbox");
-
-  function ctSyncColorInputs(picker, hexInput) {
-    picker.addEventListener("input", function () { hexInput.value = picker.value; hexInput.classList.remove("invalid"); });
-    hexInput.addEventListener("input", function () {
-      var v = hexInput.value.trim();
-      if (ctHexValid(v)) { hexInput.classList.remove("invalid"); picker.value = ctNormalizeHex(v); }
-    });
-  }
-  if (ctStrongPicker) ctSyncColorInputs(ctStrongPicker, ctStrongHexInput);
-  if (ctSoftPicker) ctSyncColorInputs(ctSoftPicker, ctSoftHexInput);
 
   if (ctBgTypeWrap) {
     ctBgTypeWrap.querySelectorAll(".ctbg-opt").forEach(function (opt) {
@@ -2047,8 +2218,8 @@
     try { colors = raw ? JSON.parse(raw) : null; } catch (e) {}
     var strong = (colors && ctHexValid(colors.strong)) ? colors.strong : "#7c3aed";
     var soft = (colors && ctHexValid(colors.soft)) ? colors.soft : "#a855f7";
-    ctStrongPicker.value = strong; ctStrongHexInput.value = strong; ctStrongHexInput.classList.remove("invalid");
-    ctSoftPicker.value = soft; ctSoftHexInput.value = soft; ctSoftHexInput.classList.remove("invalid");
+    if (ctStrongPickerWidget) ctStrongPickerWidget.setColor(strong);
+    if (ctSoftPickerWidget) ctSoftPickerWidget.setColor(soft);
     ctSelectedBgType = "none"; ctSelectedBgFile = null;
     ctBgFilename.textContent = ""; ctBgFile.value = "";
     ctBgUploadBtn.hidden = true; ctBgLoopNote.hidden = true;
@@ -2067,13 +2238,8 @@
 
   var ctSaveBtn = document.getElementById("customThemeSave");
   if (ctSaveBtn) ctSaveBtn.addEventListener("click", function () {
-    var strong = ctStrongHexInput.value.trim();
-    var soft = ctSoftHexInput.value.trim();
-    var ok = true;
-    if (!ctHexValid(strong)) { ctStrongHexInput.classList.add("invalid"); ok = false; }
-    if (!ctHexValid(soft)) { ctSoftHexInput.classList.add("invalid"); ok = false; }
-    if (!ok) { alert(t("customTheme.invalidHex")); return; }
-    strong = ctNormalizeHex(strong); soft = ctNormalizeHex(soft);
+    var strong = ctNormalizeHex((ctStrongPickerWidget ? ctStrongPickerWidget.getColor() : "#7c3aedff").slice(0, 7));
+    var soft = ctNormalizeHex((ctSoftPickerWidget ? ctSoftPickerWidget.getColor() : "#a855f7ff").slice(0, 7));
 
     try { localStorage.setItem(CUSTOM_COLORS_KEY, JSON.stringify({ strong: strong, soft: soft })); } catch (e) {}
     try { localStorage.setItem(PALETTE_KEY, "custom"); } catch (e) {}
@@ -2255,6 +2421,39 @@
           </div>
           <div class="changelog-entry-body">
             <div class="changelog-entry-head">
+              <span class="changelog-version">v0.10.0 beta</span>
+              <span class="changelog-badge badge-minor" data-i18n="changelog.badge.minor">Minor Update</span>
+            </div>
+            <ul class="changelog-changes">
+              <li data-i18n="changelog.v100.item1">New tool: Skin Creator &mdash; a Blockbench-style editor for classic Minecraft Bedrock skins, supporting 64&times;64, 64&times;32, and 128&times;128, with a live 3D preview.</li>
+              <li data-i18n="changelog.v100.item2">Drawing tools: pencil, eraser (transparent or opaque), fill bucket, and eyedropper, each with a visible label instead of icon-only buttons.</li>
+              <li data-i18n="changelog.v100.item3">Base and overlay layers, with a toggle to show or hide the overlay in the 3D preview.</li>
+              <li data-i18n="changelog.v100.item4">A new pencil/hand mode switch: pencil mode draws with one finger (two fingers still pan and zoom); hand mode never paints, so one or two fingers (or a mouse drag) just move and zoom the canvas.</li>
+              <li data-i18n="changelog.v100.item5">The 3D preview uses skinview3d (open-source, MIT-licensed), replacing an earlier from-scratch attempt whose geometry didn't line up correctly.</li>
+              <li data-i18n="changelog.v100.item6">Fixed the Steve/Alex model switch not actually changing the arm width in the 3D preview &mdash; it was being silently overridden by the library's own auto-detection.</li>
+              <li data-i18n="changelog.v100.item7">A new blank skin now starts with a simple per-face colored template (a different color for each of the 6 cube faces, Blockbench-style) instead of a transparent canvas or a permanent colored outline overlay.</li>
+              <li data-i18n="changelog.v100.item8">Zoom can no longer shrink the canvas smaller than fitting the visible area, and pinch-to-zoom respects the same limit.</li>
+              <li data-i18n="changelog.v100.item9">Import an existing skin PNG (auto-detects 64&times;64 / 64&times;32 / 128&times;128) or export the current canvas as a PNG.</li>
+              <li data-i18n="changelog.v100.item10">Added a custom color picker (saturation/value square + hue bar + hex input) used both in the Skin Creator and the "Create your own skin" theme creator, replacing the operating system's native color picker.</li>
+              <li data-i18n="changelog.v100.item11">Fixed the theme creator's color pickers being completely blank and unusable on the "None" background option &mdash; a script loading-order bug.</li>
+            
+              <li data-i18n="changelog.v100.item12">4D/5D Viewer: 4D models (cubes) are now drawn by MBSM's own renderer instead of the embedded Blockbench editor, so 4D and 5D share one viewport and nothing leaves your browser anymore. Box UV, per-face UV, mirror, inflate and per-cube rotation are supported, with the texture orientation and the left/right sides fixed (textures used to come out flipped and the side faces swapped).</li>
+              <li data-i18n="changelog.v100.item13">4D/5D Viewer: framing that fits the whole model even on narrow phone screens, even lighting, spin around the model's own center, no more thin lines on cube edges, sturdier poly_mesh reading (any polygon size, bad normals recalculated) and a new "Recalculate normals" toggle.</li>
+              <li data-i18n="changelog.v100.item14">OBJ &rarr; Skin 1.8 is now Model to Skin 1.8: besides an .obj it imports an existing Bedrock geometry .json (1.8 or 1.12+, with cubes, box UV or per-face UV) and bakes it into a mesh you can re-pose and export as 1.8.0. Standard humanoid bones missing from the file (leftItem, rightItem, sleeves, pants, jacket, hat, cape) are added back.</li>
+              <li data-i18n="changelog.v100.item15">Model to Skin 1.8: fixed bone pivots being exported without mirroring X, which made every limb pivot around the wrong side of the body (arms out or twisted came out wrong in-game). The exported poly_mesh also stores each position, normal and UV once instead of once per triangle corner, so files are much smaller.</li>
+              <li data-i18n="changelog.v100.item16">Model to Skin 1.8: held items fixed. leftItem/rightItem now default to the official hand grip point (6, 15, 1; 14.5 for Alex) instead of (5, 13, 0), which left items floating below the hand, and there is a new "Put in the hand (standard position)" button.</li>
+              <li data-i18n="changelog.v100.item17">Model to Skin 1.8: new locator editor on every bone (name + X/Y/Z, add, rename, delete) with cyan markers in the preview and in the 4D/5D viewer's "Show pivots" mode. lead_hold is now automatic on rightItem: it is exported with every model and follows the item's pivot until you edit it by hand.</li>
+              <li data-i18n="changelog.v100.item18">Model to Skin 1.8 (mobile): the Models sheet can now be scrolled. The parts list and each part's bone selector were squashed to zero height and unreachable. Also fixed the close button covering the ES/EN switch and the part search box sticking out of the sheet.</li>
+              <li data-i18n="changelog.v100.item19">Home: the tool tags (4D/5D, Classic...) moved out of the home cards and into the mobile Viewers and Tools sheets, next to each tool. The About text no longer mentions the Blockbench editor.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="changelog-entry">
+          <div class="changelog-entry-icon type-minor">
+            <img src="assets/mbsm-icon.png" alt="">
+          </div>
+          <div class="changelog-entry-body">
+            <div class="changelog-entry-head">
               <span class="changelog-version">v0.9.0 beta</span>
               <span class="changelog-badge badge-minor" data-i18n="changelog.badge.minor">Minor Update</span>
             </div>
@@ -2406,7 +2605,8 @@
       { label: "Open Classic Skins Viewer", hint: "Viewers", run: clickEl('.sidebar-link[data-tab="studio"][data-subtab="studioViewer"]') },
       { label: "Open Validator & Fixer", hint: "Tools", run: clickEl('.sidebar-link[data-tab="validator"][data-subtab="sgTabValidator"]') },
       { label: "Open Skinpack Maker", hint: "Tools", run: clickEl('.sidebar-link[data-tab="studio"][data-subtab="studioMaker"]') },
-      { label: "Open OBJ → Skin 1.8", hint: "Tools", run: clickEl('.sidebar-link[data-tab="validator"][data-subtab="sgTabObjSkin"]') },
+      { label: "Open Model to Skin 1.8", hint: "Tools", run: clickEl('.sidebar-link[data-tab="validator"][data-subtab="sgTabObjSkin"]') },
+      { label: "Open Skin Creator", hint: "Tools", run: clickEl('.sidebar-link[data-tab="skinCreator"]') },
       { label: "Open About", hint: "Workspace", run: clickEl('.sidebar-link[data-tab="about"]') },
       { label: "Toggle Grid", hint: "4D / 5D Viewer", run: clickEl("#sgToggleGrid") },
       { label: "Toggle Wireframe", hint: "4D / 5D Viewer", run: clickEl("#sgToggleWire") },
@@ -2508,18 +2708,19 @@
 <!-- Modulos de SkinGeo Viewer -- herramienta 4D/5D Viewer,
      completamente independiente de viewer.js de arriba. -->
 <script src="skinpack.js?v=1"></script>
-<script src="renderer5d.js?v=1"></script>
-<script src="blockbench.js?v=1"></script>
-<script src="skinGeoViewer.js?v=1"></script>
+<script src="renderer5d.js?v=6"></script>
+<script src="skinGeoViewer.js?v=5"></script>
 
 <!-- Módulo del conversor OBJ -> Skin 1.8 (poly_mesh), antes una página
      aparte (obj-skin-studio.html) embebida por iframe; ahora vive
      integrado en esta misma página, igual que los demás módulos de
      arriba. Se expone como window.ObjSkinStudio (init perezoso +
      refreshLanguage) y no declara nada más en el ámbito global. -->
-<script src="obj-a-skin-bedrock.js?v=2"></script>
+<script src="https://cdn.jsdelivr.net/npm/skinview3d@3/bundles/skinview3d.bundle.js"></script>
+<script src="obj-a-skin-bedrock.js?v=7"></script>
+<script src="skin-creator.js?v=6"></script>
 
-<script src="app.js?v=10"></script>
+<script src="app.js?v=17"></script>
 
 </body>
 </html>
